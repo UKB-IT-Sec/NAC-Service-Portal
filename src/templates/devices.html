@@ -2,4 +2,9 @@
 
 {% block content %}
 <h1>Device Page</h1>
+{% for device in device_list %}
+    <div class="device-entry">
+        <p>{{ device.name }}</p>
+    </div>
+{% endfor %}
 {% endblock content %}
