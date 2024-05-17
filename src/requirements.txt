@@ -1,1 +1,6 @@
 django
+flake8==3.7.9
+pytest
+pytest-django
+pytest-flake8
+pytest-cov
