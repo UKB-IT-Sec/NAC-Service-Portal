@@ -8,9 +8,9 @@
     <body>
         <div>
             {% if user.is_authenticated %}
+                <p>Hi {{ user.username }}!</p>
                 {% block content %}
                 {% endblock content %}
-                <p>Hi {{ user.username }}!</p>
                 <form method="post" action="{% url 'logout' %}">
                     {% csrf_token %}
                     <button type="submit">Log out</button>
