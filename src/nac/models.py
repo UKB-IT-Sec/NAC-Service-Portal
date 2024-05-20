@@ -2,10 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User, AbstractUser
 
 
-class CustomUser(AbstractUser):
-    name = models.TextField()
-
-
 class SecurityGroup(models.Model):
     name = models.TextField()
 
@@ -15,11 +11,15 @@ class SecurityGroup(models.Model):
 
 class Area(models.Model):
     name = models.TextField()
-    user = models.ManyToManyField(CustomUser)
     security_group = models.ManyToManyField(SecurityGroup)
 
     def __str__(self):
         return self.name[:50]
+
+
+class CustomUser(AbstractUser):
+    name = models.TextField()
+    area = models.ManyToManyField(Area)
 
 
 class Device(models.Model):
