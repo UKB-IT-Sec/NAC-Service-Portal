@@ -1,5 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AbstractUser
+
+
+class CustomUser(AbstractUser):
+    name = models.TextField()
 
 
 class SecurityGroup(models.Model):
@@ -11,7 +15,7 @@ class SecurityGroup(models.Model):
 
 class Area(models.Model):
     name = models.TextField()
-    user = models.ManyToManyField(User)
+    user = models.ManyToManyField(CustomUser)
     security_group = models.ManyToManyField(SecurityGroup)
 
     def __str__(self):
