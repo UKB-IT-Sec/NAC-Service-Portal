@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
     HomePageView,
-    DevicePageView,
+    DeviceListView,
     DeviceDetailView,
     DeviceUpdateView,
     DeviceDeleteView,
@@ -10,9 +10,9 @@ from .views import (
 
 urlpatterns = [
     path("", HomePageView.as_view(), name="home"),
-    path("devices/", DevicePageView.as_view(), name="devices"),
+    path("devices/", DeviceListView.as_view(), name="devices"),
     path("devices/<int:pk>/", DeviceDetailView.as_view(), name="device_detail"),
     path("devices/<int:pk>/edit/", DeviceUpdateView.as_view(), name="device_edit"),
     path("devices/<int:pk>/delete", DeviceDeleteView.as_view(), name="device_delete"),
-    path("device/new/", DeviceCreateView.as_view(), name="device_new")
+    path("devices/new/", DeviceCreateView.as_view(), name="device_new")
 ]

@@ -1,6 +1,7 @@
 from django.views.generic import TemplateView, ListView, DetailView
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.urls import reverse_lazy
+
 from .models import Device
 
 
@@ -8,10 +9,12 @@ class HomePageView(TemplateView):
     template_name = "home.html"
 
 
-class DevicePageView(ListView):
+class DeviceListView(ListView):
     model = Device
     template_name = "devices.html"
 
+    def get_queryset(self):
+        return Device.objects.filter(area__in=self.request.user.area.all())
 
 class DeviceDetailView(DetailView):
     model = Device
