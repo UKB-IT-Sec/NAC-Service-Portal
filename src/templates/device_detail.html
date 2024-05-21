@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="device-entry">
+    <h2> {{ object.name }}</h2>
+</div>
+
+<p><a href="{% url 'device_edit' device.pk %}">Edit</a> | <a href="{% url 'device_delete' device.pk %}">Delete</a></p>
+<p>Back to <a href="{% url 'devices' %}">All Devices</a></p>
+{% endblock content %}

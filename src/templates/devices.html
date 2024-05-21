@@ -5,8 +5,8 @@
 {% for device in device_list %}
     <div class="device-entry">
         <p>{{ device.name }}</p>
-        <p><a href="#">Edit</a> | <a href="#">Delete</a></p>
+        <p><a href="{% url 'device_edit' device.pk %}">Edit</a> | <a href="{% url 'device_delete' device.pk %}">Delete</a></p>
     </div>
 {% endfor %}
-<a href="#">Add Device</a>
+<a href="{% url 'device_new' %}">Add Device</a>
 {% endblock content %}

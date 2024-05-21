@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User, AbstractUser
-
+from django.urls import reverse
 
 class SecurityGroup(models.Model):
     name = models.TextField()
@@ -29,3 +29,6 @@ class Device(models.Model):
 
     def __str__(self):
         return self.name[:50]
+
+    def get_absolute_url(self):
+        return reverse("device_detail", kwargs={"pk": self.pk})
