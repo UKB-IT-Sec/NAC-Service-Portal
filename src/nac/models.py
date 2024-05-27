@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User, AbstractUser
 from django.urls import reverse
+from django.forms import ModelForm
 
 class SecurityGroup(models.Model):
     name = models.TextField()
@@ -32,3 +33,14 @@ class Device(models.Model):
 
     def get_absolute_url(self):
         return reverse("device_detail", kwargs={"pk": self.pk})
+
+
+class DeviceForm(ModelForm):
+    class Meta:
+        model = Device
+        fields = ["name", "area", "security_group", ]
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop("user")
+        super(DeviceForm, self).__init__(*args, **kwargs)
+        self.fields["area"].queryset = Area.objects.filter(id__in=user.area.all())
