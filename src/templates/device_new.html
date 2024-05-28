@@ -1,10 +1,16 @@
 {% extends "base.html" %}
 
+{% load static %}
+
 {% block content %}
 <h1>New device</h1>
 <form action="" method="post">{% csrf_token %}
-    {{form}}
+    {{ form.as_p }}
     <button type="submit">Save</button>
 </form>
-
 {% endblock content %}
+
+{% block footer %}
+<script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+{{ form.media }}
+{% endblock footer %}
