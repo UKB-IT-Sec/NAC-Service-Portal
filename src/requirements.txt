@@ -1,4 +1,5 @@
 django
+django-autocomplete-light
 flake8==3.7.9
 pytest
 pytest-django
