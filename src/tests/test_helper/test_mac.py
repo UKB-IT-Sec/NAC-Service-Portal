@@ -15,8 +15,8 @@ def test_normalize_mac(input_data, expected):
 
 
 @pytest.mark.parametrize('input_data, expected', [
-    (0.0, 'input is not a string type object'),
-    ('ii1122334455', 'input has invalid characters'),
+    (0.0, 'invalid input type'),
+    ('ii1122334455', 'invalid characters'),
 ])
 def test_normalize_mac_error(input_data, expected):
     with pytest.raises(MacAddressNotValid) as error_info:
@@ -25,7 +25,7 @@ def test_normalize_mac_error(input_data, expected):
 
 
 @pytest.mark.parametrize('input_data, expected', [
-    ('00112233445566', 'input size is invalid'),
+    ('00112233445566', 'invalid size'),
     ('ii1122334455', 'invalid characters')
 ])
 def test_is_valid_normalized_mac_false(input_data, expected):

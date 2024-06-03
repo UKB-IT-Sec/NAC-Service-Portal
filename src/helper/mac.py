@@ -23,14 +23,14 @@ def normalize_mac(input_string):
         input_string = input_string.replace(' ', '')
         input_string = input_string.lower()
     except(AttributeError):
-        raise MacAddressNotValid('input is not a string type object')
+        raise MacAddressNotValid('invalid input type')
     is_valid_normalized_mac(input_string)
     return input_string
 
 
 def is_valid_normalized_mac(input_string):
     if len(input_string) != 12:
-        raise MacAddressNotValid('input size is invalid')
+        raise MacAddressNotValid('invalid size')
     if re.search(r'[a-f0-9]{12}', input_string) is None:
         raise MacAddressNotValid('invalid characters')
     return True
