@@ -1,11 +1,32 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<h2>Log In</h2>
-<form method="post">{% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Log In</button>
+<form method="post">
+{% csrf_token %}
+<div class=container>
+	<table style="background-color:#424241; color:white;">
+		<tr>
+			<td>
+				{{ form.username.label_tag }}
+			</td>
+			<td>
+				{{ form.username }}
+			</td>
+		</tr>
+		<tr>
+			<td>
+				{{ form.password.label_tag }}
+			</td>
+			<td>
+				{{ form.password }}
+			</td>
+		</tr>
+		<tr>
+			<td colspan=2>
+				<button type="submit" class="btn btn-primary btn-block" style="width:100%">login</button>
+			</td>
+		</tr>
+	</table>
+</div>
 </form>
-
 {% endblock content %}
