@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User, AbstractUser
+from django.contrib.auth.models import AbstractUser
 from django.urls import reverse
 from django.forms import ModelForm
 from dal import autocomplete
@@ -42,7 +42,6 @@ class DeviceForm(ModelForm):
         model = Device
         fields = ["name", "area", "security_group", ]
         widgets = {"security_group": autocomplete.ModelSelect2(url="security-group-autocomplete", forward=["area"])}
-
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop("user")
