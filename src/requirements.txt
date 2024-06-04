@@ -3,5 +3,6 @@ django-autocomplete-light
 flake8==3.7.9
 pytest
 pytest-django
+pytest-xdist
 pytest-flake8
 pytest-cov
