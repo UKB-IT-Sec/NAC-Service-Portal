@@ -41,9 +41,6 @@ class DeviceForm(ModelForm):
     class Meta:
         model = Device
         fields = ["name", "area", "security_group", ]
-        widgets = {"security_group": autocomplete.ModelSelect2(url="security-group-autocomplete", forward=["area"])}
+        widgets = {"security_group": autocomplete.ModelSelect2(url="security-group-autocomplete", forward=["area"]),
+                   "area": autocomplete.ModelSelect2(url="area-autocomplete"), }
 
-    def __init__(self, *args, **kwargs):
-        user = kwargs.pop("user")
-        super(DeviceForm, self).__init__(*args, **kwargs)
-        self.fields["area"].queryset = Area.objects.filter(id__in=user.area.all())

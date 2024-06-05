@@ -45,11 +45,6 @@ class DeviceCreateView(CreateView):
     template_name = "device_new.html"
     form_class = DeviceForm
 
-    def get_form_kwargs(self):
-        kwargs = super(DeviceCreateView, self).get_form_kwargs()
-        kwargs["user"] = self.request.user
-        return kwargs
-
 
 class SecurityGroupAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
@@ -57,9 +52,34 @@ class SecurityGroupAutocomplete(autocomplete.Select2QuerySetView):
             return SecurityGroup.objects.none()
 
         qs = SecurityGroup.objects.all()
+
+        #autocomplete search results
+        if self.q:
+            qs = qs.filter(name__istartswith=self.q)
+
+        #only show security groups compatible with selected area
         area_pk = self.forwarded.get("area", None)
         if area_pk:
             area = Area.objects.get(pk=area_pk)
             qs = qs.filter(id__in=area.security_group.all())
 
         return qs
+
+
+class AreaAutocomplete(autocomplete.Select2QuerySetView):
+
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return Area.objects.none()
+
+        qs = Area.objects.all()
+
+        # only show areas compatible with user
+        qs = qs.filter(id__in=self.request.user.area.all())
+
+        #autocomplete search results
+        if self.q:
+            qs = qs.filter(name__istartswith=self.q)
+
+        return qs
+
