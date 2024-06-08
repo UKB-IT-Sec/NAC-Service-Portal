@@ -28,11 +28,6 @@ class DeviceUpdateView(UpdateView):
     form_class = DeviceForm
     template_name = "device_edit.html"
 
-    def get_form_kwargs(self):
-        kwargs = super(DeviceUpdateView, self).get_form_kwargs()
-        kwargs["user"] = self.request.user
-        return kwargs
-
 
 class DeviceDeleteView(DeleteView):
     model = Device

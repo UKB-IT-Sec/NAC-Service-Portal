@@ -12,5 +12,18 @@
 
 {% block footer %}
 <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+    // Bind on continent field change
+    $(':input[name$=area]').on('change', function() {
+        // Get the field prefix, ie. if this comes from a formset form
+        var prefix = $(this).getFormPrefix();
+
+        // Clear the autocomplete with the same prefix
+        $(':input[name=' + prefix + 'security_group]').val(null).trigger('change');
+    });
+});
+</script>
 {{ form.media }}
+
 {% endblock footer %}
