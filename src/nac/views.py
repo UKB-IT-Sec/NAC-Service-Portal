@@ -3,7 +3,8 @@ from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.urls import reverse_lazy
 from dal import autocomplete
 
-from .models import Device, DeviceForm, SecurityGroup, Area
+from .models import Device, SecurityGroup, Area
+from .forms import DeviceForm
 
 
 class HomePageView(TemplateView):

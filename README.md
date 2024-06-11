@@ -19,3 +19,14 @@ source venv/bin/activate
 python manage.py runserver
 ```
 Test Server should be available at `localhost:8000`
+
+## Account creation
+
+For admin access (creating accounts and groups) you need to create a superuser account.
+
+```
+python manage.py createsuperuser
+```
+Log in to the admin panel at http://127.0.0.1:8000/admin/ with your superuser credentials. Here you can create user accounts. 
+
+

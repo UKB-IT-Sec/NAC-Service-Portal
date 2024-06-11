@@ -1,8 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.urls import reverse
-from django.forms import ModelForm
-from dal import autocomplete
 
 
 class SecurityGroup(models.Model):
@@ -30,6 +28,7 @@ class Device(models.Model):
     area = models.ForeignKey(Area, on_delete=models.SET_NULL, null=True)
     security_group = models.ForeignKey(SecurityGroup, on_delete=models.SET_NULL, null=True)
 
+    """
     appl_NAC_FQDN = models.TextField() #FQDN
     appl_NAC_Hostname = models.TextField() #hostname
     appl_NAC_Active = models.BooleanField()
@@ -43,6 +42,8 @@ class Device(models.Model):
     appl_NAC_DeviceRoleInst = models.TextField() #R_iii
     appl_NAC_macAddressAIR = models.TextField() #aabbccddeeff
     appl_NAC_Certificate = models.TextField() #<>
+    """
+
 
     def __str__(self):
         return self.name[:50]
@@ -53,13 +54,7 @@ class Device(models.Model):
 
 class MacAddressCAB(models.Model):
     mac_address = models.TextField()
-    device = models.ForeignKey(Device)
+    device = models.ForeignKey(Device, on_delete=models.CASCADE)
 
 
-class DeviceForm(ModelForm):
-    class Meta:
-        model = Device
-        fields = ["name", "area", "security_group", ]
-        widgets = {"security_group": autocomplete.ModelSelect2(url="security-group-autocomplete", forward=["area"],),
-                   "area": autocomplete.ModelSelect2(url="area-autocomplete"), }
 
