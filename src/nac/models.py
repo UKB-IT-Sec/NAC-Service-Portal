@@ -28,21 +28,19 @@ class Device(models.Model):
     area = models.ForeignKey(Area, on_delete=models.SET_NULL, null=True)
     security_group = models.ForeignKey(SecurityGroup, on_delete=models.SET_NULL, null=True)
 
-    """
-    appl_NAC_FQDN = models.TextField() #FQDN
-    appl_NAC_Hostname = models.TextField() #hostname
-    appl_NAC_Active = models.BooleanField()
-    appl_NAC_ForceDot1X = models.BooleanField()
-    appl_NAC_Install = models.BooleanField()
-    appl_NAC_AllowAccessCAB = models.BooleanField()
-    appl_NAC_AllowAccessAIR = models.BooleanField()
-    appl_NAC_AllowAccessVPN = models.BooleanField()
-    appl_NAC_AllowAccessCEL = models.BooleanField()
-    appl_NAC_DeviceRoleProd = models.TextField() #R_ppp
-    appl_NAC_DeviceRoleInst = models.TextField() #R_iii
-    appl_NAC_macAddressAIR = models.TextField() #aabbccddeeff
-    appl_NAC_Certificate = models.TextField() #<>
-    """
+    appl_NAC_FQDN = models.TextField(null=True) #FQDN
+    appl_NAC_Hostname = models.TextField(null=True) #hostname
+    appl_NAC_Active = models.BooleanField(null=True)
+    appl_NAC_ForceDot1X = models.BooleanField(null=True)
+    appl_NAC_Install = models.BooleanField(null=True)
+    appl_NAC_AllowAccessCAB = models.BooleanField(null=True)
+    appl_NAC_AllowAccessAIR = models.BooleanField(null=True)
+    appl_NAC_AllowAccessVPN = models.BooleanField(null=True)
+    appl_NAC_AllowAccessCEL = models.BooleanField(null=True)
+    appl_NAC_DeviceRoleProd = models.TextField(null=True) #R_ppp
+    appl_NAC_DeviceRoleInst = models.TextField(null=True) #R_iii
+    appl_NAC_macAddressAIR = models.TextField(null=True) #aabbccddeeff
+    appl_NAC_Certificate = models.TextField(null=True) #<>
 
 
     def __str__(self):
