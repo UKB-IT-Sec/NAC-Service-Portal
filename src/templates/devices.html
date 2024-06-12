@@ -1,12 +1,39 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-<h1>Device Page</h1>
-{% for device in device_list %}
-    <div class="device-entry">
-        <p>{{ device.name }}</p>
-        <p><a href="{% url 'device_edit' device.pk %}">Edit</a> | <a href="{% url 'device_delete' device.pk %}">Delete</a></p>
-    </div>
-{% endfor %}
-<a href="{% url 'device_new' %}">Add Device</a>
+<div class="container">
+	<h1>Devices</h1>
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th scope="col">Name</th>
+				<th scope="col">FQDN</th>
+				<th scope="col">Security Group</th>
+				<th scope="col" width="60"></th>
+			</tr>
+		</thead>
+	{% for device in device_list %}
+		<tr>
+			<td>
+				{{ device.name }}
+			</td>
+			<td>
+				{{ device.appl_NAC_FQDN }}
+			</td>
+			<td>
+				{{ device.security_group }}
+			</td>
+			<td>
+				<a href="{% url 'device_edit' device.pk %}">
+					<img src="{% static 'icons/pencil-square.svg' %}" alt="edit" height="16" width="16">
+				</a>
+				<a href="{% url 'device_delete' device.pk %}">
+					<img src="{% static 'icons/trash.svg' %}" alt="delete" height="16" width="16">
+				</a>
+			</td>
+		</tr>
+	{% endfor %}
+	</table>
+</div>
 {% endblock content %}
