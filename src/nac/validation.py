@@ -14,6 +14,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 import re
+from django.core.exceptions import ValidationError
 
 
 def normalize_mac(input_string):
@@ -24,17 +25,18 @@ def normalize_mac(input_string):
         input_string = input_string.lower()
     except(AttributeError):
         raise MacAddressNotValid('invalid input type')
-    is_valid_normalized_mac(input_string)
     return input_string
 
 
-def is_valid_normalized_mac(input_string):
+def validate_mac(input_string):
     if len(input_string) != 12:
-        raise MacAddressNotValid('invalid size')
+        raise ValidationError('invalid size')
     if re.search(r'[a-f0-9]{12}', input_string) is None:
-        raise MacAddressNotValid('invalid characters')
-    return True
-
+        raise ValidationError('invalid characters')
 
 class MacAddressNotValid(Exception):
+    pass
+
+
+def validate_fqdn(input_string):
     pass

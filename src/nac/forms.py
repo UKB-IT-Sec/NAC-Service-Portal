@@ -1,7 +1,9 @@
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import CustomUser, Device
-from django.forms import ModelForm
+from django.forms import ModelForm, Field
 from dal import autocomplete
+from .validation import validate_fqdn, normalize_mac, validate_mac
+
 
 class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm):
@@ -13,6 +15,21 @@ class CustomUserChangeForm(UserChangeForm):
     class Meta:
         model = CustomUser
         fields = UserChangeForm.Meta.fields
+
+
+class FQDNField(Field):
+    def validate(self, value):
+        super().validate(value)
+        validate_fqdn(value)
+
+
+class MacAddressField(Field):
+    def to_python(self, value):
+        return normalize_mac(value)
+
+    def validate(self, value):
+        super().validate(value)
+        validate_mac(value)
 
 
 class DeviceForm(ModelForm):
