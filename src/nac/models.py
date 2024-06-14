@@ -39,6 +39,7 @@ class Device(models.Model):
     appl_NAC_AllowAccessCEL = models.BooleanField(null=True)
     appl_NAC_DeviceRoleProd = models.TextField(null=True) #R_ppp
     appl_NAC_DeviceRoleInst = models.TextField(null=True) #R_iii
+    appl_NAC_macAddressCAB = models.TextField(null=True) #aabbccddeeff multi value
     appl_NAC_macAddressAIR = models.TextField(null=True) #aabbccddeeff
     appl_NAC_Certificate = models.TextField(null=True) #<>
 
@@ -49,10 +50,6 @@ class Device(models.Model):
     def get_absolute_url(self):
         return reverse("device_detail", kwargs={"pk": self.pk})
 
-
-class MacAddressCAB(models.Model):
-    mac_address = models.TextField()
-    device = models.ForeignKey(Device, on_delete=models.CASCADE)
 
 
 

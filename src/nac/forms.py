@@ -33,6 +33,7 @@ class DeviceForm(ModelForm):
                   "appl_NAC_DeviceRoleProd",
                   "appl_NAC_DeviceRoleInst",
                   "appl_NAC_macAddressAIR",
+                  "appl_NAC_macAddressCAB",
                   "appl_NAC_Certificate", ]
 
         widgets = {"security_group": autocomplete.ModelSelect2(url="security-group-autocomplete", forward=["area"],),
