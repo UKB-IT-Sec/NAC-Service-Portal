@@ -52,3 +52,14 @@ class DeviceForm(ModelForm):
         mac = normalize_mac(data)
         validate_mac(mac)
         return mac
+
+    def clean_appl_NAC_macAddressCAB(self):
+        data = self.cleaned_data["appl_NAC_macAddressCAB"]
+        data = data.split(",")
+        macs = list()
+        for item in data:
+            mac = normalize_mac(item)
+            validate_mac(mac)
+            macs.append(mac)
+        macs = ",".join(macs)
+        return macs
