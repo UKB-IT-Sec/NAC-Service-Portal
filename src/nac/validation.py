@@ -37,6 +37,3 @@ def validate_mac(input_string):
 class MacAddressNotValid(Exception):
     pass
 
-
-def validate_fqdn(input_string):
-    pass

@@ -37,8 +37,8 @@ class Device(models.Model):
     appl_NAC_AllowAccessAIR = models.BooleanField(null=True)
     appl_NAC_AllowAccessVPN = models.BooleanField(null=True)
     appl_NAC_AllowAccessCEL = models.BooleanField(null=True)
-    appl_NAC_DeviceRoleProd = models.TextField(null=True) #R_ppp
-    appl_NAC_DeviceRoleInst = models.TextField(null=True) #R_iii
+    appl_NAC_DeviceRoleProd = models.TextField(null=True, blank=True) #R_ppp
+    appl_NAC_DeviceRoleInst = models.TextField(null=True, blank=True) #R_iii
     appl_NAC_macAddressCAB = models.TextField(null=True) #aabbccddeeff multi value
     appl_NAC_macAddressAIR = models.TextField(null=True) #aabbccddeeff
     appl_NAC_Certificate = models.TextField(null=True) #<>
