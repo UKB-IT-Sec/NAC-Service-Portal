@@ -23,15 +23,6 @@ class FQDNField(Field):
         validate_fqdn(value)
 
 
-class MacAddressField(Field):
-    def to_python(self, value):
-        return normalize_mac(value)
-
-    def validate(self, value):
-        super().validate(value)
-        validate_mac(value)
-
-
 class DeviceForm(ModelForm):
     class Meta:
         model = Device
@@ -55,3 +46,9 @@ class DeviceForm(ModelForm):
 
         widgets = {"security_group": autocomplete.ModelSelect2(url="security-group-autocomplete", forward=["area"],),
                    "area": autocomplete.ModelSelect2(url="area-autocomplete"), }
+
+    def clean_appl_NAC_macAddressAIR(self):
+        data = self.cleaned_data["appl_NAC_macAddressAIR"]
+        mac = normalize_mac(data)
+        validate_mac(mac)
+        return mac
