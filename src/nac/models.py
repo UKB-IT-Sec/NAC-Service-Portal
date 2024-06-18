@@ -24,12 +24,12 @@ class CustomUser(AbstractUser):
 
 
 class Device(models.Model):
-    name = models.TextField()
+    name = models.CharField(max_length=100)
     area = models.ForeignKey(Area, on_delete=models.SET_NULL, null=True)
     security_group = models.ForeignKey(SecurityGroup, on_delete=models.SET_NULL, null=True)
 
-    appl_NAC_FQDN = models.TextField(null=True) #FQDN
-    appl_NAC_Hostname = models.TextField(null=True) #hostname
+    appl_NAC_FQDN = models.CharField(null=True, max_length=100) #FQDN
+    appl_NAC_Hostname = models.CharField(null=True, max_length=100) #hostname
     appl_NAC_Active = models.BooleanField(null=True)
     appl_NAC_ForceDot1X = models.BooleanField(null=True)
     appl_NAC_Install = models.BooleanField(null=True)
@@ -37,10 +37,10 @@ class Device(models.Model):
     appl_NAC_AllowAccessAIR = models.BooleanField(null=True)
     appl_NAC_AllowAccessVPN = models.BooleanField(null=True)
     appl_NAC_AllowAccessCEL = models.BooleanField(null=True)
-    appl_NAC_DeviceRoleProd = models.TextField(null=True, blank=True) #R_ppp
-    appl_NAC_DeviceRoleInst = models.TextField(null=True, blank=True) #R_iii
+    appl_NAC_DeviceRoleProd = models.CharField(null=True, blank=True, max_length=100) #R_ppp
+    appl_NAC_DeviceRoleInst = models.CharField(null=True, blank=True, max_length=100) #R_iii
     appl_NAC_macAddressCAB = models.TextField(null=True) #aabbccddeeff multi value
-    appl_NAC_macAddressAIR = models.TextField(null=True) #aabbccddeeff
+    appl_NAC_macAddressAIR = models.CharField(null=True, max_length=100) #aabbccddeeff
     appl_NAC_Certificate = models.TextField(null=True) #<>
 
 
