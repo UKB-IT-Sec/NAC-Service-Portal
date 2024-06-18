@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'nac.apps.NacConfig',
+    'crispy_forms',
+    'crispy_bootstrap5',
 ]
 
 MIDDLEWARE = [
@@ -133,3 +135,7 @@ LOGIN_REDIRECT_URL = "devices"
 LOGOUT_REDIRECT_URL = "home"
 
 AUTH_USER_MODEL = "nac.CustomUser"
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"

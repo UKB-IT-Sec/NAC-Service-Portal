@@ -2,10 +2,12 @@
 
 {% load static %}
 
+{% load crispy_forms_tags %}
+
 {% block content %}
 <h1>New device</h1>
 <form action="" method="post">{% csrf_token %}
-    {{ form.as_p }}
+    {{ form | crispy }}
     <button type="submit">Save</button>
 </form>
 {% endblock content %}
