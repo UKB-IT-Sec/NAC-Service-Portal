@@ -1,6 +1,6 @@
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import CustomUser, Device
-from django.forms import ModelForm, Field
+from django.forms import ModelForm, Field, CheckboxInput
 from dal import autocomplete
 from .validation import normalize_mac, validate_mac
 
@@ -39,7 +39,15 @@ class DeviceForm(ModelForm):
                   "appl_NAC_Certificate", ]
 
         widgets = {"security_group": autocomplete.ModelSelect2(url="security-group-autocomplete", forward=["area"],),
-                   "area": autocomplete.ModelSelect2(url="area-autocomplete"), }
+                   "area": autocomplete.ModelSelect2(url="area-autocomplete"),
+                   "appl_NAC_Active": CheckboxInput,
+                   "appl_NAC_ForceDot1X": CheckboxInput,
+                   "appl_NAC_Install": CheckboxInput,
+                   "appl_NAC_AllowAccessCAB": CheckboxInput,
+                   "appl_NAC_AllowAccessAIR": CheckboxInput,
+                   "appl_NAC_AllowAccessVPN": CheckboxInput,
+                   "appl_NAC_AllowAccessCEL": CheckboxInput,
+                   }
 
     def clean_appl_NAC_macAddressAIR(self):
         data = self.cleaned_data["appl_NAC_macAddressAIR"]
