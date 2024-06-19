@@ -7,3 +7,4 @@ pytest-xdist
 pytest-flake8
 pytest-cov
 django-crispy-forms
+crispy-bootstrap5
