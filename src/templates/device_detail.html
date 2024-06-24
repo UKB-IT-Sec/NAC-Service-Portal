@@ -2,9 +2,145 @@
 
 {% block content %}
 <div class="container">
-    <div class="device-entry">
-        <h2> {{ object.name }}</h2>
-    </div>
+    <table class="table table-striped">
+        <tr>
+            <td>
+                <strong>Name</strong>
+            </td>
+            <td>
+                {{ device.name }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>Area</strong>
+            </td>
+            <td>
+                {{ device.area }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>Security Group</strong>
+            </td>
+            <td>
+                {{ device.security_group }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>FQDN</strong>
+            </td>
+            <td>
+                {{ device.appl_NAC_FQDN }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>Hostname</strong>
+            </td>
+            <td>
+                {{ device.appl_NAC_Hostname }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>Active</strong>
+            </td>
+            <td>
+                {{ device.appl_NAC_Active }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>ForceDot1X</strong>
+            </td>
+            <td>
+                {{ device.appl_NAC_ForceDot1X }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>Install</strong>
+            </td>
+            <td>
+                {{ device.appl_NAC_Install }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>Allow Access CAB</strong>
+            </td>
+            <td>
+                {{ device.appl_NAC_AllowAccessCAB }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>Allow Access AIR</strong>
+            </td>
+            <td>
+                {{ device.appl_NAC_AllowAccessAIR }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>Allow Access VPN</strong>
+            </td>
+            <td>
+                {{ device.appl_NAC_AllowAccessVPN }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>Allow Access CEL</strong>
+            </td>
+            <td>
+                {{ device.appl_NAC_AllowAccessCEL }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>Device Role Prod</strong>
+            </td>
+            <td>
+                {{ device.appl_NAC_DeviceRoleProd }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>Device Role Inst</strong>
+            </td>
+            <td>
+                {{ device.appl_NAC_DeviceRoleInst }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>MAC Address CAB</strong>
+            </td>
+            <td>
+                {{ device.appl_NAC_macAddressCAB }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>MAC Address AIR</strong>
+            </td>
+            <td>
+                {{ device.appl_NAC_macAddressAIR }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>Certificate</strong>
+            </td>
+            <td>
+                {{ device.appl_NAC_Certificate }}
+            </td>
+        </tr>
+    </table>
+
     <p><a href="{% url 'device_edit' device.pk %}">Edit</a> | <a href="{% url 'device_delete' device.pk %}">Delete</a></p>
     <p>Back to <a href="{% url 'devices' %}">All Devices</a></p>
 </div>
