@@ -1,6 +1,8 @@
 import pytest
 
-from helper.mac import normalize_mac, is_valid_normalized_mac, MacAddressNotValid
+from src.nac.validation import normalize_mac, validate_mac, MacAddressNotValid
+from django.core.exceptions import ValidationError
+
 
 
 @pytest.mark.parametrize('input_data, expected', [
@@ -16,7 +18,6 @@ def test_normalize_mac(input_data, expected):
 
 @pytest.mark.parametrize('input_data, expected', [
     (0.0, 'invalid input type'),
-    ('ii1122334455', 'invalid characters'),
 ])
 def test_normalize_mac_error(input_data, expected):
     with pytest.raises(MacAddressNotValid) as error_info:
@@ -28,11 +29,14 @@ def test_normalize_mac_error(input_data, expected):
     ('00112233445566', 'invalid size'),
     ('ii1122334455', 'invalid characters')
 ])
-def test_is_valid_normalized_mac_false(input_data, expected):
-    with pytest.raises(MacAddressNotValid) as error_info:
-        is_valid_normalized_mac(input_data)
+def test_validate_mac_false(input_data, expected):
+    with pytest.raises(ValidationError) as error_info:
+        validate_mac(input_data)
         assert error_info == expected
 
 
-def test_is_valid_nomalized_mac_true():
-    assert is_valid_normalized_mac('001122334455')
+def test_validate_mac_true():
+    try:
+        validate_mac('001122334455')
+    except ValidationError as error_info:
+        assert False, f"'001122334455' raised an exception {error_info}"
