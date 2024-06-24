@@ -30,10 +30,10 @@ class Device(models.Model):
 
     appl_NAC_FQDN = models.CharField(null=True, max_length=100) #FQDN
     appl_NAC_Hostname = models.CharField(null=True, max_length=100) #hostname
-    appl_NAC_Active = models.BooleanField(null=True)
-    appl_NAC_ForceDot1X = models.BooleanField(null=True)
+    appl_NAC_Active = models.BooleanField(null=True, default=True)
+    appl_NAC_ForceDot1X = models.BooleanField(null=True, default=True)
     appl_NAC_Install = models.BooleanField(null=True)
-    appl_NAC_AllowAccessCAB = models.BooleanField(null=True)
+    appl_NAC_AllowAccessCAB = models.BooleanField(null=True, default=True)
     appl_NAC_AllowAccessAIR = models.BooleanField(null=True)
     appl_NAC_AllowAccessVPN = models.BooleanField(null=True)
     appl_NAC_AllowAccessCEL = models.BooleanField(null=True)
