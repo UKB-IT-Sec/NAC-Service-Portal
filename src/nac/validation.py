@@ -34,6 +34,6 @@ def validate_mac(input_string):
     if re.search(r'[a-f0-9]{12}', input_string) is None:
         raise ValidationError('invalid characters')
 
+
 class MacAddressNotValid(Exception):
     pass
-

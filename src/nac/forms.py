@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import CustomUser, Device
 from django import forms
-from django.forms import ModelForm, Field, CheckboxInput
+from django.forms import ModelForm, CheckboxInput
 from dal import autocomplete
 from .validation import normalize_mac, validate_mac
 
@@ -72,5 +72,3 @@ class DeviceForm(ModelForm):
 
     def clean_synchronized(self):
         return False
-
-

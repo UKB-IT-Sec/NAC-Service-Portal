@@ -4,7 +4,6 @@ from src.nac.validation import normalize_mac, validate_mac, MacAddressNotValid
 from django.core.exceptions import ValidationError
 
 
-
 @pytest.mark.parametrize('input_data, expected', [
     ('001122334455', '001122334455'),
     (' 001122334455 ', '001122334455'),
