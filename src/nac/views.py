@@ -49,11 +49,11 @@ class SecurityGroupAutocomplete(autocomplete.Select2QuerySetView):
 
         qs = SecurityGroup.objects.all()
 
-        #autocomplete search results
+#        autocomplete search results
         if self.q:
             qs = qs.filter(name__istartswith=self.q)
 
-        #only show security groups compatible with selected area
+#        only show security groups compatible with selected area
         area_pk = self.forwarded.get("area", None)
         if area_pk:
             area = Area.objects.get(pk=area_pk)
@@ -70,12 +70,11 @@ class AreaAutocomplete(autocomplete.Select2QuerySetView):
 
         qs = Area.objects.all()
 
-        # only show areas compatible with user
+#        only show areas compatible with user
         qs = qs.filter(id__in=self.request.user.area.all())
 
-        #autocomplete search results
+#        autocomplete search results
         if self.q:
             qs = qs.filter(name__istartswith=self.q)
 
         return qs
-

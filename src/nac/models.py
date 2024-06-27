@@ -44,13 +44,8 @@ class Device(models.Model):
     appl_NAC_macAddressAIR = models.CharField(null=True, max_length=100)
     appl_NAC_Certificate = models.TextField(null=True)
 
-
     def __str__(self):
         return self.name[:50]
 
     def get_absolute_url(self):
         return reverse("device_detail", kwargs={"pk": self.pk})
-
-
-
-
