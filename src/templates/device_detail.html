@@ -1,16 +1,19 @@
 {% extends "base.html" %}
 
 {% block content %}
+</br>
 <div class="container">
     <table class="table table-striped">
-        <tr>
-            <td>
-                <strong>Name</strong>
-            </td>
-            <td>
-                {{ device.name }}
-            </td>
-        </tr>
+        <thead>
+            <tr>
+                <th>
+                    <h4>Name</h4>
+                </th>
+                <th>
+                    <h4>{{ device.name }}</h4>
+                </th>
+            </tr>
+        </thead>
         <tr>
             <td>
                 <strong>Area</strong>

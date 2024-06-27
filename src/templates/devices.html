@@ -16,7 +16,7 @@
 	{% for device in device_list %}
 		<tr>
 			<td>
-				{{ device.name }}
+				<a href="{% url 'device_detail' device.pk %}">{{ device.name }}</a>
 			</td>
 			<td>
 				{{ device.appl_NAC_FQDN }}
