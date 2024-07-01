@@ -1,6 +1,6 @@
 import pytest
 
-from src.nac.validation import normalize_mac, validate_mac, MacAddressNotValid
+from nac.validation import normalize_mac, validate_mac, MacAddressNotValid
 from django.core.exceptions import ValidationError
 
 

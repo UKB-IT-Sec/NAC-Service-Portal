@@ -40,9 +40,9 @@ class Device(models.Model):
     appl_NAC_AllowAccessCEL = models.BooleanField(null=True)
     appl_NAC_DeviceRoleProd = models.CharField(null=True, blank=True, max_length=100)
     appl_NAC_DeviceRoleInst = models.CharField(null=True, blank=True, max_length=100)
-    appl_NAC_macAddressCAB = models.TextField(null=True)
-    appl_NAC_macAddressAIR = models.CharField(null=True, max_length=100)
-    appl_NAC_Certificate = models.TextField(null=True)
+    appl_NAC_macAddressCAB = models.TextField(null=True, blank=True)
+    appl_NAC_macAddressAIR = models.CharField(null=True, max_length=100, blank=True)
+    appl_NAC_Certificate = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.name[:50]
