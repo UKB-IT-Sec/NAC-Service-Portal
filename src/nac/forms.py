@@ -70,23 +70,25 @@ class DeviceForm(ModelForm):
 
     def clean_appl_NAC_macAddressAIR(self):
         data = self.cleaned_data["appl_NAC_macAddressAIR"]
-        if not data:
-            data = ""
-        mac = normalize_mac(data)
-        validate_mac(mac)
+        if data:
+            mac = normalize_mac(data)
+            validate_mac(mac)
+        else:
+            mac = None
         return mac
 
     def clean_appl_NAC_macAddressCAB(self):
         data = self.cleaned_data["appl_NAC_macAddressCAB"]
-        if not data:
-            data = ""
-        data = data.split(",")
-        macs = list()
-        for item in data:
-            mac = normalize_mac(item)
-            validate_mac(mac)
-            macs.append(mac)
-        macs = ",".join(macs)
+        if data:
+            data = data.split(",")
+            macs = list()
+            for item in data:
+                mac = normalize_mac(item)
+                validate_mac(mac)
+                macs.append(mac)
+            macs = ",".join(macs)
+        else:
+            macs = None
         return macs
 
     def clean_synchronized(self):
