@@ -1,5 +1,6 @@
 from django.views.generic import TemplateView, ListView, DetailView
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
+from django.db.models import Q
 from django.urls import reverse_lazy
 from dal import autocomplete
 
@@ -16,7 +17,14 @@ class DeviceListView(ListView):
     template_name = "devices.html"
 
     def get_queryset(self):
-        return Device.objects.filter(area__in=self.request.user.area.all())
+        device_list = Device.objects.filter(area__in=self.request.user.area.all()) # only show devices from areas the user is authorized to see
+        query = self.request.GET.get("q")
+        if query:
+            device_list = device_list.filter(
+                Q(name__icontains=query) | Q(appl_NAC_Hostname__icontains=query) |
+                Q(appl_NAC_macAddressAIR__icontains=query) | Q(appl_NAC_macAddressCAB__icontains=query)
+                | Q(appl_NAC_FQDN__icontains=query))
+        return device_list
 
 
 class DeviceDetailView(DetailView):
