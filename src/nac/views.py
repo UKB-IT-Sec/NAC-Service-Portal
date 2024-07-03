@@ -17,7 +17,9 @@ class DeviceListView(ListView):
     template_name = "devices.html"
 
     def get_queryset(self):
-        device_list = Device.objects.filter(area__in=self.request.user.area.all()) # only show devices from areas the user is authorized to see
+        # only show devices from areas the user is authorized to see
+        device_list = Device.objects.filter(area__in=self.request.user.area.all())
+        # filter for search results
         query = self.request.GET.get("q")
         if query:
             device_list = device_list.filter(
