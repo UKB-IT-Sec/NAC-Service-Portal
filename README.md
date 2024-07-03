@@ -1,4 +1,5 @@
 # NAC-Service-Portal
+[![Django CI](https://github.com/UKB-IT-Sec/NAC-Service-Portal/actions/workflows/django.yml/badge.svg)](https://github.com/UKB-IT-Sec/NAC-Service-Portal/actions/workflows/django.yml)
 
 ## Install
 
