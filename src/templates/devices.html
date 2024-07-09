@@ -1,42 +1,65 @@
 {% extends "base.html" %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 <div class="container">
-	<h1>Devices</h1>
-	<form action="{% url 'devices' %}" method="get">
-		<input name="q" type="text" placeholder="Search device...">
-	</form>
-	<table class="table table-striped">
-		<thead>
-			<tr>
-				<th scope="col">Name</th>
-				<th scope="col">FQDN</th>
-				<th scope="col">Security Group</th>
-				<th scope="col" width="60"></th>
-			</tr>
-		</thead>
-	{% for device in device_list %}
-		<tr>
-			<td>
-				<a href="{% url 'device_detail' device.pk %}">{{ device.name }}</a>
-			</td>
-			<td>
-				{{ device.appl_NAC_FQDN }}
-			</td>
-			<td>
-				{{ device.security_group }}
-			</td>
-			<td>
-				<a href="{% url 'device_edit' device.pk %}">
-					<img src="{% static 'icons/pencil-square.svg' %}" alt="edit" height="16" width="16">
-				</a>
-				<a href="{% url 'device_delete' device.pk %}">
-					<img src="{% static 'icons/trash.svg' %}" alt="delete" height="16" width="16">
-				</a>
-			</td>
-		</tr>
-	{% endfor %}
-	</table>
+    <h1>Devices</h1>
+
+    <form action="{% url 'devices' %}" method="get">
+        {{ form | crispy }}
+        <input name="q" type="text" placeholder="Search device...">
+
+        <label for="area_drop_down">Filter by area</label>
+        <select name="selected_area" id="area_drop_down" multiple>
+            <option value="" selected disabled hidden>Choose here</option>
+        {% for area in area_list %}
+            <option value="{{ area.id }}">{{ area.name }}</option>
+        {% endfor %}
+        </select>
+
+        <label for="sec_group_drop_down">Filter by security group</label>
+        <select name="selected_sec_group" id="sec_group_drop_down" multiple>
+            <option value="" selected disabled hidden>Choose here</option>
+        {% for sec_group in sec_group_list %}
+            <option value="{{ sec_group.id }}">{{ sec_group.name }}</option>
+        {% endfor %}
+        </select>
+        <button type="submit">Filter</button>
+    </form>
+
+
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">FQDN</th>
+            <th scope="col">Security Group</th>
+            <th scope="col" width="60"></th>
+        </tr>
+        </thead>
+        {% for device in device_list %}
+        <tr>
+            <td>
+                <a href="{% url 'device_detail' device.pk %}">{{ device.name }}</a>
+            </td>
+            <td>
+                {{ device.appl_NAC_FQDN }}
+            </td>
+            <td>
+                {{ device.security_group }}
+            </td>
+            <td>
+                <a href="{% url 'device_edit' device.pk %}">
+                    <img src="{% static 'icons/pencil-square.svg' %}" alt="edit" height="16" width="16">
+                </a>
+                <a href="{% url 'device_delete' device.pk %}">
+                    <img src="{% static 'icons/trash.svg' %}" alt="delete" height="16" width="16">
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
 </div>
 {% endblock content %}
