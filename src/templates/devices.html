@@ -4,6 +4,9 @@
 {% block content %}
 <div class="container">
 	<h1>Devices</h1>
+	<form action="{% url 'devices' %}" method="get">
+		<input name="q" type="text" placeholder="Search device...">
+	</form>
 	<table class="table table-striped">
 		<thead>
 			<tr>
