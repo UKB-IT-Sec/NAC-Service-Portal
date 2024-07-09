@@ -14,6 +14,7 @@ class HomePageView(TemplateView):
 class DeviceListView(ListView):
     model = Device
     template_name = "devices.html"
+    context_object_name = "device_list"
 
     def get_queryset(self):
         # only show devices from authorization_groups the user is authorized to see
@@ -25,8 +26,24 @@ class DeviceListView(ListView):
                 Q(name__icontains=query) | Q(appl_NAC_Hostname__icontains=query) |
                 Q(appl_NAC_macAddressAIR__icontains=query) | Q(appl_NAC_macAddressCAB__icontains=query)
                 | Q(appl_NAC_FQDN__icontains=query))
+
+        # filter by area
+        selected_areas = self.request.GET.getlist("selected_area")
+        if selected_areas:
+            device_list = device_list.filter(area__in=selected_areas)
+
+        # filter by security group
+        selected_sec_groups = self.request.GET.getlist("selected_sec_group")
+        if selected_sec_groups:
+            device_list = device_list.filter(security_group__in=selected_sec_groups)
         return device_list
 
+    # we need this for the drop-down menus with filtering options
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(DeviceListView, self).get_context_data(**kwargs)
+        context["area_list"] = Area.objects.filter(id__in=self.request.user.area.all())
+        context["sec_group_list"] = SecurityGroup.objects.all()
+        return context
 
 class DeviceDetailView(DetailView):
     model = Device
