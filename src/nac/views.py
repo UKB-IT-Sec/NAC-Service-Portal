@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from dal import autocomplete
 
 from .models import Device, SecurityGroup, Area
-from .forms import DeviceForm
+from .forms import DeviceForm, DeviceSearchForm
 
 
 class HomePageView(TemplateView):
@@ -22,7 +22,7 @@ class DeviceListView(ListView):
         device_list = Device.objects.filter(area__in=self.request.user.area.all())
 
         # filter for search string
-        query = self.request.GET.get("q")
+        query = self.request.GET.get("search_string")
         if query:
             device_list = device_list.filter(
                 Q(name__icontains=query) | Q(appl_NAC_Hostname__icontains=query) |
@@ -30,12 +30,12 @@ class DeviceListView(ListView):
                 | Q(appl_NAC_FQDN__icontains=query))
 
         # filter by area
-        selected_areas = self.request.GET.getlist("selected_area")
+        selected_areas = self.request.GET.getlist("area")
         if selected_areas:
             device_list = device_list.filter(area__in=selected_areas)
 
         # filter by security group
-        selected_sec_groups = self.request.GET.getlist("selected_sec_group")
+        selected_sec_groups = self.request.GET.getlist("security_group")
         if selected_sec_groups:
             device_list = device_list.filter(security_group__in=selected_sec_groups)
         return device_list
@@ -45,7 +45,9 @@ class DeviceListView(ListView):
         context = super(DeviceListView, self).get_context_data(**kwargs)
         context["area_list"] = Area.objects.filter(id__in=self.request.user.area.all())
         context["sec_group_list"] = SecurityGroup.objects.all()
+        context["search_form"] = DeviceSearchForm(user=self.request.user)
         return context
+
 
 class DeviceDetailView(DetailView):
     model = Device
