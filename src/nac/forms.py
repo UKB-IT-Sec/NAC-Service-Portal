@@ -1,10 +1,13 @@
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from .models import CustomUser, Device
+from .models import CustomUser, Device, Area, SecurityGroup
 from django import forms
 from django.forms import ModelForm, CheckboxInput
 from dal import autocomplete
 from .validation import normalize_mac, validate_mac
 from django.core.exceptions import ValidationError
+from crispy_forms.helper import FormHelper
+from crispy_forms.bootstrap import PrependedText
+from crispy_forms.layout import Layout
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -17,6 +20,20 @@ class CustomUserChangeForm(UserChangeForm):
     class Meta:
         model = CustomUser
         fields = UserChangeForm.Meta.fields
+
+
+class DeviceSearchForm(forms.Form):
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super(DeviceSearchForm, self).__init__(*args, **kwargs)
+
+        self.fields['area'] = forms.ModelMultipleChoiceField(Area.objects.filter(
+            id__in=user.area.all()), required=False, label="Area")
+
+    search_string = forms.CharField(
+        label="Search for name, FQDN, hostname or MAC address:", max_length=100, required=False)
+    security_group = forms.ModelMultipleChoiceField(SecurityGroup.objects.all(),
+                                                    required=False, label="Security Group:")
 
 
 class DeviceForm(ModelForm):
