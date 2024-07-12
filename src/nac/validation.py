@@ -18,14 +18,9 @@ from django.core.exceptions import ValidationError
 
 
 def normalize_mac(input_string):
-    try:
-        input_string = input_string.replace(':', '')
-        input_string = input_string.replace('-', '')
-        input_string = input_string.replace(' ', '')
-        input_string = input_string.lower()
-    except(AttributeError):
+    if not isinstance(input_string, str):
         raise MacAddressNotValid('invalid input type')
-    return input_string
+    return ''.join(c for c in input_string if c.isalnum()).lower()
 
 
 def validate_mac(input_string):
