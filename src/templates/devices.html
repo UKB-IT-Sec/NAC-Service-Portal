@@ -29,17 +29,20 @@
 				{{ device.security_group }}
 			</td>
 			<td>
-				{% for mac_type, macs in device.split_MAC.items %} <!-- mac_type: appl_NAC_macAddressAIR and appl_NAC_macAddressCAB -->
+				{% for mac in device.get_appl_NAC_macAddressAIR %}
 					<b> 
-						{% for mac in macs %}
-							{% if mac_type == "appl_NAC_macAddressAIR" and mac != None %}
-								<img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_macAddressAIR" height="14" width="14">
-								<b> {{mac}}</b> <br />
-							{% elif mac_type == "appl_NAC_macAddressCAB" and mac != None%}
-								<img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_macAddressAIR" height="14" width="14">
-								<b> {{mac}}</b> <br />
-							{% endif %}
-						{% endfor %}
+						{% if mac != None %}
+							<img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_macAddressAIR" height="14" width="14">
+							<b> {{mac}}</b> <br />
+						{% endif %}
+					</b>
+				{% endfor %}
+				{% for mac in device.get_appl_NAC_macAddressCAB %}
+					<b> 
+						{% if mac != None %}
+							<img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_macAddressCAB" height="14" width="14">
+							<b> {{mac}}</b> <br />
+						{% endif %}
 					</b>
 				{% endfor %}
 			</td>
