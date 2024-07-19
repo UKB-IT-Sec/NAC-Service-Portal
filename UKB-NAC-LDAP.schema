@@ -1,0 +1,148 @@
+# Schema for appl-NAC
+#
+# Last change: July 19, 2024
+#
+# Created by: Peter Weidenbach (peter.weidenbach@ukbonn.de)
+#
+# General guideline:
+# 1. The language in this file is english
+# 2. Every OID in this file must look like this: ns.a.b.c., where
+# ns - the official namespace of the UKB-NAC schema:
+# 1.3.6.1.4.1.62174
+# a - Reserved, must always be 1 for the appl-NAC schema.
+# b - Entry type (1:attribute, 2:object)
+# c - Serial number (increased with every new entry)
+# 3. Every entry in this file MUST have a "DESC" field, containing a
+# suitable description!
+# 4. Attributes are listed in front of objects. All entries must be
+# ordered by their serial number.
+# 5. All attributenames must start with 'appl-NAC-'
+#
+# This schema is not depending on other schemas
+
+# Attribute type definitions
+
+attributetype (1.3.6.1.4.1.62174.1.1.1
+	NAME 'appl-NAC-FQDN'
+	DESC 'FQDN'
+	EQUALITY caseIgnoreMatch
+	SUBSTR caseIgnoreSubstringsMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{256}
+	SINGLE-VALUE)
+
+attributetype (1.3.6.1.4.1.62174.1.1.2
+	NAME 'appl-NAC-Hostname'
+	DESC 'Hostname'
+	EQUALITY caseIgnoreMatch
+	SUBSTR caseIgnoreSubstringsMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{256}
+	SINGLE-VALUE)
+
+attributetype (1.3.6.1.4.1.62174.1.1.3
+	NAME 'appl-NAC-Active'
+	DESC 'Device is allowed to authenticate'
+	EQUALITY booleanMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+	SINGLE-VALUE)
+
+attributetype (1.3.6.1.4.1.62174.1.1.4
+	NAME 'appl-NAC-ForceDot1X'
+	DESC 'Device is forced to authenticate with a certificate'
+	EQUALITY booleanMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+	SINGLE-VALUE)
+
+attributetype (1.3.6.1.4.1.62174.1.1.5
+	NAME 'appl-NAC-Install'
+	DESC 'Device has status INSTALL'
+	EQUALITY booleanMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+	SINGLE-VALUE)
+
+attributetype (1.3.6.1.4.1.62174.1.1.6
+	NAME 'appl-NAC-AllowAccessCAB'
+	DESC 'Device is allowed to connect via cable'
+	EQUALITY booleanMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+	SINGLE-VALUE)
+
+attributetype (1.3.6.1.4.1.62174.1.1.7
+	NAME 'appl-NAC-AllowAccessAIR'
+	DESC 'Device is allowed to connect via wifi'
+	EQUALITY booleanMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+	SINGLE-VALUE)
+
+attributetype (1.3.6.1.4.1.62174.1.1.8
+	NAME 'appl-NAC-AllowAccessVPN'
+	DESC 'Device is allowed to connect via vpn'
+	EQUALITY booleanMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+	SINGLE-VALUE)
+
+attributetype (1.3.6.1.4.1.62174.1.1.9
+	NAME 'appl-NAC-AllowAccessCEL'
+	DESC 'Device is allowed to connect via mobile service'
+	EQUALITY booleanMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+	SINGLE-VALUE)
+
+attributetype (1.3.6.1.4.1.62174.1.1.10
+	NAME 'appl-NAC-DeviceRoleProd'
+	DESC 'appl-NAC-DeviceRoleProd'
+	EQUALITY caseIgnoreMatch
+	SUBSTR caseIgnoreSubstringsMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{256}
+	SINGLE-VALUE)
+
+attributetype (1.3.6.1.4.1.62174.1.1.11
+	NAME 'appl-NAC-DeviceRoleInst'
+	DESC 'appl-NAC-DeviceRoleInst'
+	EQUALITY caseIgnoreMatch
+	SUBSTR caseIgnoreSubstringsMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{256}
+	SINGLE-VALUE)
+
+attributetype (1.3.6.1.4.1.62174.1.1.12
+	NAME 'appl-NAC-macAddressCAB'
+	DESC 'MAC addresses of ethernet interfaces'
+	EQUALITY caseIgnoreMatch
+	SUBSTR caseIgnoreSubstringsMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{256})
+
+attributetype (1.3.6.1.4.1.62174.1.1.13
+	NAME 'appl-NAC-macAddressAIR'
+	DESC 'MAC Address of wifi interface'
+	EQUALITY caseIgnoreMatch
+	SUBSTR caseIgnoreSubstringsMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{256}
+	SINGLE-VALUE)
+
+attributetype (1.3.6.1.4.1.62174.1.1.14
+	NAME 'appl-NAC-Certificate'
+	DESC 'Device Certificate'
+	EQUALITY caseIgnoreMatch
+	SUBSTR caseIgnoreSubstringsMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{256}
+	SINGLE-VALUE)
+
+# Objectclass definitions
+
+objectclass (1.3.6.1.4.1.62174.1.2.1
+	NAME 'appl-NAC-Device'
+	DESC 'Objectclass to manage NAC enabled devices'
+	SUP top STRUCTURAL
+	MUST (appl-NAC-FQDN
+		$ appl-NAC-Hostname
+		$ appl-NAC-Active
+		$ appl-NAC-ForceDot1X
+		$ appl-NAC-Install
+		$ appl-NAC-AllowAccessCAB
+		$ appl-NAC-AllowAccessAIR
+		$ appl-NAC-AllowAccessVPN
+		$ appl-NAC-AllowAccessCEL)
+	MAY (appl-NAC-DeviceRoleProd
+		$ appl-NAC-DeviceRoleInst
+		$ appl-NAC-macAddressCAB
+		$ appl-NAC-macAddressAIR
+		$ appl-NAC-Certificate))
