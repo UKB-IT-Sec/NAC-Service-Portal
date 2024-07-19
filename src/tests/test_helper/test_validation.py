@@ -9,7 +9,8 @@ from django.core.exceptions import ValidationError
     (' 001122334455 ', '001122334455'),
     ('00:00:00:00:00:00', '000000000000'),
     ('AA:bb:Cc:ee:Ff:00', 'aabbcceeff00'),
-    ('01-02-03-04-05-06', '010203040506')
+    ('01-02-03-04-05-06', '010203040506'),
+    ('\r\n01:020A-04-05 FF', '01020a0405ff')
 ])
 def test_normalize_mac(input_data, expected):
     assert normalize_mac(input_data) == expected
