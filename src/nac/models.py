@@ -26,7 +26,8 @@ class CustomUser(AbstractUser):
 class Device(models.Model):
     name = models.CharField(max_length=100)
     area = models.ForeignKey(Area, on_delete=models.SET_NULL, null=True)
-    security_group = models.ForeignKey(SecurityGroup, on_delete=models.SET_NULL, null=True)
+    security_group = models.ForeignKey(SecurityGroup,
+                                       on_delete=models.SET_NULL, null=True)
     synchronized = models.BooleanField(null=True, default=False)
 
     appl_NAC_FQDN = models.CharField(null=True, max_length=100)
@@ -38,10 +39,13 @@ class Device(models.Model):
     appl_NAC_AllowAccessAIR = models.BooleanField(null=True)
     appl_NAC_AllowAccessVPN = models.BooleanField(null=True)
     appl_NAC_AllowAccessCEL = models.BooleanField(null=True)
-    appl_NAC_DeviceRoleProd = models.CharField(null=True, blank=True, max_length=100)
-    appl_NAC_DeviceRoleInst = models.CharField(null=True, blank=True, max_length=100)
+    appl_NAC_DeviceRoleProd = models.CharField(null=True,
+                                               blank=True, max_length=100)
+    appl_NAC_DeviceRoleInst = models.CharField(null=True,
+                                               blank=True, max_length=100)
     appl_NAC_macAddressCAB = models.TextField(null=True, blank=True)
-    appl_NAC_macAddressAIR = models.CharField(null=True, max_length=100, blank=True)
+    appl_NAC_macAddressAIR = models.CharField(null=True,
+                                              max_length=100, blank=True)
     appl_NAC_Certificate = models.TextField(null=True, blank=True)
 
     def __str__(self):
@@ -49,3 +53,17 @@ class Device(models.Model):
 
     def get_absolute_url(self):
         return reverse("device_detail", kwargs={"pk": self.pk})
+
+    def format_mac(self, mac):
+        return ":".join(mac[i:i+2] for i in range(0, 12, 2))
+
+    def get_appl_NAC_macAddressAIR(self):
+        if not self.appl_NAC_macAddressAIR:
+            return None
+        return [self.format_mac(self.appl_NAC_macAddressAIR)]
+
+    def get_appl_NAC_macAddressCAB(self):
+        if not self.appl_NAC_macAddressCAB:
+            return None
+        return [self.format_mac(mac) for mac in
+                self.appl_NAC_macAddressCAB.split(",")]

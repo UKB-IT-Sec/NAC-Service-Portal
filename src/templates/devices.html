@@ -13,6 +13,7 @@
 				<th scope="col">Name</th>
 				<th scope="col">FQDN</th>
 				<th scope="col">Security Group</th>
+				<th scope="col">MAC</th>
 				<th scope="col" width="60"></th>
 			</tr>
 		</thead>
@@ -26,6 +27,24 @@
 			</td>
 			<td>
 				{{ device.security_group }}
+			</td>
+			<td>
+				{% for mac in device.get_appl_NAC_macAddressAIR %}
+					<b> 
+						{% if mac != None %}
+							<img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_macAddressAIR" height="14" width="14">
+							<b> {{mac}}</b> <br />
+						{% endif %}
+					</b>
+				{% endfor %}
+				{% for mac in device.get_appl_NAC_macAddressCAB %}
+					<b> 
+						{% if mac != None %}
+							<img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_macAddressCAB" height="14" width="14">
+							<b> {{mac}}</b> <br />
+						{% endif %}
+					</b>
+				{% endfor %}
 			</td>
 			<td>
 				<a href="{% url 'device_edit' device.pk %}">
