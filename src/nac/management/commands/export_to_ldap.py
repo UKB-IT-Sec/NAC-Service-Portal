@@ -16,6 +16,7 @@
 from django.core.management.base import BaseCommand
 
 from helper.filesystem import get_config_directory
+from nac.models import Device
 
 
 DEFAULT_CONFIG = get_config_directory() / 'export.cnf'
@@ -29,3 +30,13 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write("conf file used:{}".format(options['config_file']))
+        devices_to_sync = self._get_all_changed_devices()
+        for entry in devices_to_sync:
+            self._add_or_update_device_in_ldap_database(entry)
+
+    def _get_all_changed_devices(self):
+        return Device.objects.all().filter(synchronized=False)
+
+    def _add_or_update_device_in_ldap_database(self, device):
+        self.stdout.write('syncing device: {}'.format(device))
+        pass
