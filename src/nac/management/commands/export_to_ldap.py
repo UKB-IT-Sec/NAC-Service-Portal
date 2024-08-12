@@ -13,28 +13,19 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
-import argparse
-import sys
-import logging
+from django.core.management.base import BaseCommand
 
-from helper.filesystem import get_src_directory
+from helper.filesystem import get_config_directory
 
 
-PROGRAM_NAME = 'NSSP - Export to LDAP Server'
-PROGRAM_DESCRIPTION = 'export all content to ldap server, that is marked as changed.'
-
-DEFAULT_CONFIG = get_src_directory() / 'export.cnf'
+DEFAULT_CONFIG = get_config_directory() / 'export.cnf'
 
 
-def setup_argparser():
-    parser = argparse.ArgumentParser(description='{} - {}'.format(PROGRAM_NAME, PROGRAM_DESCRIPTION))
-    parser.add_argument('-c', '--config_file', default=DEFAULT_CONFIG, help='use a specific config file [src/export.cnf]')
-    return parser.parse_args()
+class Command(BaseCommand):
+    help = "Export Devices to LDAP server"
 
+    def add_arguments(self, parser):
+        parser.add_argument('-c', '--config_file', default=DEFAULT_CONFIG, help='use a specific config file [src/export.cnf]')
 
-if __name__ == '__main__':
-
-    args = setup_argparser()
-    logging.debug('using conf file: {}'.format(args.config_file))
-
-    sys.exit(0)
+    def handle(self, *args, **options):
+        self.stdout.write("conf file used:{}".format(options['config_file']))

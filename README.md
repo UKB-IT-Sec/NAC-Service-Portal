@@ -33,7 +33,7 @@ python manage.py createsuperuser
 Log in to the admin panel at http://127.0.0.1:8000/admin/ with your superuser credentials. Here you can create user accounts. 
 
 ## Export Assets to LDAP Server
-Default config file is `src/export.cnf`
+Default config file is `config/export.cnf`
 ```
 pyhton3 -m export-scripts.export_to_ldap
 ```

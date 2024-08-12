@@ -1,2 +1,4 @@
  [ldap-server]
  address = localhost
+ username = LDAPUSER
+ password = LDDAPUSERPASSWORD
