@@ -2,12 +2,8 @@
 [![Django CI](https://github.com/UKB-IT-Sec/NAC-Service-Portal/actions/workflows/django.yml/badge.svg)](https://github.com/UKB-IT-Sec/NAC-Service-Portal/actions/workflows/django.yml)
 
 ## Install
-
-### Pre-Requirements
-Apache2 and mod_wsgi must be installed and enabled.
-
-### Install
 ```
+cd src/
 python3 -m venv venv
 source venv/bin/activate
 pip3 install -r requirements.txt
@@ -35,5 +31,5 @@ Log in to the admin panel at http://127.0.0.1:8000/admin/ with your superuser cr
 ## Export Assets to LDAP Server
 Default config file is `config/export.cnf`
 ```
-pyhton3 -m export-scripts.export_to_ldap
+pyhton3 -m manage.py export_to_ldap
 ```

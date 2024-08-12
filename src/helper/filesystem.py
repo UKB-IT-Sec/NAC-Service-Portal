@@ -1,5 +1,5 @@
 '''
-    NSSP - Export to ldap server
+    NSSP
     Copyright (C) 2024 Universitaetsklinikum Bonn AoeR
 
     This program is free software: you can redistribute it and/or modify
