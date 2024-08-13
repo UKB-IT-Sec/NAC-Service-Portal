@@ -29,7 +29,6 @@ DEFAULT_CONFIG = get_config_directory() / 'export.cnf'
 class Command(BaseCommand):
     help = "Export Devices to LDAP server"
 
-
     def add_arguments(self, parser):
         parser.add_argument('-c', '--config_file', default=DEFAULT_CONFIG, help='use a specific config file [src/export.cnf]')
 
@@ -41,14 +40,44 @@ class Command(BaseCommand):
             self.config['ldap-server']['address'],
             self.config['ldap-server']['user'],
             self.config['ldap-server']['password'],
-            port = int(self.config['ldap-server']['port']),
-            tls= self.config['ldap-server'].getboolean('tls')
+            port=int(self.config['ldap-server']['port']),
+            tls=self.config['ldap-server'].getboolean('tls')
             )
         for entry in devices_to_sync:
             self._add_or_update_device_in_ldap_database(entry)
+        self.ldap_connection.unbind()
 
     def _get_all_changed_devices(self):
         return Device.objects.all().filter(synchronized=False)
 
     def _add_or_update_device_in_ldap_database(self, device):
-        logging.info('syncing device: {}'.format(device))     
+        if self.device_exists(device.name):
+            self._modify_device(device)
+        else:
+            self._add_device(device)
+
+    def device_exists(self, devicename):
+        return self.ldap_connection.search('appl-NAC-Hostname={},ou=Devices,dc=ukbonn,dc=de'.format(devicename), '(objectclass=appl-NAC-Device)')
+
+    def _modify_device(self, device):
+        logging.info('modify device: {}'.format(device.name))
+
+    def _add_device(self, device):
+        logging.info('add device: {}'.format(device.name))
+        if self.ldap_connection.add('appl-NAC-Hostname={},ou=Devices,dc=ukbonn,dc=de'.format(device.name),
+                                    'appl-NAC-Device',
+                                    {
+                                        'appl-NAC-FQDN': device.appl_NAC_FQDN,
+                                        'appl-NAC-Hostname': device.appl_NAC_Hostname,
+                                        'appl-NAC-Active': device.appl_NAC_Active,
+                                        'appl-NAC-ForceDot1X': device.appl_NAC_ForceDot1X,
+                                        'appl-NAC-Install': device.appl_NAC_Install,
+                                        'appl-NAC-AllowAccessCAB': device.appl_NAC_AllowAccessCAB,
+                                        'appl-NAC-AllowAccessAIR': device.appl_NAC_AllowAccessAIR,
+                                        'appl-NAC-AllowAccessVPN': device.appl_NAC_AllowAccessVPN,
+                                        'appl-NAC-AllowAccessCEL': device.appl_NAC_AllowAccessCEL
+                                    }
+                                    ):
+            logging.debug('{} added'.format(device.name))
+        else:
+            logging.debug('failed to add {}'.format(device.name))
