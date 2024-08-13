@@ -13,10 +13,14 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
+import logging
 from django.core.management.base import BaseCommand
+from ldap3 import Server, Connection, ALL
 
 from helper.filesystem import get_config_directory
 from nac.models import Device
+from helper.config import get_config_from_file
+from helper.logging import setup_console_logger
 
 
 DEFAULT_CONFIG = get_config_directory() / 'export.cnf'
@@ -29,8 +33,10 @@ class Command(BaseCommand):
         parser.add_argument('-c', '--config_file', default=DEFAULT_CONFIG, help='use a specific config file [src/export.cnf]')
 
     def handle(self, *args, **options):
-        self.stdout.write("conf file used:{}".format(options['config_file']))
+        setup_console_logger(options['verbosity'])
+        self.config = get_config_from_file(options['config_file'])
         devices_to_sync = self._get_all_changed_devices()
+#        self._connect_to_ldap_server()
         for entry in devices_to_sync:
             self._add_or_update_device_in_ldap_database(entry)
 
@@ -38,5 +44,10 @@ class Command(BaseCommand):
         return Device.objects.all().filter(synchronized=False)
 
     def _add_or_update_device_in_ldap_database(self, device):
-        self.stdout.write('syncing device: {}'.format(device))
-        pass
+        logging.info('syncing device: {}'.format(device))
+
+    def _connect_to_ldap_server(self):
+        ldap_server = Server(self.config['ldap-server']['address'], port=int(self.config['ldap-server']['port']), use_ssl=self.config['ldap-server'].getboolean('tls'), get_info=ALL)
+        logging.debug('connecting to ldap server: {}'.format(ldap_server.info))
+        self.ldap_connection = Connection(ldap_server, self.config['ldap-server']['user'], self.config['ldap-server']['password'])
+        self.ldap_connection.bind()
