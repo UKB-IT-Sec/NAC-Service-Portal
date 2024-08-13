@@ -13,25 +13,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
+from ldap3 import Server, Connection, ALL
 import logging
 
 
-def map_log_level_to_verbosity(verbosity):
-    if verbosity == 0:
-        return logging.ERROR
-    if verbosity == 1:
-        return logging.WARNING
-    if verbosity == 2:
-        return logging.INFO
-    if verbosity == 3:
-        return logging.DEBUG
-    return logging.DEBUG
-
-
-def setup_console_logger(verbosity):
-    log_format = logging.Formatter(fmt='[%(asctime)s][%(module)s][%(levelname)s]: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    logger = logging.getLogger('')
-    logger.setLevel(map_log_level_to_verbosity(verbosity))
-    console_logger = logging.StreamHandler()
-    console_logger.setFormatter(log_format)
-    logger.addHandler(console_logger)
+def connect_to_ldap_server(address, username, password, port=389, tls=False):
+    logging.info('connecting to LDAP server: {}:{} user: {}'.format(address, port, username))
+    ldap_server = Server(address, port=port, use_ssl=tls, get_info=ALL)
+    ldap_connection = Connection(ldap_server, username, password)
+    ldap_connection.bind()
+    return ldap_connection  

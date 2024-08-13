@@ -1,6 +1,6 @@
  [ldap-server]
  address = localhost
- port = 383
+ port = 389
  tls = no
  user = LDAPUSER
  password = LDDAPUSERPASSWORD
