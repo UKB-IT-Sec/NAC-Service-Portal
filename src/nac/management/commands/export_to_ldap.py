@@ -20,7 +20,7 @@ from helper.filesystem import get_config_directory
 from nac.models import Device
 from helper.config import get_config_from_file
 from helper.logging import setup_console_logger
-from helper.ldap import connect_to_ldap_server
+from helper.ldap import connect_to_ldap_server, map_device_data
 
 
 DEFAULT_CONFIG = get_config_directory() / 'export.cnf'
@@ -72,7 +72,7 @@ class Command(BaseCommand):
     def _add_device(self, device):
         if self.ldap_connection.add('appl-NAC-Hostname={},ou=Devices,dc=ukbonn,dc=de'.format(device.name),
                                     'appl-NAC-Device',
-                                    self._map_device_data(device)
+                                    map_device_data(device)
                                     ):
             logging.info('%s added', device.name)
             device.synchronized = True
@@ -81,27 +81,3 @@ class Command(BaseCommand):
         else:
             logging.error('failed to add %s', device.name)
         return False
-
-    def _map_device_data(self, device):
-        device_data = {
-            'appl-NAC-FQDN': device.appl_NAC_FQDN,
-            'appl-NAC-Hostname': device.appl_NAC_Hostname,
-            'appl-NAC-Active': device.appl_NAC_Active,
-            'appl-NAC-ForceDot1X': device.appl_NAC_ForceDot1X,
-            'appl-NAC-Install': device.appl_NAC_Install,
-            'appl-NAC-AllowAccessCAB': device.appl_NAC_AllowAccessCAB,
-            'appl-NAC-AllowAccessAIR': device.appl_NAC_AllowAccessAIR,
-            'appl-NAC-AllowAccessVPN': device.appl_NAC_AllowAccessVPN,
-            'appl-NAC-AllowAccessCEL': device.appl_NAC_AllowAccessCEL
-            }
-        if device.appl_NAC_DeviceRoleProd:
-            device_data['appl-NAC-DeviceRoleProd'] = device.appl_NAC_DeviceRoleProd
-        if device.appl_NAC_DeviceRoleInst:
-            device_data['appl-NAC-DeviceRoleInst'] = device.appl_NAC_DeviceRoleInst
-        if device.appl_NAC_macAddressCAB:
-            device_data['appl-NAC-macAddressCAB'] = device.appl_NAC_macAddressCAB
-        if device.appl_NAC_macAddressAIR:
-            device_data['appl-NAC-macAddressAIR'] = device.appl_NAC_macAddressAIR
-        if device.appl_NAC_Certificate:
-            device_data['appl-NAC-Certificate'] = device.appl_NAC_Certificate
-        return device_data
