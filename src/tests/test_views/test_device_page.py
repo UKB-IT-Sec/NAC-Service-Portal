@@ -3,7 +3,7 @@ from nac.models import Device, Area, CustomUser
 from nac.views import DeviceListView
 from django.test import RequestFactory
 from django.urls import reverse_lazy
-from pytest_django.asserts import assertQuerysetEqual
+from pytest_django.asserts import assertQuerySetEqual
 
 
 @pytest.mark.django_db
@@ -30,4 +30,4 @@ def test_device_search(query, result):
     result_qs = view.get_queryset()
     print(result_qs)
 
-    assertQuerysetEqual(desired_qs, result_qs, ordered=False)
+    assertQuerySetEqual(desired_qs, result_qs, ordered=False)

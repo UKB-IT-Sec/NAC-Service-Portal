@@ -2,12 +2,8 @@
 [![Django CI](https://github.com/UKB-IT-Sec/NAC-Service-Portal/actions/workflows/django.yml/badge.svg)](https://github.com/UKB-IT-Sec/NAC-Service-Portal/actions/workflows/django.yml)
 
 ## Install
-
-### Pre-Requirements
-Apache2 and mod_wsgi must be installed and enabled.
-
-### Install
 ```
+cd src/
 python3 -m venv venv
 source venv/bin/activate
 pip3 install -r requirements.txt
@@ -32,4 +28,10 @@ python manage.py createsuperuser
 ```
 Log in to the admin panel at http://127.0.0.1:8000/admin/ with your superuser credentials. Here you can create user accounts. 
 
+## Export Assets to LDAP Server
+You have to add `resources/appl-NAC.schema` to your ldap server before an import is possible.
 
+Default config file for ldap export can be found at `config/export.cnf`
+```
+pyhton3 -m manage.py export_to_ldap
+```
