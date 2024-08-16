@@ -55,28 +55,32 @@ class Command(BaseCommand):
         return Device.objects.all().filter(synchronized=False)
 
     def _add_or_update_device_in_ldap_database(self, device):
+        logging.debug('processing %s', device.name)
         if self._device_exists(device.name):
-            self._modify_device(device)
-        else:
-            self._add_device(device)
+            self._delete_device(device)
+        self._add_device(device)
 
     def _device_exists(self, devicename):
         return self.ldap_connection.search('appl-NAC-Hostname={},ou=Devices,dc=ukbonn,dc=de'.format(devicename), '(objectclass=appl-NAC-Device)')
 
-    def _modify_device(self, device):
-        logging.info('modify device: {}'.format(device.name))
+    def _delete_device(self, device):
+        if self.ldap_connection.delete('appl-NAC-Hostname={},ou=Devices,dc=ukbonn,dc=de'.format(device.name)):
+            logging.info('%s deleted', device.name)
+        else:
+            logging.error('failed to delete %s', device.name)
 
     def _add_device(self, device):
-        logging.info('add device: {}'.format(device.name))
         if self.ldap_connection.add('appl-NAC-Hostname={},ou=Devices,dc=ukbonn,dc=de'.format(device.name),
                                     'appl-NAC-Device',
                                     self._map_device_data(device)
                                     ):
-            logging.debug('{} added'.format(device.name))
+            logging.info('%s added', device.name)
             device.synchronized = True
             device.save()
+            return True
         else:
-            logging.debug('failed to add {}'.format(device.name))
+            logging.error('failed to add %s', device.name)
+        return False
 
     def _map_device_data(self, device):
         device_data = {

@@ -19,7 +19,7 @@ import logging
 
 
 def connect_to_ldap_server(address, username, password, port=389, tls=False):
-    set_library_log_detail_level(EXTENDED)
+#    set_library_log_detail_level(EXTENDED)
     logging.info('connecting to LDAP server: {}:{} user: {}'.format(address, port, username))
     ldap_server = Server(address, port=port, use_ssl=tls, get_info=ALL)
     ldap_connection = Connection(ldap_server, username, password)
