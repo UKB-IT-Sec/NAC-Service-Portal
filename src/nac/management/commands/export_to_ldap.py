@@ -35,7 +35,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         setup_console_logger(options['verbosity'])
         self.config = get_config_from_file(options['config_file'])
+
         devices_to_sync = self._get_all_changed_devices()
+
         self.ldap_connection = connect_to_ldap_server(
             self.config['ldap-server']['address'],
             self.config['ldap-server']['user'],
@@ -43,20 +45,22 @@ class Command(BaseCommand):
             port=int(self.config['ldap-server']['port']),
             tls=self.config['ldap-server'].getboolean('tls')
             )
+
         for entry in devices_to_sync:
             self._add_or_update_device_in_ldap_database(entry)
+
         self.ldap_connection.unbind()
 
     def _get_all_changed_devices(self):
         return Device.objects.all().filter(synchronized=False)
 
     def _add_or_update_device_in_ldap_database(self, device):
-        if self.device_exists(device.name):
+        if self._device_exists(device.name):
             self._modify_device(device)
         else:
             self._add_device(device)
 
-    def device_exists(self, devicename):
+    def _device_exists(self, devicename):
         return self.ldap_connection.search('appl-NAC-Hostname={},ou=Devices,dc=ukbonn,dc=de'.format(devicename), '(objectclass=appl-NAC-Device)')
 
     def _modify_device(self, device):
@@ -66,18 +70,34 @@ class Command(BaseCommand):
         logging.info('add device: {}'.format(device.name))
         if self.ldap_connection.add('appl-NAC-Hostname={},ou=Devices,dc=ukbonn,dc=de'.format(device.name),
                                     'appl-NAC-Device',
-                                    {
-                                        'appl-NAC-FQDN': device.appl_NAC_FQDN,
-                                        'appl-NAC-Hostname': device.appl_NAC_Hostname,
-                                        'appl-NAC-Active': device.appl_NAC_Active,
-                                        'appl-NAC-ForceDot1X': device.appl_NAC_ForceDot1X,
-                                        'appl-NAC-Install': device.appl_NAC_Install,
-                                        'appl-NAC-AllowAccessCAB': device.appl_NAC_AllowAccessCAB,
-                                        'appl-NAC-AllowAccessAIR': device.appl_NAC_AllowAccessAIR,
-                                        'appl-NAC-AllowAccessVPN': device.appl_NAC_AllowAccessVPN,
-                                        'appl-NAC-AllowAccessCEL': device.appl_NAC_AllowAccessCEL
-                                    }
+                                    self._map_device_data(device)
                                     ):
             logging.debug('{} added'.format(device.name))
+            device.synchronized = True
+            device.save()
         else:
             logging.debug('failed to add {}'.format(device.name))
+
+    def _map_device_data(self, device):
+        device_data = {
+            'appl-NAC-FQDN': device.appl_NAC_FQDN,
+            'appl-NAC-Hostname': device.appl_NAC_Hostname,
+            'appl-NAC-Active': device.appl_NAC_Active,
+            'appl-NAC-ForceDot1X': device.appl_NAC_ForceDot1X,
+            'appl-NAC-Install': device.appl_NAC_Install,
+            'appl-NAC-AllowAccessCAB': device.appl_NAC_AllowAccessCAB,
+            'appl-NAC-AllowAccessAIR': device.appl_NAC_AllowAccessAIR,
+            'appl-NAC-AllowAccessVPN': device.appl_NAC_AllowAccessVPN,
+            'appl-NAC-AllowAccessCEL': device.appl_NAC_AllowAccessCEL
+            }
+        if device.appl_NAC_DeviceRoleProd:
+            device_data['appl-NAC-DeviceRoleProd'] = device.appl_NAC_DeviceRoleProd
+        if device.appl_NAC_DeviceRoleInst:
+            device_data['appl-NAC-DeviceRoleInst'] = device.appl_NAC_DeviceRoleInst
+        if device.appl_NAC_macAddressCAB:
+            device_data['appl-NAC-macAddressCAB'] = device.appl_NAC_macAddressCAB
+        if device.appl_NAC_macAddressAIR:
+            device_data['appl-NAC-macAddressAIR'] = device.appl_NAC_macAddressAIR
+        if device.appl_NAC_Certificate:
+            device_data['appl-NAC-Certificate'] = device.appl_NAC_Certificate
+        return device_data
