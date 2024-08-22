@@ -25,3 +25,28 @@ def connect_to_ldap_server(address, username, password, port=389, tls=False):
     ldap_connection = Connection(ldap_server, username, password)
     ldap_connection.bind()
     return ldap_connection
+
+
+def map_device_data(device):
+    device_data = {
+        'appl-NAC-FQDN': device.appl_NAC_FQDN,
+        'appl-NAC-Hostname': device.appl_NAC_Hostname,
+        'appl-NAC-Active': device.appl_NAC_Active,
+        'appl-NAC-ForceDot1X': device.appl_NAC_ForceDot1X,
+        'appl-NAC-Install': device.appl_NAC_Install,
+        'appl-NAC-AllowAccessCAB': device.appl_NAC_AllowAccessCAB,
+        'appl-NAC-AllowAccessAIR': device.appl_NAC_AllowAccessAIR,
+        'appl-NAC-AllowAccessVPN': device.appl_NAC_AllowAccessVPN,
+        'appl-NAC-AllowAccessCEL': device.appl_NAC_AllowAccessCEL
+        }
+    if device.appl_NAC_DeviceRoleProd:
+        device_data['appl-NAC-DeviceRoleProd'] = device.appl_NAC_DeviceRoleProd
+    if device.appl_NAC_DeviceRoleInst:
+        device_data['appl-NAC-DeviceRoleInst'] = device.appl_NAC_DeviceRoleInst
+    if device.appl_NAC_macAddressCAB:
+        device_data['appl-NAC-macAddressCAB'] = device.appl_NAC_macAddressCAB
+    if device.appl_NAC_macAddressAIR:
+        device_data['appl-NAC-macAddressAIR'] = device.appl_NAC_macAddressAIR
+    if device.appl_NAC_Certificate:
+        device_data['appl-NAC-Certificate'] = device.appl_NAC_Certificate
+    return device_data
