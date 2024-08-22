@@ -1,5 +1,0 @@
-name;area;security_group;synchronized;appl_NAC_FQDN;appl_NAC_Hostname;appl_NAC_Active;appl_NAC_ForceDot1X;appl_NAC_Install;appl_NAC_AllowAccessCAB;appl_NAC_AllowAccessAIR;appl_NAC_AllowAccessVPN;appl_NAC_AllowAccessCEL;appl_NAC_DeviceRoleProd;appl_NAC_DeviceRoleInst;appl_NAC_macAddressCAB;appl_NAC_macAddressAIR;appl_NAC_Certificate
-test1;A1;S1;False;FQDN1;Hostname1;True;True;False;True;False;False;False;DeviceRoleProd1;DeviceRoleInst2;12345789abc;aabbccddeeff;Certificate1
-test2;A1;S2;False;FQDN2;Hostname2;True;True;False;True;False;False;False;DeviceRoleProd2;DeviceRoleInst3;12345785def;11bbccddeeff;Certificate2
-test3;A1;S2;False;FQDN2;Hostname2;True;True;True;True;False;True;True;DeviceRoleProd2;DeviceRoleInst3;001122334455,001122334455;;Certificate3
-test4;A1;S2;False;FQDN4;Hostname4;False;False;True;True;True;True;True;DeviceRoleProd2;DeviceRoleInst3;001122334456,001122334456;001122334456;
