@@ -144,113 +144,100 @@ def test_str_to_bool(input_value, expected_output, command):
     assert command.str_to_bool(input_value) == expected_output
 
 
-def test_save_invalid_devices_empty_file(command):
+@patch('builtins.open', new_callable=mock_open)
+@patch('nac.management.commands.import_to_db.DictWriter')
+@patch('nac.management.commands.import_to_db.stat')
+@patch('nac.management.commands.import_to_db.logging')
+def test_save_invalid_devices_empty_file(mock_logging, mock_stat,
+                                         mock_writer, mocked_file, command):
     device = {"name": "test"}
-    with patch('builtins.open', mock_open()) as mocked_file, \
-            patch('nac.management.commands.import_to_db.DictWriter'
-                  ) as mock_writer, \
-            patch('nac.management.commands.import_to_db.stat') as mock_stat, \
-            patch('nac.management.commands.import_to_db.logging'
-                  ) as mock_logging:
-        mock_stat.return_value.st_size = 0
-        mock_writer_instance = MagicMock()
-        mock_writer.return_value = mock_writer_instance
-        command.save_invalid_devices(device)
-        mocked_file.assert_called_once_with(command.CSV_SAVE_FILE,
-                                            'a', newline="")
-        mock_writer.assert_called_once_with(mocked_file(),
-                                            fieldnames=device.keys(),
-                                            delimiter=";")
-        mock_writer_instance.writeheader.assert_called_once()
-        mock_writer_instance.writerows.assert_called_once_with([device])
-        mock_logging.info.assert_called_once_with(
-            f"Writing invalid device to {command.CSV_SAVE_FILE}")
-        mock_logging.debug.assert_called_once_with(
-            f"Writing invalid device to {command.CSV_SAVE_FILE}: SUCCESSFUL")
+    mock_stat.return_value.st_size = 0
+    mock_writer_instance = MagicMock()
+    mock_writer.return_value = mock_writer_instance
+    command.save_invalid_devices(device)
+    mocked_file.assert_called_once_with(command.CSV_SAVE_FILE,
+                                        'a', newline="")
+    mock_writer.assert_called_once_with(mocked_file(),
+                                        fieldnames=device.keys(),
+                                        delimiter=";")
+    mock_writer_instance.writeheader.assert_called_once()
+    mock_writer_instance.writerows.assert_called_once_with([device])
+    mock_logging.info.assert_called_once_with(
+        f"Writing invalid device to {command.CSV_SAVE_FILE}")
+    mock_logging.debug.assert_called_once_with(
+        f"Writing invalid device to {command.CSV_SAVE_FILE}: SUCCESSFUL")
 
 
-def test_save_invalid_devices_non_empty_file(command):
+@patch('nac.management.commands.import_to_db.DictWriter')
+@patch('nac.management.commands.import_to_db.stat')
+def test_save_invalid_devices_non_empty_file(mock_stat, mock_writer, command):
     device = {"name": "test"}
-    with patch('nac.management.commands.import_to_db.DictWriter'
-               ) as mock_writer, \
-            patch('nac.management.commands.import_to_db.stat') as mock_stat:
-        mock_stat.return_value.st_size = 100
-        mock_writer_instance = MagicMock()
-        mock_writer.return_value = mock_writer_instance
-        command.save_invalid_devices(device)
-        mock_writer_instance.writeheader.assert_not_called()
+    mock_stat.return_value.st_size = 100
+    mock_writer_instance = MagicMock()
+    mock_writer.return_value = mock_writer_instance
+    command.save_invalid_devices(device)
+    mock_writer_instance.writeheader.assert_not_called()
 
 
-def test_save_invalid_devices_exception(command):
+@patch('nac.management.commands.import_to_db.logging')
+@patch('builtins.open', side_effect=Exception("Failed"))
+def test_save_invalid_devices_exception(mock_file, mock_logging, command):
     device = {"name": "test"}
-    with patch('builtins.open', side_effect=Exception("Failed")), \
-            patch('nac.management.commands.import_to_db.logging'
-                  ) as mock_logging:
-        command.save_invalid_devices(device)
-        mock_logging.error.assert_called_once_with(
-            f"Writing invalid device to "
-            f"{command.CSV_SAVE_FILE}: FAILED -> Failed")
+    command.save_invalid_devices(device)
+    mock_logging.error.assert_called_once_with(
+        f"Writing invalid device to "
+        f"{command.CSV_SAVE_FILE}: FAILED -> Failed")
 
 
-def test_read_csv(command):
+@patch('builtins.open', new_callable=mock_open, read_data="name\n;test")
+@patch('nac.management.commands.import_to_db.DictReader')
+@patch('nac.management.commands.import_to_db.Command.handle_deviceObject')
+@patch('nac.management.commands.import_to_db.logging')
+def test_read_csv(mock_logging, mock_handler, mock_reader, mock_file, command):
     command.source_file = "test.csv"
-    with patch('builtins.open', mock_open(read_data="name\n;test")
-               ) as mock_file, \
-            patch('nac.management.commands.import_to_db.DictReader'
-                  ) as mock_reader, \
-            patch(
-             'nac.management.commands.import_to_db.Command.handle_deviceObject'
-                  ) as mock_handler, \
-            patch('nac.management.commands.import_to_db.logging'
-                  ) as mock_logging:
-        mock_reader.return_value = [{"name": "test"}]
-        mock_handler.return_value = None
-        command.read_csv()
-        mock_file.assert_called_once_with("test.csv", "r", newline="")
-        mock_reader.assert_called_once_with(mock_file(), delimiter=";")
-        mock_handler.assert_called_once_with({"name": "test"})
-        mock_logging.info.assert_called_once_with("Reading test.csv")
-        mock_logging.debug.assert_called_once_with(
-            "Reading test.csv: SUCCESSFUL")
+    mock_reader.return_value = [{"name": "test"}]
+    mock_handler.return_value = None
+    command.read_csv()
+    mock_file.assert_called_once_with("test.csv", "r", newline="")
+    mock_reader.assert_called_once_with(mock_file(), delimiter=";")
+    mock_handler.assert_called_once_with({"name": "test"})
+    mock_logging.info.assert_called_once_with("Reading test.csv")
+    mock_logging.debug.assert_called_once_with(
+        "Reading test.csv: SUCCESSFUL")
 
 
-def test_read_csv_exception(command):
+@patch('builtins.open', side_effect=Exception("Failed"))
+@patch('nac.management.commands.import_to_db.DictReader')
+@patch('nac.management.commands.import_to_db.Command.handle_deviceObject')
+@patch('nac.management.commands.import_to_db.logging')
+def test_read_csv_exception(mock_logging, mock_handler,
+                            mock_reader, mock_file, command):
     command.source_file = "test.csv"
-    with patch('builtins.open', side_effect=Exception("Failed")
-               ) as mock_file, \
-            patch('nac.management.commands.import_to_db.DictReader'
-                  ) as mock_reader, \
-            patch(
-             'nac.management.commands.import_to_db.Command.handle_deviceObject'
-                  ) as mock_handler, \
-            patch('nac.management.commands.import_to_db.logging'
-                  ) as mock_logging:
-        command.read_csv()
-        mock_file.assert_called_once_with("test.csv", "r", newline="")
-        mock_reader.assert_not_called()
-        mock_handler.assert_not_called()
-        mock_logging.error.assert_called_once_with(
-            f"Reading {"test.csv"}: FAILED -> Failed")
+    command.read_csv()
+    mock_file.assert_called_once_with("test.csv", "r", newline="")
+    mock_reader.assert_not_called()
+    mock_handler.assert_not_called()
+    mock_logging.error.assert_called_once_with(
+        f"Reading {"test.csv"}: FAILED -> Failed")
 
 
-def test_clear_invalid_devices_file(command):
-    with patch("builtins.open", mock_open()) as mock_file, \
-         patch('nac.management.commands.import_to_db.logging') as mock_logging:
-        command.clear_invalid_devices_file()
-        mock_file.assert_called_once_with(command.CSV_SAVE_FILE, "w")
-        mock_logging.info.assert_called_once_with(
-            f"Removing all entries in {command.CSV_SAVE_FILE}")
+@patch('builtins.open', new_callable=mock_open)
+@patch('nac.management.commands.import_to_db.logging')
+def test_clear_invalid_devices_file(mock_logging, mock_file, command):
+    command.clear_invalid_devices_file()
+    mock_file.assert_called_once_with(command.CSV_SAVE_FILE, "w")
+    mock_logging.info.assert_called_once_with(
+        f"Removing all entries in {command.CSV_SAVE_FILE}")
 
 
-def test_clear_invalid_devices_file_exception(command):
-    with patch("builtins.open", side_effect=Exception("Failed")
-               ) as mock_file, \
-         patch('nac.management.commands.import_to_db.logging') as mock_logging:
-        command.clear_invalid_devices_file()
-        mock_file.assert_called_once_with(command.CSV_SAVE_FILE, "w")
-        mock_logging.error.assert_called_once_with(
-            f"Removing all entries in {command.CSV_SAVE_FILE} FAILED -> Failed"
-            )
+@patch('builtins.open', side_effect=Exception("Failed"))
+@patch('nac.management.commands.import_to_db.logging')
+def test_clear_invalid_devices_file_exception(mock_logging, mock_file, command):
+    command.clear_invalid_devices_file()
+    mock_file.assert_called_once_with(command.CSV_SAVE_FILE, "w")
+    mock_logging.error.assert_called_once_with(
+        f"Removing all entries in {command.CSV_SAVE_FILE} FAILED -> Failed"
+        )
 
 
 @pytest.mark.django_db
