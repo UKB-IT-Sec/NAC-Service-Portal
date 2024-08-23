@@ -10,11 +10,12 @@ from helper.filesystem import get_resources_directory, get_absolute_path
 from django.core.exceptions import ValidationError
 
 
-CSV_SAVE_FILE = "invalid_devices.csv"
 DEFAULT_SOURCE_CSV = get_resources_directory() / 'ldap_testobjects.csv'
 
 
 class Command(BaseCommand):
+    CSV_SAVE_FILE = "invalid_devices.csv"
+    
     help = 'Import devices from CSV file'
 
     def add_arguments(self, parser):
@@ -28,10 +29,10 @@ class Command(BaseCommand):
 
     def clear_invalid_devices_file(self):
         try:
-            with open(CSV_SAVE_FILE, "w"):
-                logging.info(f"Removing all entries in {CSV_SAVE_FILE}")
+            with open(self.CSV_SAVE_FILE, "w"):
+                logging.info(f"Removing all entries in {self.CSV_SAVE_FILE}")
         except Exception as e:
-            logging.error(f"Removing all entries in {CSV_SAVE_FILE} FAILED -> {e}")
+            logging.error(f"Removing all entries in {self.CSV_SAVE_FILE} FAILED -> {e}")
 
     def read_csv(self):
         try:
@@ -118,12 +119,12 @@ class Command(BaseCommand):
     def save_invalid_devices(self, deviceObject_invalid):
         try:
             column_header = deviceObject_invalid.keys()
-            with open(CSV_SAVE_FILE, 'a', newline="") as csvfile:
-                logging.info(f"Writing invalid device to {CSV_SAVE_FILE}")
+            with open(self.CSV_SAVE_FILE, 'a', newline="") as csvfile:
+                logging.info(f"Writing invalid device to {self.CSV_SAVE_FILE}")
                 writer = DictWriter(csvfile, fieldnames=column_header, delimiter=";")
-                if stat(CSV_SAVE_FILE).st_size == 0:
+                if stat(self.CSV_SAVE_FILE).st_size == 0:
                     writer.writeheader()
                 writer.writerows([deviceObject_invalid])
-                logging.debug(f"Writing invalid device to {CSV_SAVE_FILE}: SUCCESSFUL")
+                logging.debug(f"Writing invalid device to {self.CSV_SAVE_FILE}: SUCCESSFUL")
         except Exception as e:
-            logging.error(f"Writing invalid device to {CSV_SAVE_FILE}: FAILED -> {e}")
+            logging.error(f"Writing invalid device to {self.CSV_SAVE_FILE}: FAILED -> {e}")
