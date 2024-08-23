@@ -218,7 +218,7 @@ def test_read_csv_exception(mock_logging, mock_handler,
     mock_reader.assert_not_called()
     mock_handler.assert_not_called()
     mock_logging.error.assert_called_once_with(
-        f"Reading {"test.csv"}: FAILED -> Failed")
+        "Reading test.csv: FAILED -> Failed")
 
 
 @patch('builtins.open', new_callable=mock_open)
@@ -232,7 +232,8 @@ def test_clear_invalid_devices_file(mock_logging, mock_file, command):
 
 @patch('builtins.open', side_effect=Exception("Failed"))
 @patch('nac.management.commands.import_to_db.logging')
-def test_clear_invalid_devices_file_exception(mock_logging, mock_file, command):
+def test_clear_invalid_devices_file_exception(mock_logging,
+                                              mock_file, command):
     command.clear_invalid_devices_file()
     mock_file.assert_called_once_with(command.CSV_SAVE_FILE, "w")
     mock_logging.error.assert_called_once_with(
