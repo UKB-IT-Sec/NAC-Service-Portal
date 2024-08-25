@@ -108,7 +108,7 @@ def test_add_device_to_db(mock_logging, mock_create, command):
     mock_create.return_value = None
     assert command.add_device_to_db(device) is True
     mock_create.assert_called()
-    mock_logging.debug.assert_called()
+    mock_logging.info.assert_called()
     mock_logging.debug.assert_called_once_with(
         f"Import device {device['name']} to database: SUCCESSFUL")
 
@@ -168,9 +168,11 @@ def test_save_invalid_devices_empty_file(mock_logging, mock_stat,
         f"Writing invalid device to {command.CSV_SAVE_FILE}: SUCCESSFUL")
 
 
+@patch('builtins.open', new_callable=mock_open)
 @patch('nac.management.commands.import_to_db.DictWriter')
 @patch('nac.management.commands.import_to_db.stat')
-def test_save_invalid_devices_non_empty_file(mock_stat, mock_writer, command):
+def test_save_invalid_devices_non_empty_file(mock_stat, mock_writer,
+                                             mock_file, command):
     device = {"name": "test"}
     mock_stat.return_value.st_size = 100
     mock_writer_instance = MagicMock()
