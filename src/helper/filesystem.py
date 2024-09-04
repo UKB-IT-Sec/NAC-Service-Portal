@@ -22,3 +22,7 @@ def get_src_directory():
 
 def get_config_directory():
     return get_src_directory().parent / 'config'
+
+
+def get_resources_directory():
+    return get_src_directory().parent / 'resources'

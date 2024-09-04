@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 import logging
-from helper.filesystem import get_config_directory, get_src_directory
+from helper.filesystem import get_config_directory, get_resources_directory
 from helper.config import get_config_from_file
 from helper.logging import setup_console_logger
 from helper.ldap import connect_to_ldap_server
@@ -10,7 +10,7 @@ from os import stat
 
 DEFAULT_CONFIG = get_config_directory() / 'export.cnf'
 DEFAULT_OBJECT = 'appl-NAC-Device'
-CSV_SAVE_FILE = get_src_directory().parent / 'resources' / 'ldapObjects.csv'
+CSV_SAVE_FILE = get_resources_directory() / 'ldapObjects.csv'
 
 
 class Command(BaseCommand):
