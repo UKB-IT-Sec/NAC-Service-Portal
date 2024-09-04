@@ -10,7 +10,7 @@ def test_get_config_directory():
 
 
 def test_get_resources_directory():
-    assert (get_resources_directory() / 'ldap_testobjects.csv').exists()
+    assert (get_resources_directory() / 'appl-NAC.schema').exists()
 
 
 def test_get_absolute_path():

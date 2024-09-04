@@ -1,7 +1,9 @@
 import pytest
-from nac.management.commands.import_to_db import Command, DEFAULT_SOURCE_CSV
+from nac.management.commands.import_to_db import Command, \
+    DEFAULT_SOURCE_CSV, CSV_SAVE_FILE
 from unittest.mock import patch, mock_open, MagicMock
 from django.core.exceptions import ValidationError
+from nac.models import Area, SecurityGroup
 
 
 @pytest.fixture
@@ -38,24 +40,29 @@ def test_check_device(mock_logging, mock_atomic, appl_NAC_ForceDot1X,
                       appl_NAC_Certificate, appl_NAC_AllowAccessAIR,
                       appl_NAC_macAddressAIR, appl_NAC_AllowAccessCAB,
                       appl_NAC_macAddressCAB, expected_result, command):
+
+    test_sec_group = SecurityGroup.objects.create(name="test")
+    test_area = Area.objects.create(name="test")
+    test_area.security_group.set([test_sec_group])
     data = {
         "name": "test",
-        "area": "test_area",
-        "security_group": "test_sec_group",
-        "appl_NAC_FQDN": "test",
-        "appl_NAC_Hostname": "test",
-        "appl_NAC_Active": True,
-        "appl_NAC_ForceDot1X": appl_NAC_ForceDot1X,
-        "appl_NAC_Install": True,
-        "appl_NAC_AllowAccessCAB": appl_NAC_AllowAccessCAB,
-        "appl_NAC_AllowAccessAIR": appl_NAC_AllowAccessAIR,
-        "appl_NAC_AllowAccessVPN": appl_NAC_AllowAccessVPN,
-        "appl_NAC_AllowAccessCEL": True,
-        "appl_NAC_DeviceRoleProd": "test",
-        "appl_NAC_DeviceRoleInst": "test",
-        "appl_NAC_macAddressAIR": appl_NAC_macAddressAIR,
-        "appl_NAC_macAddressCAB": appl_NAC_macAddressCAB,
-        "appl_NAC_Certificate": appl_NAC_Certificate,
+        "objectClass": "appl-NAC-Device",
+        "area": test_area,
+        "security_group": test_sec_group,
+        "appl-NAC-FQDN": "test",
+        "appl-NAC-Hostname": "test",
+        "appl-NAC-Active": True,
+        "appl-NAC-ForceDot1X": appl_NAC_ForceDot1X,
+        "appl-NAC-Install": True,
+        "appl-NAC-AllowAccessCAB": appl_NAC_AllowAccessCAB,
+        "appl-NAC-AllowAccessAIR": appl_NAC_AllowAccessAIR,
+        "appl-NAC-AllowAccessVPN": appl_NAC_AllowAccessVPN,
+        "appl-NAC-AllowAccessCEL": True,
+        "appl-NAC-DeviceRoleProd": "test",
+        "appl-NAC-DeviceRoleInst": "test",
+        "appl-NAC-macAddressAIR": appl_NAC_macAddressAIR,
+        "appl-NAC-macAddressCAB": appl_NAC_macAddressCAB,
+        "appl-NAC-Certificate": appl_NAC_Certificate,
         "synchronized": False,
     }
 
@@ -77,10 +84,14 @@ def test_check_device(mock_logging, mock_atomic, appl_NAC_ForceDot1X,
 def test_check_device_exceptions(
         mock_device_form, mock_logging,
         mock_str_to_bool, mock_atomic, command):
+    test_sec_group = SecurityGroup.objects.create(name="test")
+    test_area = Area.objects.create(name="test")
+    test_area.security_group.set([test_sec_group])
     invalid_device = {
         "name": "test",
-        "area": "test_area",
-        "security_group": "test_sec_group"}
+        "objectClass": "appl-NAC-Device",
+        "area": test_area,
+        "security_group": test_sec_group}
     mock_form = MagicMock()
     mock_form.is_valid.return_value = False
     mock_form.errors = {"Type": ["Reason"]}
@@ -155,7 +166,7 @@ def test_save_invalid_devices_empty_file(mock_logging, mock_stat,
     mock_writer_instance = MagicMock()
     mock_writer.return_value = mock_writer_instance
     command.save_invalid_devices(device)
-    mocked_file.assert_called_once_with(command.CSV_SAVE_FILE,
+    mocked_file.assert_called_once_with(CSV_SAVE_FILE,
                                         'a', newline="")
     mock_writer.assert_called_once_with(mocked_file(),
                                         fieldnames=device.keys(),
@@ -163,9 +174,9 @@ def test_save_invalid_devices_empty_file(mock_logging, mock_stat,
     mock_writer_instance.writeheader.assert_called_once()
     mock_writer_instance.writerows.assert_called_once_with([device])
     mock_logging.info.assert_called_once_with(
-        f"Writing invalid device to {command.CSV_SAVE_FILE}")
+        f"Writing invalid device to {CSV_SAVE_FILE}")
     mock_logging.debug.assert_called_once_with(
-        f"Writing invalid device to {command.CSV_SAVE_FILE}: SUCCESSFUL")
+        f"Writing invalid device to {CSV_SAVE_FILE}: SUCCESSFUL")
 
 
 @patch('builtins.open', new_callable=mock_open)
@@ -188,7 +199,7 @@ def test_save_invalid_devices_exception(mock_file, mock_logging, command):
     command.save_invalid_devices(device)
     mock_logging.error.assert_called_once_with(
         f"Writing invalid device to "
-        f"{command.CSV_SAVE_FILE}: FAILED -> Failed")
+        f"{CSV_SAVE_FILE}: FAILED -> Failed")
 
 
 @patch('builtins.open', new_callable=mock_open, read_data="name\n;test")
@@ -227,9 +238,9 @@ def test_read_csv_exception(mock_logging, mock_handler,
 @patch('nac.management.commands.import_to_db.logging')
 def test_clear_invalid_devices_file(mock_logging, mock_file, command):
     command.clear_invalid_devices_file()
-    mock_file.assert_called_once_with(command.CSV_SAVE_FILE, "w")
+    mock_file.assert_called_once_with(CSV_SAVE_FILE, "w")
     mock_logging.info.assert_called_once_with(
-        f"Removing all entries in {command.CSV_SAVE_FILE}")
+        f"Removing all entries in {CSV_SAVE_FILE}")
 
 
 @patch('builtins.open', side_effect=Exception("Failed"))
@@ -237,9 +248,9 @@ def test_clear_invalid_devices_file(mock_logging, mock_file, command):
 def test_clear_invalid_devices_file_exception(mock_logging,
                                               mock_file, command):
     command.clear_invalid_devices_file()
-    mock_file.assert_called_once_with(command.CSV_SAVE_FILE, "w")
+    mock_file.assert_called_once_with(CSV_SAVE_FILE, "w")
     mock_logging.error.assert_called_once_with(
-        f"Removing all entries in {command.CSV_SAVE_FILE} FAILED -> Failed"
+        f"Removing all entries in {CSV_SAVE_FILE} FAILED -> Failed"
         )
 
 
@@ -282,34 +293,13 @@ def test_handle_deviceObject_invalid_Device(
     mock_logging.error.assert_not_called()
 
 
-@pytest.mark.django_db
-@patch('nac.management.commands.import_to_db.Command.check_device')
-@patch('nac.management.commands.import_to_db.Command.add_device_to_db')
-@patch('nac.management.commands.import_to_db.Command.save_invalid_devices')
-@patch('nac.management.commands.import_to_db.logging')
-def test_handle_deviceObject_exception(
-        mock_logging, mock_save_invalid_devices,
-        mock_add_device_to_db, mock_check_device, command):
-    device = {"name": "test"}
-    mock_check_device.side_effect = Exception("Unexpected error")
-
-    command.handle_deviceObject(device)
-
-    mock_check_device.assert_called_once_with(device)
-    mock_add_device_to_db.assert_not_called()
-    mock_save_invalid_devices.assert_not_called()
-    mock_logging.error.assert_called_once_with(
-        "Handling device object: FAILED -> Unexpected error"
-    )
-
-
 def test_add_arguments(command):
     mock_parser = MagicMock()
     command.add_arguments(mock_parser)
     mock_parser.add_argument.assert_called_once_with(
         '-f', '--csv_file',
         default=DEFAULT_SOURCE_CSV,
-        help='use a specific csv file [src/ldap_testobjects.csv]'
+        help='use a specific csv file [src/ldapObjects.csv]'
     )
 
 

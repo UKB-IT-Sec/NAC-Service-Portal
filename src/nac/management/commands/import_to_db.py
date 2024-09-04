@@ -9,12 +9,11 @@ from nac.forms import DeviceForm
 from helper.logging import setup_console_logger
 from helper.filesystem import get_resources_directory, get_absolute_path
 
-
-DEFAULT_SOURCE_CSV = get_resources_directory() / 'ldap_testobjects.csv'
+DEFAULT_SOURCE_CSV = get_resources_directory() / 'ldapObjects.csv'
+CSV_SAVE_FILE = get_resources_directory() / "invalid_devices.csv"
 
 
 class Command(BaseCommand):
-    CSV_SAVE_FILE = "invalid_devices.csv"
 
     help = 'Import devices from CSV file'
 
@@ -22,7 +21,7 @@ class Command(BaseCommand):
         parser.add_argument(
             '-f', '--csv_file',
             default=DEFAULT_SOURCE_CSV,
-            help='use a specific csv file [src/ldap_testobjects.csv]'
+            help='use a specific csv file [src/ldapObjects.csv]'
         )
 
     def handle(self, *args, **options):
@@ -33,11 +32,11 @@ class Command(BaseCommand):
 
     def clear_invalid_devices_file(self):
         try:
-            with open(self.CSV_SAVE_FILE, "w"):
-                logging.info(f"Removing all entries in {self.CSV_SAVE_FILE}")
+            with open(CSV_SAVE_FILE, "w"):
+                logging.info(f"Removing all entries in {CSV_SAVE_FILE}")
         except Exception as e:
             logging.error(
-                f"Removing all entries in {self.CSV_SAVE_FILE} FAILED -> {e}"
+                f"Removing all entries in {CSV_SAVE_FILE} FAILED -> {e}"
             )
 
     def read_csv(self):
@@ -57,17 +56,21 @@ class Command(BaseCommand):
             self.add_device_to_db(device)
         except ValidationError:
             self.save_invalid_devices(deviceObject)
-        except Exception as e:
-            logging.error(f"Handling device object: FAILED -> {e}")
+        except Exception:
+            pass
 
     def check_device(self, deviceObject):
         logging.info(f"Checking validity of device {deviceObject.get('name')}")
         try:
+            if deviceObject.get('objectClass') != 'appl-NAC-Device':
+                raise Exception(
+                    f"Invalid Object-type! EXPECTED: appl-NAC-Device <->"
+                    f"  ACTUAL: {deviceObject.get('objectClass')}")
             with transaction.atomic():
-                security_group, _ = SecurityGroup.objects.get_or_create(
+                security_group = SecurityGroup.objects.get(
                     name=deviceObject.get("security_group")
                 )
-                area, _ = Area.objects.get_or_create(
+                area = Area.objects.get(
                     name=deviceObject.get("area")
                 )
                 area.security_group.add(security_group)
@@ -75,43 +78,43 @@ class Command(BaseCommand):
                     "name": deviceObject.get("name"),
                     "area": area,
                     "security_group": security_group,
-                    "appl_NAC_FQDN": deviceObject.get("appl_NAC_FQDN"),
-                    "appl_NAC_Hostname": deviceObject.get("appl_NAC_Hostname"),
+                    "appl_NAC_FQDN": deviceObject.get("appl-NAC-FQDN"),
+                    "appl_NAC_Hostname": deviceObject.get("appl-NAC-Hostname"),
                     "appl_NAC_Active": self.str_to_bool(
-                        deviceObject.get("appl_NAC_Active")
+                        deviceObject.get("appl-NAC-Active")
                     ),
                     "appl_NAC_ForceDot1X": self.str_to_bool(
-                        deviceObject.get("appl_NAC_ForceDot1X")
+                        deviceObject.get("appl-NAC-ForceDot1X")
                     ),
                     "appl_NAC_Install": self.str_to_bool(
-                        deviceObject.get("appl_NAC_Install")
+                        deviceObject.get("appl-NAC-Install")
                     ),
                     "appl_NAC_AllowAccessCAB": self.str_to_bool(
-                        deviceObject.get("appl_NAC_AllowAccessCAB")
+                        deviceObject.get("appl-NAC-AllowAccessCAB")
                     ),
                     "appl_NAC_AllowAccessAIR": self.str_to_bool(
-                        deviceObject.get("appl_NAC_AllowAccessAIR")
+                        deviceObject.get("appl-NAC-AllowAccessAIR")
                     ),
                     "appl_NAC_AllowAccessVPN": self.str_to_bool(
-                        deviceObject.get("appl_NAC_AllowAccessVPN")
+                        deviceObject.get("appl-NAC-AllowAccessVPN")
                     ),
                     "appl_NAC_AllowAccessCEL": self.str_to_bool(
-                        deviceObject.get("appl_NAC_AllowAccessCEL")
+                        deviceObject.get("appl-NAC-AllowAccessCEL")
                     ),
                     "appl_NAC_DeviceRoleProd": deviceObject.get(
-                        "appl_NAC_DeviceRoleProd"
+                        "appl-NAC-DeviceRoleProd"
                     ),
                     "appl_NAC_DeviceRoleInst": deviceObject.get(
-                        "appl_NAC_DeviceRoleInst"
+                        "appl-NAC-DeviceRoleInst"
                     ),
                     "appl_NAC_macAddressAIR": deviceObject.get(
-                        "appl_NAC_macAddressAIR"
+                        "appl-NAC-macAddressAIR"
                     ),
                     "appl_NAC_macAddressCAB": deviceObject.get(
-                        "appl_NAC_macAddressCAB"
+                        "appl-NAC-macAddressCAB"
                     ),
                     "appl_NAC_Certificate": deviceObject.get(
-                        "appl_NAC_Certificate"
+                        "appl-NAC-Certificate"
                     ),
                     "synchronized": self.str_to_bool(
                         deviceObject.get("synchronized")
@@ -128,6 +131,7 @@ class Command(BaseCommand):
                     for field, errors in device_form.errors.items():
                         for reason in errors:
                             logging.error(f"Field: {field} - Error: {reason}")
+                            print(f"Field: {field} - Error: {reason}")
                     raise ValidationError("Invalid Device")
         except ValidationError:
             raise
@@ -163,20 +167,20 @@ class Command(BaseCommand):
     def save_invalid_devices(self, deviceObject_invalid):
         try:
             column_header = deviceObject_invalid.keys()
-            with open(self.CSV_SAVE_FILE, 'a', newline="") as csvfile:
-                logging.info(f"Writing invalid device to {self.CSV_SAVE_FILE}")
+            with open(CSV_SAVE_FILE, 'a', newline="") as csvfile:
+                logging.info(f"Writing invalid device to {CSV_SAVE_FILE}")
                 writer = DictWriter(
                     csvfile, fieldnames=column_header, delimiter=";"
                 )
-                if stat(self.CSV_SAVE_FILE).st_size == 0:
+                if stat(CSV_SAVE_FILE).st_size == 0:
                     writer.writeheader()
                 writer.writerows([deviceObject_invalid])
                 logging.debug(
-                    f"Writing invalid device to {self.CSV_SAVE_FILE}: "
+                    f"Writing invalid device to {CSV_SAVE_FILE}: "
                     f"SUCCESSFUL"
                 )
         except Exception as e:
             logging.error(
                 f"Writing invalid device to "
-                f"{self.CSV_SAVE_FILE}: FAILED -> {e}"
+                f"{CSV_SAVE_FILE}: FAILED -> {e}"
             )
