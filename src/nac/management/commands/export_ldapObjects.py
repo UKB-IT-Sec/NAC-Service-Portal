@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 import logging
-from helper.filesystem import get_config_directory
+from helper.filesystem import get_config_directory, get_src_directory
 from helper.config import get_config_from_file
 from helper.logging import setup_console_logger
 from helper.ldap import connect_to_ldap_server
@@ -9,8 +9,8 @@ from csv import DictWriter
 from os import stat
 
 DEFAULT_CONFIG = get_config_directory() / 'export.cnf'
-DEFAULT_OBJECT = 'inetOrgPerson'
-CSV_SAVE_FILE = 'ldapObjects.csv'
+DEFAULT_OBJECT = 'appl-NAC-Device'
+CSV_SAVE_FILE = get_src_directory().parent / 'resources' / 'ldapObjects.csv'
 
 
 class Command(BaseCommand):
@@ -45,8 +45,11 @@ class Command(BaseCommand):
     def _handle_objects(self):
         logging.info('Initiating CSV export to file: %s', CSV_SAVE_FILE)
         for progress_counter, entry in enumerate(self.ldap_connection.entries):
+            temp_dict = entry.entry_attributes_as_dict
+            temp_dict['name'] = \
+                entry.entry_attributes_as_dict['appl-NAC-Hostname']
             self.write_object(
-                entry.entry_attributes_as_dict, progress_counter+1)
+                temp_dict, progress_counter+1)
 
     def _get_objects(self):
         logging.debug('Searching for %s-objects', self.objectClass)
@@ -61,9 +64,11 @@ class Command(BaseCommand):
             logging.error("Not Found: %s-objects",
                           self.objectClass)
 
-    def _convert_dictlists_to_str(self, dict):
-        return {key: ','.join(value) if isinstance(value, list)
-                else str(value) for key, value in dict.items()}
+    def _convert_dictlists_to_str(self, obj_dict):
+        for key, value in obj_dict.items():
+            if isinstance(value, list):
+                obj_dict[key] = ','.join(map(str, value))
+        return obj_dict
 
     def _clear_file(self):
         try:

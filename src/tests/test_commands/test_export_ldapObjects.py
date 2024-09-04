@@ -62,15 +62,17 @@ def test_handle(mock_handle_objects, mock_get_objects, mock_clear_file,
 @patch('nac.management.commands.export_ldapObjects.Command.write_object')
 def test_handle_objects(mock_write_object, command):
     mock_entry1 = MagicMock()
-    mock_entry1.entry_attributes_as_dict = {'attr1': 'value1'}
+    mock_entry1.entry_attributes_as_dict = {'appl-NAC-Hostname': 'value1'}
     mock_entry2 = MagicMock()
-    mock_entry2.entry_attributes_as_dict = {'attr2': 'value2'}
+    mock_entry2.entry_attributes_as_dict = {'appl-NAC-Hostname': 'value2'}
     command.ldap_connection = MagicMock()
     command.ldap_connection.entries = [mock_entry1, mock_entry2]
     command._handle_objects()
     assert mock_write_object.call_count == 2
-    mock_write_object.assert_any_call({'attr1': 'value1'}, 1)
-    mock_write_object.assert_any_call({'attr2': 'value2'}, 2)
+    mock_write_object.assert_any_call({'appl-NAC-Hostname': 'value1',
+                                       'name': 'value1'}, 1)
+    mock_write_object.assert_any_call({'appl-NAC-Hostname': 'value2',
+                                       'name': 'value2'}, 2)
 
 
 @patch('nac.management.commands.export_ldapObjects.logging')
