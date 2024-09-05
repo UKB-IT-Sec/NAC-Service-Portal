@@ -5,7 +5,7 @@
     "fields": {
       "name": "dev1",
       "area": 1,
-      "security_group": 1,
+      "appl_NAC_DeviceRoleProd": 1,
       "synchronized": false,
       "appl_NAC_FQDN": "fqdn1",
       "appl_NAC_Hostname": "r",
@@ -16,7 +16,6 @@
       "appl_NAC_AllowAccessAIR": false,
       "appl_NAC_AllowAccessVPN": true,
       "appl_NAC_AllowAccessCEL": true,
-      "appl_NAC_DeviceRoleProd": null,
       "appl_NAC_DeviceRoleInst": "r",
       "appl_NAC_macAddressCAB": "002596123456",
       "appl_NAC_macAddressAIR": "001122334455",
@@ -29,7 +28,7 @@
     "fields": {
       "name": "dev2",
       "area": 1,
-      "security_group": 1,
+      "appl_NAC_DeviceRoleProd": 1,
       "synchronized": false,
       "appl_NAC_FQDN": "fqdn2",
       "appl_NAC_Hostname": "s",
@@ -40,7 +39,6 @@
       "appl_NAC_AllowAccessAIR": false,
       "appl_NAC_AllowAccessVPN": false,
       "appl_NAC_AllowAccessCEL": false,
-      "appl_NAC_DeviceRoleProd": "ss",
       "appl_NAC_DeviceRoleInst": "s",
       "appl_NAC_macAddressCAB": "000000000000",
       "appl_NAC_macAddressAIR": "002596123456",
@@ -53,7 +51,7 @@
     "fields": {
       "name": "dev3",
       "area": 1,
-      "security_group": 1,
+      "appl_NAC_DeviceRoleProd": 1,
       "synchronized": false,
       "appl_NAC_FQDN": "s",
       "appl_NAC_Hostname": "s",
@@ -64,7 +62,6 @@
       "appl_NAC_AllowAccessAIR": false,
       "appl_NAC_AllowAccessVPN": false,
       "appl_NAC_AllowAccessCEL": false,
-      "appl_NAC_DeviceRoleProd": "ss",
       "appl_NAC_DeviceRoleInst": "s",
       "appl_NAC_macAddressCAB": "002596123456",
       "appl_NAC_macAddressAIR": "123456789000,002596123456",
@@ -77,7 +74,7 @@
     "fields": {
       "name": "dev4",
       "area": 1,
-      "security_group": 1,
+      "appl_NAC_DeviceRoleProd": 1,
       "synchronized": false,
       "appl_NAC_FQDN": "s",
       "appl_NAC_Hostname": "host",
@@ -88,7 +85,6 @@
       "appl_NAC_AllowAccessAIR": false,
       "appl_NAC_AllowAccessVPN": false,
       "appl_NAC_AllowAccessCEL": false,
-      "appl_NAC_DeviceRoleProd": "ss",
       "appl_NAC_DeviceRoleInst": "s",
       "appl_NAC_macAddressCAB": "002596123456",
       "appl_NAC_macAddressAIR": "002596123456",
@@ -101,7 +97,7 @@
     "fields": {
       "name": "dev5",
       "area": 1,
-      "security_group": 1,
+      "appl_NAC_DeviceRoleProd": 1,
       "synchronized": false,
       "appl_NAC_FQDN": "s",
       "appl_NAC_Hostname": "s",
@@ -112,7 +108,6 @@
       "appl_NAC_AllowAccessAIR": false,
       "appl_NAC_AllowAccessVPN": false,
       "appl_NAC_AllowAccessCEL": false,
-      "appl_NAC_DeviceRoleProd": "ss",
       "appl_NAC_DeviceRoleInst": "s",
       "appl_NAC_macAddressCAB": "002596123456",
       "appl_NAC_macAddressAIR": "002596123456",
@@ -124,13 +119,13 @@
     "pk": 1,
     "fields": {
       "name": "Area 1",
-      "security_group": [
+      "DeviceRoleProd": [
         1
       ]
     }
   },
   {
-    "model": "nac.securitygroup",
+    "model": "nac.deviceRoleProd",
     "pk": 1,
     "fields": {
       "name": "Sec Group 1"
