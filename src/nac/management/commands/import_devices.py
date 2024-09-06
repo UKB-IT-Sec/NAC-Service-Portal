@@ -4,7 +4,7 @@ from csv import DictReader, DictWriter
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.core.exceptions import ValidationError
-from nac.models import Device, Area, SecurityGroup
+from nac.models import Device, Area, DeviceRoleProd
 from nac.forms import DeviceForm
 from helper.logging import setup_console_logger
 from helper.filesystem import get_resources_directory, get_absolute_path
@@ -23,12 +23,28 @@ class Command(BaseCommand):
             default=DEFAULT_SOURCE_CSV,
             help='use a specific csv file [src/ldapObjects.csv]'
         )
+        parser.add_argument(
+            '-a', '--area',
+            default='DefaultArea',
+            help='specify the Device Area'
+        )
 
     def handle(self, *args, **options):
         setup_console_logger(options['verbosity'])
         self.source_file = get_absolute_path(options['csv_file'])
+        self.area = self.check_valid_area(options['area'])
+        if not self.area:
+            return
         self.clear_invalid_devices_file()
+
         self.read_csv()
+
+    def check_valid_area(self, area):
+        exists = Area.objects.filter(name=area).exists()
+        if not exists:
+            logging.error(
+                f"Area-Object: {area} not in Database")
+        return area if exists else None
 
     def clear_invalid_devices_file(self):
         try:
@@ -60,24 +76,25 @@ class Command(BaseCommand):
             pass
 
     def check_device(self, deviceObject):
-        logging.info(f"Checking validity of device {deviceObject.get('name')}")
+        logging.info(f"Checking validity of device"
+                     f"{deviceObject.get('appl-NAC-Hostname')}")
         try:
             if deviceObject.get('objectClass') != 'appl-NAC-Device':
                 raise Exception(
                     f"Invalid Object-type! EXPECTED: appl-NAC-Device <->"
-                    f"  ACTUAL: {deviceObject.get('objectClass')}")
+                    f" ACTUAL: {deviceObject.get('objectClass')}")
             with transaction.atomic():
-                security_group = SecurityGroup.objects.get(
-                    name=deviceObject.get("security_group")
+                deviceRoleProd = DeviceRoleProd.objects.get(
+                    name=deviceObject.get("appl-NAC-DeviceRoleProd")
                 )
                 area = Area.objects.get(
-                    name=deviceObject.get("area")
+                    name=self.area
                 )
-                area.security_group.add(security_group)
+                area.DeviceRoleProd.add(deviceRoleProd)
                 device_data = {
-                    "name": deviceObject.get("name"),
+                    "name": deviceObject.get("appl-NAC-Hostname"),
                     "area": area,
-                    "security_group": security_group,
+                    "appl_NAC_DeviceRoleProd": deviceRoleProd,
                     "appl_NAC_FQDN": deviceObject.get("appl-NAC-FQDN"),
                     "appl_NAC_Hostname": deviceObject.get("appl-NAC-Hostname"),
                     "appl_NAC_Active": self.str_to_bool(
@@ -100,9 +117,6 @@ class Command(BaseCommand):
                     ),
                     "appl_NAC_AllowAccessCEL": self.str_to_bool(
                         deviceObject.get("appl-NAC-AllowAccessCEL")
-                    ),
-                    "appl_NAC_DeviceRoleProd": deviceObject.get(
-                        "appl-NAC-DeviceRoleProd"
                     ),
                     "appl_NAC_DeviceRoleInst": deviceObject.get(
                         "appl-NAC-DeviceRoleInst"

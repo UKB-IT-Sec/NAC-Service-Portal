@@ -3,7 +3,7 @@ from nac.management.commands.import_devices import Command, \
     DEFAULT_SOURCE_CSV, CSV_SAVE_FILE
 from unittest.mock import patch, mock_open, MagicMock
 from django.core.exceptions import ValidationError
-from nac.models import Area, SecurityGroup
+from nac.models import Area, DeviceRoleProd
 
 
 @pytest.fixture
@@ -41,14 +41,15 @@ def test_check_device(mock_logging, mock_atomic, appl_NAC_ForceDot1X,
                       appl_NAC_macAddressAIR, appl_NAC_AllowAccessCAB,
                       appl_NAC_macAddressCAB, expected_result, command):
 
-    test_sec_group = SecurityGroup.objects.create(name="test")
+    test_deviceRoleProd = DeviceRoleProd.objects.create(name="test")
     test_area = Area.objects.create(name="test")
-    test_area.security_group.set([test_sec_group])
+    test_area.DeviceRoleProd.set([test_deviceRoleProd])
+    command.area = 'test'
     data = {
         "name": "test",
         "objectClass": "appl-NAC-Device",
         "area": test_area,
-        "security_group": test_sec_group,
+        "appl-NAC-DeviceRoleProd": test_deviceRoleProd,
         "appl-NAC-FQDN": "test",
         "appl-NAC-Hostname": "test",
         "appl-NAC-Active": True,
@@ -58,7 +59,6 @@ def test_check_device(mock_logging, mock_atomic, appl_NAC_ForceDot1X,
         "appl-NAC-AllowAccessAIR": appl_NAC_AllowAccessAIR,
         "appl-NAC-AllowAccessVPN": appl_NAC_AllowAccessVPN,
         "appl-NAC-AllowAccessCEL": True,
-        "appl-NAC-DeviceRoleProd": "test",
         "appl-NAC-DeviceRoleInst": "test",
         "appl-NAC-macAddressAIR": appl_NAC_macAddressAIR,
         "appl-NAC-macAddressCAB": appl_NAC_macAddressCAB,
@@ -84,24 +84,28 @@ def test_check_device(mock_logging, mock_atomic, appl_NAC_ForceDot1X,
 def test_check_device_exceptions(
         mock_device_form, mock_logging,
         mock_str_to_bool, mock_atomic, command):
-    test_sec_group = SecurityGroup.objects.create(name="test")
+    test_deviceRoleProd = DeviceRoleProd.objects.create(name="test")
     test_area = Area.objects.create(name="test")
-    test_area.security_group.set([test_sec_group])
+    command.area = 'test'
+    test_area.DeviceRoleProd.set([test_deviceRoleProd])
     invalid_device = {
         "name": "test",
         "objectClass": "appl-NAC-Device",
         "area": test_area,
-        "security_group": test_sec_group}
+        "appl-NAC-DeviceRoleProd": test_deviceRoleProd}
     mock_form = MagicMock()
     mock_form.is_valid.return_value = False
     mock_form.errors = {"Type": ["Reason"]}
     mock_device_form.return_value = mock_form
+
     with pytest.raises(ValidationError, match="Invalid Device"):
         command.check_device(invalid_device)
     mock_logging.error.assert_called_with("Field: Type - Error: Reason")
     assert mock_logging.error.call_count == 2  # Invalid-Error, Error Data
     mock_atomic.assert_called()
+
     mock_atomic.reset_mock()
+
     mock_str_to_bool.side_effect = Exception("Failed")
     with pytest.raises(Exception, match="Failed"):
         command.check_device(invalid_device)
@@ -109,6 +113,17 @@ def test_check_device_exceptions(
         "Checking validity of device test: FAILED -> Failed"
     )
     mock_atomic.assert_called()
+
+    mock_atomic.reset_mock()
+    invalid_device = {
+        "name": "test",
+        "objectClass": "test_object",
+        "area": test_area,
+        "appl-NAC-DeviceRoleProd": test_deviceRoleProd}
+    with pytest.raises(
+            Exception, match="Invalid Object-type! EXPECTED: "
+                             "appl-NAC-Device <-> ACTUAL: test_object"):
+        command.check_device(invalid_device)
 
 
 @pytest.mark.django_db
@@ -293,32 +308,80 @@ def test_handle_deviceObject_invalid_Device(
     mock_logging.error.assert_not_called()
 
 
+@pytest.mark.django_db
+@patch('nac.management.commands.import_devices.Command.check_device')
+@patch('nac.management.commands.import_devices.Command.add_device_to_db')
+@patch('nac.management.commands.import_devices.Command.save_invalid_devices')
+@patch('nac.management.commands.import_devices.logging')
+def test_handle_deviceObject_exception(
+        mock_logging, mock_save_invalid_devices,
+        mock_add_device_to_db, mock_check_device, command):
+    device = {"name": "test"}
+    mock_check_device.side_effect = Exception("Invalid device")
+
+    command.handle_deviceObject(device)
+
+    mock_check_device.assert_called_once_with(device)
+    mock_add_device_to_db.assert_not_called()
+    mock_save_invalid_devices.assert_not_called()
+
+
 def test_add_arguments(command):
     mock_parser = MagicMock()
     command.add_arguments(mock_parser)
-    mock_parser.add_argument.assert_called_once_with(
+    mock_parser.add_argument.assert_any_call(
         '-f', '--csv_file',
         default=DEFAULT_SOURCE_CSV,
         help='use a specific csv file [src/ldapObjects.csv]'
     )
+    mock_parser.add_argument.assert_any_call(
+        '-a', '--area',
+        default='DefaultArea',
+        help='specify the Device Area'
+    )
 
 
 @pytest.mark.django_db
+@patch('nac.management.commands.import_devices.Command.check_valid_area')
 @patch('nac.management.commands.import_devices.setup_console_logger')
 @patch('nac.management.commands.import_devices.get_absolute_path')
 @patch(
     'nac.management.commands.import_devices.Command.clear_invalid_devices_file')
 @patch('nac.management.commands.import_devices.Command.read_csv')
 def test_handle(mock_read_csv, mock_clear_invalid_devices_file,
-                mock_get_absolute_path, mock_setup_console_logger, command):
+                mock_get_absolute_path, mock_setup_console_logger,
+                mock_check_valid_area, command):
     options = {
         'verbosity': 0,
-        'csv_file': 'test.csv'
+        'csv_file': 'test.csv',
+        'area': 'testarea'
     }
     mock_get_absolute_path.return_value = 'mockpath/to/test.csv'
     command.handle(**options)
     mock_setup_console_logger.assert_called_once_with(0)
+    mock_check_valid_area.assert_called_once_with('testarea')
     mock_get_absolute_path.assert_called_once_with('test.csv')
     mock_clear_invalid_devices_file.assert_called_once()
     mock_read_csv.assert_called_once()
     assert command.source_file == 'mockpath/to/test.csv'
+    # Area does no exist
+    mock_clear_invalid_devices_file.reset_mock()
+    mock_check_valid_area.return_value = None
+    command.handle(**options)
+    mock_clear_invalid_devices_file.assert_not_called()
+
+
+@pytest.mark.django_db
+def test_check_valid_area_exists(command):
+    test_area = Area.objects.create(name='testarea')
+    result = command.check_valid_area(test_area)
+    assert result == test_area
+
+
+@pytest.mark.django_db
+@patch('nac.management.commands.import_devices.logging')
+def test_check_valid_area_not_exists(mock_logging, command):
+    result = command.check_valid_area('dummy')
+    mock_logging.error.assert_called_once_with(
+        "Area-Object: dummy not in Database")
+    assert result is None
