@@ -12,7 +12,7 @@
 			<tr>
 				<th scope="col">Name</th>
 				<th scope="col">FQDN</th>
-				<th scope="col">Security Group</th>
+				<th scope="col">Device Role Prod</th>
 				<th scope="col">MAC</th>
 				<th scope="col" width="60"></th>
 			</tr>
@@ -26,7 +26,7 @@
 				{{ device.appl_NAC_FQDN }}
 			</td>
 			<td>
-				{{ device.security_group }}
+				{{ device.appl_NAC_DeviceRoleProd }}
 			</td>
 			<td>
 				{% for mac in device.get_appl_NAC_macAddressAIR %}
