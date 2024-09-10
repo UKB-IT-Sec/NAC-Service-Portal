@@ -1,5 +1,5 @@
 import pytest
-from nac.models import Device, Area, CustomUser
+from nac.models import Device, AuthorizationGroup, CustomUser
 from nac.views import DeviceListView
 from django.test import RequestFactory
 from django.urls import reverse_lazy
@@ -21,7 +21,7 @@ def test_device_search(query, result):
     print(desired_qs)
 
     test_user = CustomUser.objects.create(name="test")
-    test_user.area.set([Area.objects.get(pk=1)])
+    test_user.authorization_group.set([AuthorizationGroup.objects.get(pk=1)])
 
     request = RequestFactory().get(reverse_lazy("devices") + "?q=" + query)
     request.user = test_user

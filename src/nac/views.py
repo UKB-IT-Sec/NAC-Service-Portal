@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.urls import reverse_lazy
 from dal import autocomplete
 
-from .models import Device, DeviceRoleProd, Area
+from .models import Device, DeviceRoleProd, AuthorizationGroup
 from .forms import DeviceForm
 
 
@@ -18,7 +18,7 @@ class DeviceListView(ListView):
 
     def get_queryset(self):
         # only show devices from areas the user is authorized to see
-        device_list = Device.objects.filter(area__in=self.request.user.area.all())
+        device_list = Device.objects.filter(area__in=self.request.user.authorization_group.all())
         # filter for search results
         query = self.request.GET.get("q")
         if query:
@@ -63,25 +63,25 @@ class DeviceRoleProdAutocomplete(autocomplete.Select2QuerySetView):
         if self.q:
             qs = qs.filter(name__istartswith=self.q)
 
-#        only show DeviceRoleProd compatible with selected area
-        area_pk = self.forwarded.get("area", None)
-        if area_pk:
-            area = Area.objects.get(pk=area_pk)
-            qs = qs.filter(id__in=area.DeviceRoleProd.all())
+#        only show DeviceRoleProd compatible with selected authorization_group
+        authorization_group_pk = self.forwarded.get("authorization_group", None)
+        if authorization_group_pk:
+            authorization_group = AuthorizationGroup.objects.get(pk=authorization_group_pk)
+            qs = qs.filter(id__in=authorization_group.DeviceRoleProd.all())
 
         return qs
 
 
-class AreaAutocomplete(autocomplete.Select2QuerySetView):
+class AuthorizationGroupAutocomplete(autocomplete.Select2QuerySetView):
 
     def get_queryset(self):
         if not self.request.user.is_authenticated:
-            return Area.objects.none()
+            return AuthorizationGroup.objects.none()
 
-        qs = Area.objects.all()
+        qs = AuthorizationGroup.objects.all()
 
 #        only show areas compatible with user
-        qs = qs.filter(id__in=self.request.user.area.all())
+        qs = qs.filter(id__in=self.request.user.authorization_group.all())
 
 #        autocomplete search results
         if self.q:
