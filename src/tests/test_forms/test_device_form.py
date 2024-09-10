@@ -1,6 +1,6 @@
 import pytest
 from nac.forms import DeviceForm
-from nac.models import Area, SecurityGroup
+from nac.models import Area, DeviceRoleProd
 
 
 @pytest.mark.django_db
@@ -17,13 +17,13 @@ from nac.models import Area, SecurityGroup
                           (True, True, "test", True, "001122334455", False, None, True)])
 def test_clean(appl_NAC_ForceDot1X, appl_NAC_AllowAccessVPN, appl_NAC_Certificate, appl_NAC_AllowAccessAIR,
                appl_NAC_macAddressAIR, appl_NAC_AllowAccessCAB, appl_NAC_macAddressCAB, validity):
-    test_sec_group = SecurityGroup.objects.create(name="test")
+    test_DeviceRoleProd = DeviceRoleProd.objects.create(name="test")
     test_area = Area.objects.create(name="test")
-    test_area.security_group.set([test_sec_group])
+    test_area.DeviceRoleProd.set([test_DeviceRoleProd])
     form = DeviceForm(data={
        "name": "test",
        "area": test_area,
-       "security_group": test_sec_group,
+       "appl_NAC_DeviceRoleProd": test_DeviceRoleProd,
        "appl_NAC_FQDN": "test",
        "appl_NAC_Hostname": "test",
        "appl_NAC_Active": True,
@@ -33,7 +33,6 @@ def test_clean(appl_NAC_ForceDot1X, appl_NAC_AllowAccessVPN, appl_NAC_Certificat
        "appl_NAC_AllowAccessAIR": appl_NAC_AllowAccessAIR,
        "appl_NAC_AllowAccessVPN": appl_NAC_AllowAccessVPN,
        "appl_NAC_AllowAccessCEL": True,
-       "appl_NAC_DeviceRoleProd": "test",
        "appl_NAC_DeviceRoleInst": "test",
        "appl_NAC_macAddressAIR": appl_NAC_macAddressAIR,
        "appl_NAC_macAddressCAB": appl_NAC_macAddressCAB,

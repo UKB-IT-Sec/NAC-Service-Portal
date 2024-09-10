@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.urls import reverse_lazy
 from dal import autocomplete
 
-from .models import Device, SecurityGroup, Area
+from .models import Device, DeviceRoleProd, Area
 from .forms import DeviceForm
 
 
@@ -52,22 +52,22 @@ class DeviceCreateView(CreateView):
     form_class = DeviceForm
 
 
-class SecurityGroupAutocomplete(autocomplete.Select2QuerySetView):
+class DeviceRoleProdAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         if not self.request.user.is_authenticated:
-            return SecurityGroup.objects.none()
+            return DeviceRoleProd.objects.none()
 
-        qs = SecurityGroup.objects.all()
+        qs = DeviceRoleProd.objects.all()
 
 #        autocomplete search results
         if self.q:
             qs = qs.filter(name__istartswith=self.q)
 
-#        only show security groups compatible with selected area
+#        only show DeviceRoleProd compatible with selected area
         area_pk = self.forwarded.get("area", None)
         if area_pk:
             area = Area.objects.get(pk=area_pk)
-            qs = qs.filter(id__in=area.security_group.all())
+            qs = qs.filter(id__in=area.DeviceRoleProd.all())
 
         return qs
 
