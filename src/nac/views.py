@@ -17,8 +17,8 @@ class DeviceListView(ListView):
     template_name = "devices.html"
 
     def get_queryset(self):
-        # only show devices from areas the user is authorized to see
-        device_list = Device.objects.filter(area__in=self.request.user.authorization_group.all())
+        # only show devices from authorization_groups the user is authorized to see
+        device_list = Device.objects.filter(authorization_group__in=self.request.user.authorization_group.all())
         # filter for search results
         query = self.request.GET.get("q")
         if query:
@@ -80,7 +80,7 @@ class AuthorizationGroupAutocomplete(autocomplete.Select2QuerySetView):
 
         qs = AuthorizationGroup.objects.all()
 
-#        only show areas compatible with user
+#        only show authorization_groups compatible with user
         qs = qs.filter(id__in=self.request.user.authorization_group.all())
 
 #        autocomplete search results
