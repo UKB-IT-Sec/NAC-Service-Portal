@@ -17,7 +17,7 @@ class DeviceRoleInst(models.Model):
         return self.name[:50]
 
 
-class Area(models.Model):
+class AuthorizationGroup(models.Model):
     name = models.TextField()
     DeviceRoleProd = models.ManyToManyField(DeviceRoleProd)
     DeviceRoleInst = models.ManyToManyField(DeviceRoleInst)
@@ -28,12 +28,12 @@ class Area(models.Model):
 
 class CustomUser(AbstractUser):
     name = models.TextField()
-    area = models.ManyToManyField(Area)
+    authorization_group = models.ManyToManyField(AuthorizationGroup)
 
 
 class Device(models.Model):
     name = models.CharField(max_length=100)
-    area = models.ForeignKey(Area, on_delete=models.SET_NULL, null=True)
+    authorization_group = models.ForeignKey(AuthorizationGroup, on_delete=models.SET_NULL, null=True)
     appl_NAC_DeviceRoleProd = models.ForeignKey(
         DeviceRoleProd, on_delete=models.SET_NULL, null=True)
     appl_NAC_DeviceRoleInst = models.ForeignKey(

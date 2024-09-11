@@ -1,0 +1,3 @@
+appl-NAC-AllowAccessAIR;appl-NAC-AllowAccessVPN;objectClass;appl-NAC-Active;appl-NAC-AllowAccessCAB;appl-NAC-DeviceRoleInst;appl-NAC-DeviceRoleProd;appl-NAC-AllowAccessCEL;appl-NAC-Install;appl-NAC-macAddressAIR;appl-NAC-FQDN;appl-NAC-Hostname;appl-NAC-macAddressCAB;appl-NAC-Certificate;appl-NAC-ForceDot1X
+True;True;appl-NAC-Device;True;True;DeviceRoleInst3;DeviceRoleProd2;True;True;001122334455;FQDN2;Hostname2;001122334455,001122334455;Certificate3;True
+True;True;appl-NAC-Device;True;True;DeviceRoleInst3;DeviceRoleProd2;True;True;001122334456;FQDN4;Hostname4;001122334456,001122334456;Certificate4;True
