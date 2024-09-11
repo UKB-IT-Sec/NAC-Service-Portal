@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.urls import reverse_lazy
 from dal import autocomplete
 
-from .models import Device, DeviceRoleProd, Area
+from .models import Device, DeviceRoleProd, Area, DeviceRoleInst
 from .forms import DeviceForm
 
 
@@ -69,6 +69,20 @@ class DeviceRoleProdAutocomplete(autocomplete.Select2QuerySetView):
             area = Area.objects.get(pk=area_pk)
             qs = qs.filter(id__in=area.DeviceRoleProd.all())
 
+        return qs
+
+
+class DeviceRoleInstAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return DeviceRoleInst.objects.none()
+        qs = DeviceRoleInst.objects.all()
+        if self.q:
+            qs = qs.filter(name__istartswith=self.q)
+        area_pk = self.forwarded.get("area", None)
+        if area_pk:
+            area = Area.objects.get(pk=area_pk)
+            qs = qs.filter(id__in=area.DeviceRoleInst.all())
         return qs
 
 

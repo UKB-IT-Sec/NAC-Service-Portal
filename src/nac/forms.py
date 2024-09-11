@@ -41,7 +41,10 @@ class DeviceForm(ModelForm):
                   "synchronized",
                   ]
 
-        widgets = {"appl_NAC_DeviceRoleProd": autocomplete.ModelSelect2(url="DeviceRoleProd-autocomplete", forward=["area"], ),
+        widgets = {"appl_NAC_DeviceRoleProd": autocomplete.ModelSelect2(
+            url="DeviceRoleProd-autocomplete", forward=["area"], ),
+                   "appl_NAC_DeviceRoleInst": autocomplete.ModelSelect2(
+                       url="DeviceRoleInst-autocomplete", forward=["area"], ),
                    "area": autocomplete.ModelSelect2(url="area-autocomplete"),
                    "appl_NAC_Active": CheckboxInput,
                    "appl_NAC_ForceDot1X": CheckboxInput,

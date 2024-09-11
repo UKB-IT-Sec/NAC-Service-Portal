@@ -16,7 +16,7 @@
       "appl_NAC_AllowAccessAIR": false,
       "appl_NAC_AllowAccessVPN": true,
       "appl_NAC_AllowAccessCEL": true,
-      "appl_NAC_DeviceRoleInst": "r",
+      "appl_NAC_DeviceRoleInst": 1,
       "appl_NAC_macAddressCAB": "002596123456",
       "appl_NAC_macAddressAIR": "001122334455",
       "appl_NAC_Certificate": "h"
@@ -39,7 +39,7 @@
       "appl_NAC_AllowAccessAIR": false,
       "appl_NAC_AllowAccessVPN": false,
       "appl_NAC_AllowAccessCEL": false,
-      "appl_NAC_DeviceRoleInst": "s",
+      "appl_NAC_DeviceRoleInst": 1,
       "appl_NAC_macAddressCAB": "000000000000",
       "appl_NAC_macAddressAIR": "002596123456",
       "appl_NAC_Certificate": "s"
@@ -62,7 +62,7 @@
       "appl_NAC_AllowAccessAIR": false,
       "appl_NAC_AllowAccessVPN": false,
       "appl_NAC_AllowAccessCEL": false,
-      "appl_NAC_DeviceRoleInst": "s",
+      "appl_NAC_DeviceRoleInst": 1,
       "appl_NAC_macAddressCAB": "002596123456",
       "appl_NAC_macAddressAIR": "123456789000,002596123456",
       "appl_NAC_Certificate": "s"
@@ -85,7 +85,7 @@
       "appl_NAC_AllowAccessAIR": false,
       "appl_NAC_AllowAccessVPN": false,
       "appl_NAC_AllowAccessCEL": false,
-      "appl_NAC_DeviceRoleInst": "s",
+      "appl_NAC_DeviceRoleInst": 1,
       "appl_NAC_macAddressCAB": "002596123456",
       "appl_NAC_macAddressAIR": "002596123456",
       "appl_NAC_Certificate": "s"
@@ -108,7 +108,7 @@
       "appl_NAC_AllowAccessAIR": false,
       "appl_NAC_AllowAccessVPN": false,
       "appl_NAC_AllowAccessCEL": false,
-      "appl_NAC_DeviceRoleInst": "s",
+      "appl_NAC_DeviceRoleInst": 1,
       "appl_NAC_macAddressCAB": "002596123456",
       "appl_NAC_macAddressAIR": "002596123456",
       "appl_NAC_Certificate": "s"
@@ -121,6 +121,9 @@
       "name": "Area 1",
       "DeviceRoleProd": [
         1
+      ],
+      "DeviceRoleInst": [
+        1
       ]
     }
   },
@@ -128,7 +131,14 @@
     "model": "nac.deviceRoleProd",
     "pk": 1,
     "fields": {
-      "name": "Sec Group 1"
+      "name": "DeviceRoleProd"
+    }
+  },
+  {
+    "model": "nac.deviceRoleInst",
+    "pk": 1,
+    "fields": {
+      "name": "DeviceRoleInst"
     }
   }
 ]
