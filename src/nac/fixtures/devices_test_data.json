@@ -4,7 +4,7 @@
     "pk": 1,
     "fields": {
       "name": "dev1",
-      "area": 1,
+      "authorization_group": 1,
       "appl_NAC_DeviceRoleProd": 1,
       "synchronized": false,
       "appl_NAC_FQDN": "fqdn1",
@@ -27,7 +27,7 @@
     "pk": 2,
     "fields": {
       "name": "dev2",
-      "area": 1,
+      "authorization_group": 1,
       "appl_NAC_DeviceRoleProd": 1,
       "synchronized": false,
       "appl_NAC_FQDN": "fqdn2",
@@ -50,7 +50,7 @@
     "pk": 3,
     "fields": {
       "name": "dev3",
-      "area": 1,
+      "authorization_group": 1,
       "appl_NAC_DeviceRoleProd": 1,
       "synchronized": false,
       "appl_NAC_FQDN": "s",
@@ -73,7 +73,7 @@
     "pk": 4,
     "fields": {
       "name": "dev4",
-      "area": 1,
+      "authorization_group": 1,
       "appl_NAC_DeviceRoleProd": 1,
       "synchronized": false,
       "appl_NAC_FQDN": "s",
@@ -96,7 +96,7 @@
     "pk": 5,
     "fields": {
       "name": "dev5",
-      "area": 1,
+      "authorization_group": 1,
       "appl_NAC_DeviceRoleProd": 1,
       "synchronized": false,
       "appl_NAC_FQDN": "s",
@@ -115,10 +115,10 @@
     }
   },
   {
-    "model": "nac.area",
+    "model": "nac.authorizationgroup",
     "pk": 1,
     "fields": {
-      "name": "Area 1",
+      "name": "Authorisation Group 1",
       "DeviceRoleProd": [
         1
       ],

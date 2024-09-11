@@ -10,7 +10,7 @@ from django.core.exceptions import ValidationError
 class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm):
         model = CustomUser
-        fields = ("username", "email", "area",)
+        fields = ("username", "email", "authorization_group",)
 
 
 class CustomUserChangeForm(UserChangeForm):
@@ -23,7 +23,7 @@ class DeviceForm(ModelForm):
     class Meta:
         model = Device
         fields = ["name",
-                  "area",
+                  "authorization_group",
                   "appl_NAC_FQDN",
                   "appl_NAC_Hostname",
                   "appl_NAC_DeviceRoleProd",
@@ -41,11 +41,9 @@ class DeviceForm(ModelForm):
                   "synchronized",
                   ]
 
-        widgets = {"appl_NAC_DeviceRoleProd": autocomplete.ModelSelect2(
-            url="DeviceRoleProd-autocomplete", forward=["area"], ),
-                   "appl_NAC_DeviceRoleInst": autocomplete.ModelSelect2(
-                       url="DeviceRoleInst-autocomplete", forward=["area"], ),
-                   "area": autocomplete.ModelSelect2(url="area-autocomplete"),
+        widgets = {"authorization_group": autocomplete.ModelSelect2(url="authorization-group-autocomplete"),
+                   "appl_NAC_DeviceRoleProd": autocomplete.ModelSelect2(url="DeviceRoleProd-autocomplete", forward=["authorization_group"], ),
+                   "appl_NAC_DeviceRoleInst": autocomplete.ModelSelect2(url="DeviceRoleInst-autocomplete", forward=["authorization_group"], ),
                    "appl_NAC_Active": CheckboxInput,
                    "appl_NAC_ForceDot1X": CheckboxInput,
                    "appl_NAC_Install": CheckboxInput,
