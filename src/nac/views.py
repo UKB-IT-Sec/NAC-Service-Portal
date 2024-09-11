@@ -56,7 +56,7 @@ class DeviceRoleProdAutocomplete(autocomplete.Select2QuerySetView):
         if not self.request.user.is_authenticated:
             return DeviceRoleProd.objects.none()
 
-        qs = DeviceRoleProd.objects.all()
+        qs = DeviceRoleProd.objects.all().order_by('id')
 
 #        autocomplete search results
         if self.q:
@@ -64,6 +64,7 @@ class DeviceRoleProdAutocomplete(autocomplete.Select2QuerySetView):
 
 #        only show DeviceRoleProd compatible with selected authorization_group
         authorization_group_pk = self.forwarded.get("authorization_group", None)
+
         if authorization_group_pk:
             authorization_group = AuthorizationGroup.objects.get(pk=authorization_group_pk)
             qs = qs.filter(id__in=authorization_group.DeviceRoleProd.all())
@@ -71,18 +72,20 @@ class DeviceRoleProdAutocomplete(autocomplete.Select2QuerySetView):
         return qs
 
 
-
 class DeviceRoleInstAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         if not self.request.user.is_authenticated:
             return DeviceRoleInst.objects.none()
-        qs = DeviceRoleInst.objects.all()
+
+        qs = DeviceRoleInst.objects.all().order_by('id')
+
         if self.q:
             qs = qs.filter(name__istartswith=self.q)
-        area_pk = self.forwarded.get("area", None)
-        if area_pk:
-            area = Area.objects.get(pk=area_pk)
-            qs = qs.filter(id__in=area.DeviceRoleInst.all())
+
+        authorization_group_pk = self.forwarded.get("authorization_group", None)
+        if authorization_group_pk:
+            authorization_group = AuthorizationGroup.objects.get(pk=authorization_group_pk)
+            qs = qs.filter(id__in=authorization_group.DeviceRoleInst.all())
         return qs
 
 
@@ -91,7 +94,7 @@ class AuthorizationGroupAutocomplete(autocomplete.Select2QuerySetView):
         if not self.request.user.is_authenticated:
             return AuthorizationGroup.objects.none()
 
-        qs = AuthorizationGroup.objects.all()
+        qs = AuthorizationGroup.objects.all().order_by('id')
 
 #        only show authorization_groups compatible with user
         qs = qs.filter(id__in=self.request.user.authorization_group.all())

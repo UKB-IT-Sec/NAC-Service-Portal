@@ -41,10 +41,9 @@ class DeviceForm(ModelForm):
                   "synchronized",
                   ]
 
-        widgets = {"appl_NAC_DeviceRoleProd": autocomplete.ModelSelect2(url="DeviceRoleProd-autocomplete", forward=["authorization_group"], ),
-                   "appl_NAC_DeviceRoleInst": autocomplete.ModelSelect2(
-                       url="DeviceRoleInst-autocomplete", forward=["authorization-group"], ),
-                   "authorization_group": autocomplete.ModelSelect2(url="authorization-group-autocomplete"),
+        widgets = {"authorization_group": autocomplete.ModelSelect2(url="authorization-group-autocomplete"),
+                   "appl_NAC_DeviceRoleProd": autocomplete.ModelSelect2(url="DeviceRoleProd-autocomplete", forward=["authorization_group"], ),
+                   "appl_NAC_DeviceRoleInst": autocomplete.ModelSelect2(url="DeviceRoleInst-autocomplete", forward=["authorization_group"], ),
                    "appl_NAC_Active": CheckboxInput,
                    "appl_NAC_ForceDot1X": CheckboxInput,
                    "appl_NAC_Install": CheckboxInput,
