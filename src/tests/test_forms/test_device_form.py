@@ -1,6 +1,6 @@
 import pytest
 from nac.forms import DeviceForm
-from nac.models import Area, DeviceRoleProd
+from nac.models import AuthorizationGroup, DeviceRoleProd
 
 
 @pytest.mark.django_db
@@ -18,11 +18,11 @@ from nac.models import Area, DeviceRoleProd
 def test_clean(appl_NAC_ForceDot1X, appl_NAC_AllowAccessVPN, appl_NAC_Certificate, appl_NAC_AllowAccessAIR,
                appl_NAC_macAddressAIR, appl_NAC_AllowAccessCAB, appl_NAC_macAddressCAB, validity):
     test_DeviceRoleProd = DeviceRoleProd.objects.create(name="test")
-    test_area = Area.objects.create(name="test")
-    test_area.DeviceRoleProd.set([test_DeviceRoleProd])
+    test_authorization_group = AuthorizationGroup.objects.create(name="test")
+    test_authorization_group.DeviceRoleProd.set([test_DeviceRoleProd])
     form = DeviceForm(data={
        "name": "test",
-       "area": test_area,
+       "authorization_group": test_authorization_group,
        "appl_NAC_DeviceRoleProd": test_DeviceRoleProd,
        "appl_NAC_FQDN": "test",
        "appl_NAC_Hostname": "test",

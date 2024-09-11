@@ -7,7 +7,7 @@ from .views import (
     DeviceDeleteView,
     DeviceCreateView,
     DeviceRoleProdAutocomplete,
-    AreaAutocomplete,
+    AuthorizationGroupAutocomplete,
 )
 
 urlpatterns = [
@@ -18,5 +18,5 @@ urlpatterns = [
     path("devices/<int:pk>/delete", DeviceDeleteView.as_view(), name="device_delete"),
     path("devices/new/", DeviceCreateView.as_view(), name="device_new"),
     path("DeviceRoleProd-autocomplete/", DeviceRoleProdAutocomplete.as_view(), name="DeviceRoleProd-autocomplete"),
-    path("area-autocomplete/", AreaAutocomplete.as_view(), name="area-autocomplete"),
+    path("authorization-group-autocomplete/", AuthorizationGroupAutocomplete.as_view(), name="authorization-group-autocomplete"),
 ]
