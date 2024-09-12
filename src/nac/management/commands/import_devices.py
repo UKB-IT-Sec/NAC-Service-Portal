@@ -3,8 +3,8 @@ from os import stat
 from csv import DictReader, DictWriter
 from django.core.management.base import BaseCommand
 from django.db import transaction
-from django.core.exceptions import ValidationError
-from nac.models import Device, Area, DeviceRoleProd
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from nac.models import Device, AuthorizationGroup, DeviceRoleProd, DeviceRoleInst
 from nac.forms import DeviceForm
 from helper.logging import setup_console_logger
 from helper.filesystem import get_resources_directory, get_absolute_path
@@ -24,27 +24,27 @@ class Command(BaseCommand):
             help='use a specific csv file [src/ldapObjects.csv]'
         )
         parser.add_argument(
-            '-a', '--area',
-            default='DefaultArea',
-            help='specify the Device Area'
+            '-a', '--auth_group',
+            default='DefaultAG',
+            help='specify the Device Authorization Group'
         )
 
     def handle(self, *args, **options):
         setup_console_logger(options['verbosity'])
         self.source_file = get_absolute_path(options['csv_file'])
-        self.area = self.check_valid_area(options['area'])
-        if not self.area:
+        self.auth_group = self.check_valid_auth_group(options['auth_group'])
+        if not self.auth_group:
             return
         self.clear_invalid_devices_file()
 
         self.read_csv()
 
-    def check_valid_area(self, area):
-        exists = Area.objects.filter(name=area).exists()
+    def check_valid_auth_group(self, auth_group):
+        exists = AuthorizationGroup.objects.filter(name=auth_group).exists()
         if not exists:
             logging.error(
-                f"Area-Object: {area} not in Database")
-        return area if exists else None
+                f"Authorization Group-Object: {auth_group} not in Database")
+        return auth_group if exists else None
 
     def clear_invalid_devices_file(self):
         try:
@@ -84,17 +84,37 @@ class Command(BaseCommand):
                     f"Invalid Object-type! EXPECTED: appl-NAC-Device <->"
                     f" ACTUAL: {deviceObject.get('objectClass')}")
             with transaction.atomic():
-                deviceRoleProd = DeviceRoleProd.objects.get(
-                    name=deviceObject.get("appl-NAC-DeviceRoleProd")
+                auth_group = AuthorizationGroup.objects.get(
+                    name=self.auth_group
                 )
-                area = Area.objects.get(
-                    name=self.area
-                )
-                area.DeviceRoleProd.add(deviceRoleProd)
+                try:
+                    deviceRoleProd = DeviceRoleProd.objects.get(
+                        name=deviceObject.get("appl-NAC-DeviceRoleProd"))
+                except ObjectDoesNotExist:
+                    raise Exception(
+                        f"DeviceRoleProd: {deviceObject.get(
+                            "appl-NAC-DeviceRoleProd")} not in Database")
+                try:
+                    deviceRoleInst = DeviceRoleInst.objects.get(
+                        name=deviceObject.get("appl-NAC-DeviceRoleInst"))
+                except ObjectDoesNotExist:
+                    raise Exception(
+                        f"DeviceRoleInst: {deviceObject.get(
+                            "appl-NAC-DeviceRoleInst")} not in Database")
+                if deviceRoleProd not in auth_group.DeviceRoleProd.all():
+                    raise Exception(
+                        f"DeviceRoleProd: {deviceRoleProd} "
+                        f"not in authorization group: {auth_group}")
+                elif deviceRoleInst not in auth_group.DeviceRoleInst.all():
+                    raise Exception(
+                        f"DeviceRoleInst: {deviceRoleInst} "
+                        f"not in authorization group: {auth_group}")
+
                 device_data = {
                     "name": deviceObject.get("appl-NAC-Hostname"),
-                    "area": area,
+                    "authorization_group": auth_group,
                     "appl_NAC_DeviceRoleProd": deviceRoleProd,
+                    "appl_NAC_DeviceRoleInst": deviceRoleInst,
                     "appl_NAC_FQDN": deviceObject.get("appl-NAC-FQDN"),
                     "appl_NAC_Hostname": deviceObject.get("appl-NAC-Hostname"),
                     "appl_NAC_Active": self.str_to_bool(
@@ -117,9 +137,6 @@ class Command(BaseCommand):
                     ),
                     "appl_NAC_AllowAccessCEL": self.str_to_bool(
                         deviceObject.get("appl-NAC-AllowAccessCEL")
-                    ),
-                    "appl_NAC_DeviceRoleInst": deviceObject.get(
-                        "appl-NAC-DeviceRoleInst"
                     ),
                     "appl_NAC_macAddressAIR": deviceObject.get(
                         "appl-NAC-macAddressAIR"
@@ -157,7 +174,7 @@ class Command(BaseCommand):
             raise
 
     def str_to_bool(self, input_value):
-        return not (input_value in {False, 'False', 'false'})
+        return not (input_value in {False, 'False', 'false', 'FALSE'})
 
     def add_device_to_db(self, deviceObject_valid):
         logging.info(
