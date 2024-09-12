@@ -138,7 +138,8 @@ def test_check_device_exceptions(
         "appl-NAC-DeviceRoleProd": "dummy",
         "appl-NAC-DeviceRoleInst": test_deviceRoleInst}
     with pytest.raises(
-            Exception, match="DeviceRoleProd: dummy not in Database"):
+            Exception,
+            match="('DeviceRoleProd: %s not in Database', 'dummy')"):
         command.check_device(invalid_device)
     mock_atomic.assert_called()
 
@@ -150,7 +151,8 @@ def test_check_device_exceptions(
         "appl-NAC-DeviceRoleProd": test_deviceRoleProd,
         "appl-NAC-DeviceRoleInst": "dummy"}
     with pytest.raises(
-            Exception, match="DeviceRoleInst: dummy not in Database"):
+            Exception,
+            match="('DeviceRoleInst: %s not in Database', 'dummy')"):
         command.check_device(invalid_device)
     mock_atomic.assert_called()
 

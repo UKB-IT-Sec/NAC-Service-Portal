@@ -92,15 +92,15 @@ class Command(BaseCommand):
                         name=deviceObject.get("appl-NAC-DeviceRoleProd"))
                 except ObjectDoesNotExist:
                     raise Exception(
-                        f"DeviceRoleProd: {deviceObject.get(
-                            "appl-NAC-DeviceRoleProd")} not in Database")
+                        "DeviceRoleProd: %s not in Database",
+                        deviceObject.get("appl-NAC-DeviceRoleProd"))
                 try:
                     deviceRoleInst = DeviceRoleInst.objects.get(
                         name=deviceObject.get("appl-NAC-DeviceRoleInst"))
                 except ObjectDoesNotExist:
                     raise Exception(
-                        f"DeviceRoleInst: {deviceObject.get(
-                            "appl-NAC-DeviceRoleInst")} not in Database")
+                        "DeviceRoleInst: %s not in Database",
+                        deviceObject.get("appl-NAC-DeviceRoleInst"))
                 if deviceRoleProd not in auth_group.DeviceRoleProd.all():
                     raise Exception(
                         f"DeviceRoleProd: {deviceRoleProd} "
