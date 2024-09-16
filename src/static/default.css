@@ -40,7 +40,6 @@ td {
 .inline {
   display: inline;
 }
-
 .link-button {
   background: none;
   border: none;
@@ -59,3 +58,26 @@ td {
 .link-button:active {
   color: red;
 }
+.icon-zoom:hover{
+	transform: scale(1.2);
+}
+.icon-desc {
+	position: relative;
+	display: inline-block;
+  }
+.icon-desc:hover::after {
+	content: attr(desc);
+	font-size: 12px;
+	position: absolute;
+	background: #333;
+	color: white;
+	padding: 3px;
+	border-radius: 10px;
+	pointer-events: none;
+	left: 50%;
+	transform: translateX(-50%);
+	top: 100%;
+	margin-top: 5px;
+	white-space: nowrap;
+	z-index: 2000;
+  }
