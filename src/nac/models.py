@@ -10,9 +10,17 @@ class DeviceRoleProd(models.Model):
         return self.name[:50]
 
 
+class DeviceRoleInst(models.Model):
+    name = models.TextField()
+
+    def __str__(self):
+        return self.name[:50]
+
+
 class AuthorizationGroup(models.Model):
     name = models.TextField()
     DeviceRoleProd = models.ManyToManyField(DeviceRoleProd)
+    DeviceRoleInst = models.ManyToManyField(DeviceRoleInst)
 
     def __str__(self):
         return self.name[:50]
@@ -28,6 +36,8 @@ class Device(models.Model):
     authorization_group = models.ForeignKey(AuthorizationGroup, on_delete=models.SET_NULL, null=True)
     appl_NAC_DeviceRoleProd = models.ForeignKey(
         DeviceRoleProd, on_delete=models.SET_NULL, null=True)
+    appl_NAC_DeviceRoleInst = models.ForeignKey(
+        DeviceRoleInst, on_delete=models.SET_NULL, null=True)
     synchronized = models.BooleanField(null=True, default=False)
 
     appl_NAC_FQDN = models.CharField(null=True, max_length=100)
@@ -39,8 +49,6 @@ class Device(models.Model):
     appl_NAC_AllowAccessAIR = models.BooleanField(null=True)
     appl_NAC_AllowAccessVPN = models.BooleanField(null=True)
     appl_NAC_AllowAccessCEL = models.BooleanField(null=True)
-    appl_NAC_DeviceRoleInst = models.CharField(null=True,
-                                               blank=True, max_length=100)
     appl_NAC_macAddressCAB = models.TextField(null=True, blank=True)
     appl_NAC_macAddressAIR = models.CharField(null=True,
                                               max_length=100, blank=True)
