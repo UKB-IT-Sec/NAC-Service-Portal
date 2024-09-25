@@ -1,8 +1,9 @@
 import pytest
-from nac.management.commands.import_devices import Command, \
-    DEFAULT_SOURCE_CSV, CSV_SAVE_FILE
+from nac.management.commands.import_devices_from_csv import Command, \
+    DEFAULT_SOURCE_FILE, SAVE_FILE
 from unittest.mock import patch, mock_open, MagicMock
 from django.core.exceptions import ValidationError
+from django.core.management.base import CommandError
 from nac.models import AuthorizationGroup, DeviceRoleProd, DeviceRoleInst
 
 
@@ -33,8 +34,8 @@ def command():
         (True, True, "test", True, "001122334455", False, None, None)
     ]
 )
-@patch('nac.management.commands.import_devices.transaction.atomic')
-@patch('nac.management.commands.import_devices.logging')
+@patch('nac.management.commands.import_devices_from_csv.transaction.atomic')
+@patch('nac.management.commands.import_devices_from_csv.logging')
 def test_check_device(mock_logging, mock_atomic, appl_NAC_ForceDot1X,
                       appl_NAC_AllowAccessVPN,
                       appl_NAC_Certificate, appl_NAC_AllowAccessAIR,
@@ -79,10 +80,10 @@ def test_check_device(mock_logging, mock_atomic, appl_NAC_ForceDot1X,
 
 
 @pytest.mark.django_db
-@patch('nac.management.commands.import_devices.transaction.atomic')
-@patch('nac.management.commands.import_devices.Command.str_to_bool')
-@patch('nac.management.commands.import_devices.logging')
-@patch('nac.management.commands.import_devices.DeviceForm')
+@patch('nac.management.commands.import_devices_from_csv.transaction.atomic')
+@patch('nac.management.commands.import_devices_from_csv.Command.str_to_bool')
+@patch('nac.management.commands.import_devices_from_csv.logging')
+@patch('nac.management.commands.import_devices_from_csv.DeviceForm')
 def test_check_device_exceptions(
         mock_device_form, mock_logging,
         mock_str_to_bool, mock_atomic, command):
@@ -187,8 +188,8 @@ def test_check_device_exceptions(
 
 
 @pytest.mark.django_db
-@patch('nac.management.commands.import_devices.Device.objects.create')
-@patch('nac.management.commands.import_devices.logging')
+@patch('nac.management.commands.import_devices_from_csv.Device.objects.create')
+@patch('nac.management.commands.import_devices_from_csv.logging')
 def test_add_device_to_db(mock_logging, mock_create, command):
     device = {"name": "test"}
     mock_create.return_value = None
@@ -200,9 +201,9 @@ def test_add_device_to_db(mock_logging, mock_create, command):
 
 
 @pytest.mark.django_db
-@patch('nac.management.commands.import_devices.transaction.atomic')
-@patch('nac.management.commands.import_devices.Device.objects.create')
-@patch('nac.management.commands.import_devices.logging')
+@patch('nac.management.commands.import_devices_from_csv.transaction.atomic')
+@patch('nac.management.commands.import_devices_from_csv.Device.objects.create')
+@patch('nac.management.commands.import_devices_from_csv.logging')
 def test_add_device_to_db_exception(mock_logging, mock_create,
                                     mock_atomic, command):
     device = {"name": "test"}
@@ -231,9 +232,9 @@ def test_str_to_bool(input_value, expected_output, command):
 
 
 @patch('builtins.open', new_callable=mock_open)
-@patch('nac.management.commands.import_devices.DictWriter')
-@patch('nac.management.commands.import_devices.stat')
-@patch('nac.management.commands.import_devices.logging')
+@patch('nac.management.commands.import_devices_from_csv.DictWriter')
+@patch('nac.management.commands.import_devices_from_csv.stat')
+@patch('nac.management.commands.import_devices_from_csv.logging')
 def test_save_invalid_devices_empty_file(mock_logging, mock_stat,
                                          mock_writer, mocked_file, command):
     device = {"name": "test"}
@@ -241,7 +242,7 @@ def test_save_invalid_devices_empty_file(mock_logging, mock_stat,
     mock_writer_instance = MagicMock()
     mock_writer.return_value = mock_writer_instance
     command.save_invalid_devices(device)
-    mocked_file.assert_called_once_with(CSV_SAVE_FILE,
+    mocked_file.assert_called_once_with(SAVE_FILE,
                                         'a', newline="")
     mock_writer.assert_called_once_with(mocked_file(),
                                         fieldnames=device.keys(),
@@ -249,14 +250,14 @@ def test_save_invalid_devices_empty_file(mock_logging, mock_stat,
     mock_writer_instance.writeheader.assert_called_once()
     mock_writer_instance.writerows.assert_called_once_with([device])
     mock_logging.info.assert_called_once_with(
-        f"Writing invalid device to {CSV_SAVE_FILE}")
+        f"Writing invalid device to {SAVE_FILE}")
     mock_logging.debug.assert_called_once_with(
-        f"Writing invalid device to {CSV_SAVE_FILE}: SUCCESSFUL")
+        f"Writing invalid device to {SAVE_FILE}: SUCCESSFUL")
 
 
 @patch('builtins.open', new_callable=mock_open)
-@patch('nac.management.commands.import_devices.DictWriter')
-@patch('nac.management.commands.import_devices.stat')
+@patch('nac.management.commands.import_devices_from_csv.DictWriter')
+@patch('nac.management.commands.import_devices_from_csv.stat')
 def test_save_invalid_devices_non_empty_file(mock_stat, mock_writer,
                                              mock_file, command):
     device = {"name": "test"}
@@ -267,20 +268,20 @@ def test_save_invalid_devices_non_empty_file(mock_stat, mock_writer,
     mock_writer_instance.writeheader.assert_not_called()
 
 
-@patch('nac.management.commands.import_devices.logging')
+@patch('nac.management.commands.import_devices_from_csv.logging')
 @patch('builtins.open', side_effect=Exception("Failed"))
 def test_save_invalid_devices_exception(mock_file, mock_logging, command):
     device = {"name": "test"}
     command.save_invalid_devices(device)
     mock_logging.error.assert_called_once_with(
         f"Writing invalid device to "
-        f"{CSV_SAVE_FILE}: FAILED -> Failed")
+        f"{SAVE_FILE}: FAILED -> Failed")
 
 
 @patch('builtins.open', new_callable=mock_open, read_data="name\n;test")
-@patch('nac.management.commands.import_devices.DictReader')
-@patch('nac.management.commands.import_devices.Command.handle_deviceObject')
-@patch('nac.management.commands.import_devices.logging')
+@patch('nac.management.commands.import_devices_from_csv.DictReader')
+@patch('nac.management.commands.import_devices_from_csv.Command.handle_deviceObject')
+@patch('nac.management.commands.import_devices_from_csv.logging')
 def test_read_csv(mock_logging, mock_handler, mock_reader, mock_file, command):
     command.source_file = "test.csv"
     mock_reader.return_value = [{"name": "test"}]
@@ -295,9 +296,9 @@ def test_read_csv(mock_logging, mock_handler, mock_reader, mock_file, command):
 
 
 @patch('builtins.open', side_effect=Exception("Failed"))
-@patch('nac.management.commands.import_devices.DictReader')
-@patch('nac.management.commands.import_devices.Command.handle_deviceObject')
-@patch('nac.management.commands.import_devices.logging')
+@patch('nac.management.commands.import_devices_from_csv.DictReader')
+@patch('nac.management.commands.import_devices_from_csv.Command.handle_deviceObject')
+@patch('nac.management.commands.import_devices_from_csv.logging')
 def test_read_csv_exception(mock_logging, mock_handler,
                             mock_reader, mock_file, command):
     command.source_file = "test.csv"
@@ -310,30 +311,30 @@ def test_read_csv_exception(mock_logging, mock_handler,
 
 
 @patch('builtins.open', new_callable=mock_open)
-@patch('nac.management.commands.import_devices.logging')
+@patch('nac.management.commands.import_devices_from_csv.logging')
 def test_clear_invalid_devices_file(mock_logging, mock_file, command):
     command.clear_invalid_devices_file()
-    mock_file.assert_called_once_with(CSV_SAVE_FILE, "w")
+    mock_file.assert_called_once_with(SAVE_FILE, "w")
     mock_logging.info.assert_called_once_with(
-        f"Removing all entries in {CSV_SAVE_FILE}")
+        f"Removing all entries in {SAVE_FILE}")
 
 
 @patch('builtins.open', side_effect=Exception("Failed"))
-@patch('nac.management.commands.import_devices.logging')
+@patch('nac.management.commands.import_devices_from_csv.logging')
 def test_clear_invalid_devices_file_exception(mock_logging,
                                               mock_file, command):
     command.clear_invalid_devices_file()
-    mock_file.assert_called_once_with(CSV_SAVE_FILE, "w")
+    mock_file.assert_called_once_with(SAVE_FILE, "w")
     mock_logging.error.assert_called_once_with(
-        f"Removing all entries in {CSV_SAVE_FILE} FAILED -> Failed"
+        f"Removing all entries in {SAVE_FILE} FAILED -> Failed"
         )
 
 
 @pytest.mark.django_db
-@patch('nac.management.commands.import_devices.Command.check_device')
-@patch('nac.management.commands.import_devices.Command.add_device_to_db')
-@patch('nac.management.commands.import_devices.Command.save_invalid_devices')
-@patch('nac.management.commands.import_devices.logging')
+@patch('nac.management.commands.import_devices_from_csv.Command.check_device')
+@patch('nac.management.commands.import_devices_from_csv.Command.add_device_to_db')
+@patch('nac.management.commands.import_devices_from_csv.Command.save_invalid_devices')
+@patch('nac.management.commands.import_devices_from_csv.logging')
 def test_handle_deviceObject(
         mock_logging, mock_save_invalid_devices,
         mock_add_device_to_db, mock_check_device, command):
@@ -350,10 +351,10 @@ def test_handle_deviceObject(
 
 
 @pytest.mark.django_db
-@patch('nac.management.commands.import_devices.Command.check_device')
-@patch('nac.management.commands.import_devices.Command.add_device_to_db')
-@patch('nac.management.commands.import_devices.Command.save_invalid_devices')
-@patch('nac.management.commands.import_devices.logging')
+@patch('nac.management.commands.import_devices_from_csv.Command.check_device')
+@patch('nac.management.commands.import_devices_from_csv.Command.add_device_to_db')
+@patch('nac.management.commands.import_devices_from_csv.Command.save_invalid_devices')
+@patch('nac.management.commands.import_devices_from_csv.logging')
 def test_handle_deviceObject_invalid_Device(
         mock_logging, mock_save_invalid_devices,
         mock_add_device_to_db, mock_check_device, command):
@@ -369,10 +370,10 @@ def test_handle_deviceObject_invalid_Device(
 
 
 @pytest.mark.django_db
-@patch('nac.management.commands.import_devices.Command.check_device')
-@patch('nac.management.commands.import_devices.Command.add_device_to_db')
-@patch('nac.management.commands.import_devices.Command.save_invalid_devices')
-@patch('nac.management.commands.import_devices.logging')
+@patch('nac.management.commands.import_devices_from_csv.Command.check_device')
+@patch('nac.management.commands.import_devices_from_csv.Command.add_device_to_db')
+@patch('nac.management.commands.import_devices_from_csv.Command.save_invalid_devices')
+@patch('nac.management.commands.import_devices_from_csv.logging')
 def test_handle_deviceObject_exception(
         mock_logging, mock_save_invalid_devices,
         mock_add_device_to_db, mock_check_device, command):
@@ -380,7 +381,7 @@ def test_handle_deviceObject_exception(
     mock_check_device.side_effect = Exception("Invalid device")
 
     command.handle_deviceObject(device)
-
+    mock_logging.error.assert_called_once_with("Error: Handling device Object failed -> Invalid device")
     mock_check_device.assert_called_once_with(device)
     mock_add_device_to_db.assert_not_called()
     mock_save_invalid_devices.assert_not_called()
@@ -391,7 +392,7 @@ def test_add_arguments(command):
     command.add_arguments(mock_parser)
     mock_parser.add_argument.assert_any_call(
         '-f', '--csv_file',
-        default=DEFAULT_SOURCE_CSV,
+        default=DEFAULT_SOURCE_FILE,
         help='use a specific csv file [src/ldapObjects.csv]'
     )
     mock_parser.add_argument.assert_any_call(
@@ -402,31 +403,41 @@ def test_add_arguments(command):
 
 
 @pytest.mark.django_db
-@patch('nac.management.commands.import_devices.Command.check_valid_auth_group')
-@patch('nac.management.commands.import_devices.setup_console_logger')
-@patch('nac.management.commands.import_devices.get_absolute_path')
+@patch('nac.management.commands.import_devices_from_csv.Command.check_valid_auth_group')
+@patch('nac.management.commands.import_devices_from_csv.setup_console_logger')
+@patch('nac.management.commands.import_devices_from_csv.get_existing_path')
 @patch(
-    'nac.management.commands.import_devices.Command.clear_invalid_devices_file')
-@patch('nac.management.commands.import_devices.Command.read_csv')
+    'nac.management.commands.import_devices_from_csv.Command.clear_invalid_devices_file')
+@patch('nac.management.commands.import_devices_from_csv.Command.read_csv')
 def test_handle(mock_read_csv, mock_clear_invalid_devices_file,
-                mock_get_absolute_path, mock_setup_console_logger,
+                mock_get_existing_path, mock_setup_console_logger,
                 mock_check_valid_auth_group, command):
     options = {
         'verbosity': 0,
         'csv_file': 'test.csv',
         'auth_group': 'testag'
     }
-    mock_get_absolute_path.return_value = 'mockpath/to/test.csv'
+    mock_get_existing_path.return_value = 'mockpath/to/test.csv'
     command.handle(**options)
     mock_setup_console_logger.assert_called_once_with(0)
     mock_check_valid_auth_group.assert_called_once_with('testag')
-    mock_get_absolute_path.assert_called_once_with('test.csv')
+    mock_get_existing_path.assert_called_once_with('test.csv')
     mock_clear_invalid_devices_file.assert_called_once()
     mock_read_csv.assert_called_once()
     assert command.source_file == 'mockpath/to/test.csv'
+
     mock_clear_invalid_devices_file.reset_mock()
     mock_check_valid_auth_group.return_value = None
-    command.handle(**options)
+    with pytest.raises(CommandError,
+                       match="Invalid auth group 'testag'."):
+        command.handle(**options)
+    mock_clear_invalid_devices_file.assert_not_called()
+
+    mock_clear_invalid_devices_file.reset_mock()
+    mock_get_existing_path.return_value = None
+    with pytest.raises(CommandError,
+                       match="The path 'test.csv' does not exist."):
+        command.handle(**options)
     mock_clear_invalid_devices_file.assert_not_called()
 
 
@@ -438,7 +449,7 @@ def test_check_valid_auth_group_exists(command):
 
 
 @pytest.mark.django_db
-@patch('nac.management.commands.import_devices.logging')
+@patch('nac.management.commands.import_devices_from_csv.logging')
 def test_check_valid_auth_group_not_exists(mock_logging, command):
     result = command.check_valid_auth_group('dummy')
     mock_logging.error.assert_called_once_with(

@@ -1,16 +1,16 @@
 import logging
 from os import stat
 from csv import DictReader, DictWriter
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from nac.models import Device, AuthorizationGroup, DeviceRoleProd, DeviceRoleInst
 from nac.forms import DeviceForm
 from helper.logging import setup_console_logger
-from helper.filesystem import get_resources_directory, get_absolute_path
+from helper.filesystem import get_resources_directory, get_existing_path
 
-DEFAULT_SOURCE_CSV = get_resources_directory() / 'ldapObjects.csv'
-CSV_SAVE_FILE = get_resources_directory() / "invalid_devices.csv"
+DEFAULT_SOURCE_FILE = get_resources_directory() / 'ldapObjects.csv'
+SAVE_FILE = get_resources_directory() / "invalid_devices.csv"
 
 
 class Command(BaseCommand):
@@ -20,7 +20,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
             '-f', '--csv_file',
-            default=DEFAULT_SOURCE_CSV,
+            default=DEFAULT_SOURCE_FILE,
             help='use a specific csv file [src/ldapObjects.csv]'
         )
         parser.add_argument(
@@ -31,12 +31,21 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         setup_console_logger(options['verbosity'])
-        self.source_file = get_absolute_path(options['csv_file'])
+        self.source_file = get_existing_path(options['csv_file'])
+
+        if not self.source_file:
+            logging.error(
+                f"The path '{options['csv_file']}'does not exist.")
+            raise CommandError(
+                f"The path '{options['csv_file']}' does not exist.")
         self.auth_group = self.check_valid_auth_group(options['auth_group'])
         if not self.auth_group:
-            return
-        self.clear_invalid_devices_file()
+            logging.error(
+                f"Invalid auth group '{options['auth_group']}'.")
+            raise CommandError(
+                f"Invalid auth group '{options['auth_group']}'.")
 
+        self.clear_invalid_devices_file()
         self.read_csv()
 
     def check_valid_auth_group(self, auth_group):
@@ -48,11 +57,11 @@ class Command(BaseCommand):
 
     def clear_invalid_devices_file(self):
         try:
-            with open(CSV_SAVE_FILE, "w"):
-                logging.info(f"Removing all entries in {CSV_SAVE_FILE}")
+            with open(SAVE_FILE, "w"):
+                logging.info(f"Removing all entries in {SAVE_FILE}")
         except Exception as e:
             logging.error(
-                f"Removing all entries in {CSV_SAVE_FILE} FAILED -> {e}"
+                f"Removing all entries in {SAVE_FILE} FAILED -> {e}"
             )
 
     def read_csv(self):
@@ -72,8 +81,8 @@ class Command(BaseCommand):
             self.add_device_to_db(device)
         except ValidationError:
             self.save_invalid_devices(deviceObject)
-        except Exception:
-            pass
+        except Exception as e:
+            logging.error(f"Error: Handling device Object failed -> {e}")
 
     def check_device(self, deviceObject):
         logging.info(f"Checking validity of device"
@@ -198,20 +207,20 @@ class Command(BaseCommand):
     def save_invalid_devices(self, deviceObject_invalid):
         try:
             column_header = deviceObject_invalid.keys()
-            with open(CSV_SAVE_FILE, 'a', newline="") as csvfile:
-                logging.info(f"Writing invalid device to {CSV_SAVE_FILE}")
+            with open(SAVE_FILE, 'a', newline="") as csvfile:
+                logging.info(f"Writing invalid device to {SAVE_FILE}")
                 writer = DictWriter(
                     csvfile, fieldnames=column_header, delimiter=";"
                 )
-                if stat(CSV_SAVE_FILE).st_size == 0:
+                if stat(SAVE_FILE).st_size == 0:
                     writer.writeheader()
                 writer.writerows([deviceObject_invalid])
                 logging.debug(
-                    f"Writing invalid device to {CSV_SAVE_FILE}: "
+                    f"Writing invalid device to {SAVE_FILE}: "
                     f"SUCCESSFUL"
                 )
         except Exception as e:
             logging.error(
                 f"Writing invalid device to "
-                f"{CSV_SAVE_FILE}: FAILED -> {e}"
+                f"{SAVE_FILE}: FAILED -> {e}"
             )
