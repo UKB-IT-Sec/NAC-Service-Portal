@@ -35,3 +35,6 @@ Default config file for ldap export can be found at `config/export.cnf`
 ```
 pyhton3 -m manage.py export_to_ldap
 ```
+
+## Public Funding
+![Funded by European Union](https://ec.europa.eu/regional_policy/images/information-sources/logo-download-center/nextgeneu_en.jpg)
