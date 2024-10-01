@@ -89,7 +89,7 @@ class Command(BaseCommand):
                      f"{deviceObject.get('appl-NAC-Hostname')}")
         try:
             if deviceObject.get('objectClass') != 'appl-NAC-Device':
-                raise Exception(
+                raise ValidationError(
                     f"Invalid Object-type! EXPECTED: appl-NAC-Device <->"
                     f" ACTUAL: {deviceObject.get('objectClass')}")
             with transaction.atomic():
@@ -100,22 +100,24 @@ class Command(BaseCommand):
                     deviceRoleProd = DeviceRoleProd.objects.get(
                         name=deviceObject.get("appl-NAC-DeviceRoleProd"))
                 except ObjectDoesNotExist:
-                    raise Exception(
-                        "DeviceRoleProd: %s not in Database",
-                        deviceObject.get("appl-NAC-DeviceRoleProd"))
+                    raise ValidationError(
+                        f"DeviceRoleProd: "
+                        f"{deviceObject.get("appl-NAC-DeviceRoleProd")} "
+                        f"not in Database")
                 try:
                     deviceRoleInst = DeviceRoleInst.objects.get(
                         name=deviceObject.get("appl-NAC-DeviceRoleInst"))
                 except ObjectDoesNotExist:
-                    raise Exception(
-                        "DeviceRoleInst: %s not in Database",
-                        deviceObject.get("appl-NAC-DeviceRoleInst"))
+                    raise ValidationError(
+                        f"DeviceRoleInst: "
+                        f"{deviceObject.get("appl-NAC-DeviceRoleInst")} "
+                        f"not in Database")
                 if deviceRoleProd not in auth_group.DeviceRoleProd.all():
-                    raise Exception(
+                    raise ValidationError(
                         f"DeviceRoleProd: {deviceRoleProd} "
                         f"not in authorization group: {auth_group}")
                 elif deviceRoleInst not in auth_group.DeviceRoleInst.all():
-                    raise Exception(
+                    raise ValidationError(
                         f"DeviceRoleInst: {deviceRoleInst} "
                         f"not in authorization group: {auth_group}")
 

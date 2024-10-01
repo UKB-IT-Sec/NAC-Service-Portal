@@ -139,8 +139,8 @@ def test_check_device_exceptions(
         "appl-NAC-DeviceRoleProd": "dummy",
         "appl-NAC-DeviceRoleInst": test_deviceRoleInst}
     with pytest.raises(
-            Exception,
-            match="('DeviceRoleProd: %s not in Database', 'dummy')"):
+            ValidationError,
+            match="('DeviceRoleProd: dummy not in Database')"):
         command.check_device(invalid_device)
     mock_atomic.assert_called()
 
@@ -152,8 +152,8 @@ def test_check_device_exceptions(
         "appl-NAC-DeviceRoleProd": test_deviceRoleProd,
         "appl-NAC-DeviceRoleInst": "dummy"}
     with pytest.raises(
-            Exception,
-            match="('DeviceRoleInst: %s not in Database', 'dummy')"):
+            ValidationError,
+            match="('DeviceRoleInst: dummy not in Database')"):
         command.check_device(invalid_device)
     mock_atomic.assert_called()
 
@@ -167,7 +167,7 @@ def test_check_device_exceptions(
         "appl-NAC-DeviceRoleProd": "dummy",
         "appl-NAC-DeviceRoleInst": test_deviceRoleInst}
     with pytest.raises(
-            Exception, match="DeviceRoleProd: dummy "
+            ValidationError, match="DeviceRoleProd: dummy "
             "not in authorization group: test"):
         command.check_device(invalid_device)
     mock_atomic.assert_called()
@@ -181,7 +181,7 @@ def test_check_device_exceptions(
         "appl-NAC-DeviceRoleProd": test_deviceRoleProd,
         "appl-NAC-DeviceRoleInst": "dummy"}
     with pytest.raises(
-            Exception, match="DeviceRoleInst: dummy "
+            ValidationError, match="DeviceRoleInst: dummy "
             "not in authorization group: test"):
         command.check_device(invalid_device)
     mock_atomic.assert_called()
