@@ -102,7 +102,7 @@ class Command(BaseCommand):
                 except ObjectDoesNotExist:
                     raise ValidationError(
                         f"DeviceRoleProd: "
-                        f"{deviceObject.get("appl-NAC-DeviceRoleProd")} "
+                        f"{deviceObject.get('appl-NAC-DeviceRoleProd')} "
                         f"not in Database")
                 try:
                     deviceRoleInst = DeviceRoleInst.objects.get(
@@ -110,7 +110,7 @@ class Command(BaseCommand):
                 except ObjectDoesNotExist:
                     raise ValidationError(
                         f"DeviceRoleInst: "
-                        f"{deviceObject.get("appl-NAC-DeviceRoleInst")} "
+                        f"{deviceObject.get('appl-NAC-DeviceRoleInst')} "
                         f"not in Database")
                 if deviceRoleProd not in auth_group.DeviceRoleProd.all():
                     raise ValidationError(
