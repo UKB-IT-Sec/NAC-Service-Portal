@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Armis Sites:</h1>
+<form method="POST" action="{% url 'armis_import' %}">
+  {% csrf_token %}
+    <select name="site-id">
+      <option value="" disabled {% if not selected_site %}selected{% endif %}>Choose site...</option>
+      {% for site_id, site_info in armis_sites.items %}
+        <option value="{{ site_id }}" {% if site_id == selected_site %}selected{% endif %}>
+          {{ site_info.name }}
+        </option>
+      {% endfor %}
+    </select>
+    <button type="submit">Auswählen</button>
+  </form>
+  {%if devices%}
+  <div id="pagination">
+    <button id="prevPage">Vorherige</button>
+    <span id="pageInfo">Seite <span id="currentPage">1</span> von <span id="totalPages">1</span></span>
+    <button id="nextPage">Nächste</button>
+  </div>
+  <table id="deviceTable">
+    <thead>
+      <tr>
+        <th>Device Name</th>
+        <th>MAC Address</th>
+        <th>IP Address</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Tabellendaten werden hier dynamisch eingefügt -->
+    </tbody>
+  </table>
+  {%endif%}
+  <script>
+  const itemsPerPage = 50;
+  let currentPage = 1;
+  let data = [
+      {% for device in devices %}
+          {
+              name: "{{ device.name }}",
+              macAddress: "{{ device.macAddress }}",
+              ipAddress: "{{ device.ipAddress }}"
+          },
+      {% endfor %}
+  ];
+  
+  function displayTable(page) {
+      const tableBody = document.querySelector("#deviceTable tbody");
+      tableBody.innerHTML = "";
+      
+      const start = (page - 1) * itemsPerPage;
+      const end = start + itemsPerPage;
+      const pageData = data.slice(start, end);
+      
+      pageData.forEach(device => {
+          const row = tableBody.insertRow();
+          row.insertCell().textContent = device.name;
+          row.insertCell().textContent = device.macAddress;
+          row.insertCell().textContent = device.ipAddress;
+      });
+      
+      document.getElementById("currentPage").textContent = page;
+      document.getElementById("totalPages").textContent = Math.ceil(data.length / itemsPerPage);
+  }
+  
+  function setupPagination() {
+      const prevButton = document.getElementById("prevPage");
+      const nextButton = document.getElementById("nextPage");
+      
+      prevButton.addEventListener("click", () => {
+          if (currentPage > 1) {
+              currentPage--;
+              displayTable(currentPage);
+          }
+      });
+      
+      nextButton.addEventListener("click", () => {
+          if (currentPage < Math.ceil(data.length / itemsPerPage)) {
+              currentPage++;
+              displayTable(currentPage);
+          }
+      });
+  }
+  
+  displayTable(currentPage);
+  setupPagination();
+  </script>
+{% endblock content %}

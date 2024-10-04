@@ -1,10 +1,13 @@
-from django.views.generic import TemplateView, ListView, DetailView
+from django.views.generic import TemplateView, ListView, DetailView, View
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.db.models import Q
 from django.urls import reverse_lazy
 from dal import autocomplete
 from .models import Device, DeviceRoleProd, AuthorizationGroup, DeviceRoleInst
 from .forms import DeviceForm
+from django.core.cache import cache
+from django.shortcuts import render
+from helper.armis import get_armis_sites, get_devices
 
 
 class HomePageView(TemplateView):
@@ -26,6 +29,33 @@ class DeviceListView(ListView):
                 Q(appl_NAC_macAddressAIR__icontains=query) | Q(appl_NAC_macAddressCAB__icontains=query)
                 | Q(appl_NAC_FQDN__icontains=query))
         return device_list
+
+
+class ArmisView(View):
+    template_name = "armis_import.html"
+
+    def _get_context(self):
+        context = {}
+        armis_sites = cache.get('armis_sites')
+        if armis_sites is None:
+            armis_sites = get_armis_sites()
+            cache.set('armis_sites', armis_sites, 3600)
+        context['armis_sites'] = armis_sites
+        return context
+
+    def get(self, request, *args, **kwargs):
+        context = self._get_context()
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        context = self._get_context()
+
+        selected_site = request.POST.get('site-id')
+        context['selected_site'] = selected_site if selected_site else ''
+        if selected_site:
+            context['devices'] = get_devices(context['armis_sites'][selected_site])
+
+        return render(request, self.template_name, context)
 
 
 class DeviceDetailView(DetailView):

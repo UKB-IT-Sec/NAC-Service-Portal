@@ -2,6 +2,11 @@
  address = localhost
  port = 389
  tls = no
- user = LDAPUSER
- password = LDDAPUSERPASSWORD
+ user = 
+ password = 
+ [armis-server]
+ api_secret_key = 
+ tenant_hostname = 
+ sites_pattern = ^[a-zA-Z0-9]{3}\s[a-zA-Z0-9]{3}$
+ vlan_blacklist = 351,305,360
  
