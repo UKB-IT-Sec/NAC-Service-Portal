@@ -28,11 +28,16 @@ class Command(BaseCommand):
             default='DefaultAG',
             help='specify the Device Authorization Group'
         )
+        parser.add_argument(
+            '-u', '--update',
+            action='store_true',
+            help='specify if existing Devices should be updated'
+        )
 
     def handle(self, *args, **options):
         setup_console_logger(options['verbosity'])
         self.source_file = get_existing_path(options['csv_file'])
-
+        self.update = options['update']
         if not self.source_file:
             logging.error(
                 f"The path '{options['csv_file']}'does not exist.")
@@ -85,7 +90,7 @@ class Command(BaseCommand):
             logging.error(f"Error: Handling device Object failed -> {e}")
 
     def check_device(self, deviceObject):
-        logging.info(f"Checking validity of device"
+        logging.info(f"Checking validity of device "
                      f"{deviceObject.get('appl-NAC-Hostname')}")
         try:
             if deviceObject.get('objectClass') != 'appl-NAC-Device':
@@ -165,6 +170,13 @@ class Command(BaseCommand):
                 device_form = DeviceForm(device_data)
                 if device_form.is_valid():
                     logging.debug(f"Device {device_data.get('name')} is valid")
+                    if Device.objects.filter(appl_NAC_Hostname=deviceObject.get('appl-NAC-Hostname')).exists():
+                        logging.debug(f"Device {deviceObject.get('appl-NAC-Hostname')} already exists")
+                        if self.update:
+                            logging.debug(f"Updating Device {deviceObject.get('appl-NAC-Hostname')}")
+                            Device.objects.filter(appl_NAC_Hostname=deviceObject.get('appl-NAC-Hostname')).delete()
+                        else:
+                            raise ValidationError(f"Device {deviceObject.get('appl-NAC-Hostname')} exists and will not get updated")
                     return device_data
                 else:
                     logging.error(

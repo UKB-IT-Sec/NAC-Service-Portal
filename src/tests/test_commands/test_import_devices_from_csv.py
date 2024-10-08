@@ -4,7 +4,7 @@ from nac.management.commands.import_devices_from_csv import Command, \
 from unittest.mock import patch, mock_open, MagicMock
 from django.core.exceptions import ValidationError
 from django.core.management.base import CommandError
-from nac.models import AuthorizationGroup, DeviceRoleProd, DeviceRoleInst
+from nac.models import AuthorizationGroup, DeviceRoleProd, DeviceRoleInst, Device
 
 
 @pytest.fixture
@@ -80,13 +80,14 @@ def test_check_device(mock_logging, mock_atomic, appl_NAC_ForceDot1X,
 
 
 @pytest.mark.django_db
+@patch('nac.models.Device.objects.filter')
 @patch('nac.management.commands.import_devices_from_csv.transaction.atomic')
 @patch('nac.management.commands.import_devices_from_csv.Command.str_to_bool')
 @patch('nac.management.commands.import_devices_from_csv.logging')
 @patch('nac.management.commands.import_devices_from_csv.DeviceForm')
 def test_check_device_exceptions(
         mock_device_form, mock_logging,
-        mock_str_to_bool, mock_atomic, command):
+        mock_str_to_bool, mock_atomic, mock_device_filter, command):
     test_deviceRoleProd = DeviceRoleProd.objects.create(name="test")
     test_deviceRoleInst = DeviceRoleInst.objects.create(name="test")
     test_authorization_group = AuthorizationGroup.objects.create(name="test")
@@ -185,6 +186,33 @@ def test_check_device_exceptions(
             "not in authorization group: test"):
         command.check_device(invalid_device)
     mock_atomic.assert_called()
+
+    test_authorization_group.DeviceRoleProd.set([test_deviceRoleProd])
+    test_authorization_group.DeviceRoleInst.set([test_deviceRoleInst])
+    Device.objects.create(name="test", appl_NAC_Hostname="host")
+    command.update = False
+    mock_form = MagicMock()
+    mock_form.is_valid.return_value = True
+    command.str_to_bool = MagicMock(return_value=False)
+    mock_device_form.return_value = mock_form
+    valid_device = {
+        "name": "test",
+        "objectClass": "appl-NAC-Device",
+        "appl-NAC-Hostname": "host",
+        "authorization_group": test_authorization_group,
+        "appl-NAC-DeviceRoleProd": test_deviceRoleProd,
+        "appl-NAC-DeviceRoleInst": test_deviceRoleInst}
+    with pytest.raises(ValidationError,
+                       match="Device host exists and will not get updated"):
+        command.check_device(valid_device)
+    mock_atomic.assert_called()
+
+    command.update = True
+    command.check_device(valid_device)
+    mock_logging.debug.assert_any_call(
+        "Updating Device host"
+    )
+    mock_device_filter.return_value.delete.assert_called_once()
 
 
 @pytest.mark.django_db
@@ -400,6 +428,11 @@ def test_add_arguments(command):
         default='DefaultAG',
         help='specify the Device Authorization Group'
     )
+    mock_parser.add_argument.assert_any_call(
+        '-u', '--update',
+        action='store_true',
+        help='specify if existing Devices should be updated'
+    )
 
 
 @pytest.mark.django_db
@@ -415,7 +448,8 @@ def test_handle(mock_read_csv, mock_clear_invalid_devices_file,
     options = {
         'verbosity': 0,
         'csv_file': 'test.csv',
-        'auth_group': 'testag'
+        'auth_group': 'testag',
+        'update': False
     }
     mock_get_existing_path.return_value = 'mockpath/to/test.csv'
     command.handle(**options)
