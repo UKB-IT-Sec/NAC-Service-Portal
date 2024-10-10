@@ -65,7 +65,12 @@
 								</svg>
 								Add Device
 							</a>
-						</li>						
+						</li>
+						<li class="nav-item">
+							<a class="nav-link active" aria-current="page" href="{% url 'account-settings' %}">
+							Account Settings
+							</a>
+						</li>
 						<li class="nav-item">
 						    <form method="post" action="{% url 'logout' %}" class="inline">
 								{% csrf_token %}
