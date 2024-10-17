@@ -5,25 +5,10 @@
 {% block content %}
 <div class="container">
 	<h1>Devices</h1>
-	<form action="{% url 'devices' %}" method="get">
-		<input name="q" type="text" placeholder="Search device...">
-		<label for="area_drop_down">Filter by area</label>
-        <select name="selected_area" id="area_drop_down" multiple>
-            <option value="" selected disabled hidden>Choose here</option>
-        {% for area in area_list %}
-            <option value="{{ area.id }}">{{ area.name }}</option>
-        {% endfor %}
-        </select>
-
-        <label for="sec_group_drop_down">Filter by security group</label>
-        <select name="selected_sec_group" id="sec_group_drop_down" multiple>
-            <option value="" selected disabled hidden>Choose here</option>
-        {% for sec_group in sec_group_list %}
-            <option value="{{ sec_group.id }}">{{ sec_group.name }}</option>
-        {% endfor %}
-        </select>
+	 <form action="{% url 'devices' %}" method="get">
+        {{ search_form | crispy }}
         <button type="submit">Filter</button>
-	</form>
+    </form>
 	<table class="table table-striped">
 		<thead>
 			<tr>
