@@ -1,4 +1,4 @@
-from django.views.generic import TemplateView, ListView, DetailView, View
+from django.views.generic import TemplateView, ListView, DetailView
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.db.models import Q
 from django.urls import reverse_lazy
@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.shortcuts import render, redirect
+
 
 class HomePageView(TemplateView):
     template_name = "home.html"
