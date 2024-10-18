@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.urls import reverse_lazy
 from dal import autocomplete
 from .models import Device, DeviceRoleProd, AuthorizationGroup, DeviceRoleInst
-from .forms import DeviceForm
+from .forms import DeviceForm, DeviceSearchForm
 
 
 class HomePageView(TemplateView):
@@ -14,6 +14,7 @@ class HomePageView(TemplateView):
 class DeviceListView(ListView):
     model = Device
     template_name = "devices.html"
+    context_object_name = "device_list"
 
     def get_queryset(self):
         # only show devices from authorization_groups the user is authorized to see
@@ -25,7 +26,25 @@ class DeviceListView(ListView):
                 Q(name__icontains=query) | Q(appl_NAC_Hostname__icontains=query) |
                 Q(appl_NAC_macAddressAIR__icontains=query) | Q(appl_NAC_macAddressCAB__icontains=query)
                 | Q(appl_NAC_FQDN__icontains=query))
+
+        # filter by authorization group
+        selected_authorization_groups = self.request.GET.getlist("authorization_group")
+        if selected_authorization_groups:
+            device_list = device_list.filter(authorization_group__in=selected_authorization_groups)
+
+        # filter by device role prod
+        selected_device_roles_prod = self.request.GET.getlist("device_role_prod")
+        if selected_device_roles_prod:
+            device_list = device_list.filter(appl_NAC_DeviceRoleProd__in=selected_device_roles_prod)
         return device_list
+
+    # we need this for the drop-down menus with filtering options
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(DeviceListView, self).get_context_data(**kwargs)
+        context["auth_group_list"] = AuthorizationGroup.objects.filter(id__in=self.request.user.authorization_group.all())
+        context["device_role_prod_list"] = DeviceRoleProd.objects.all()
+        context["search_form"] = DeviceSearchForm(user=self.request.user)
+        return context
 
 
 class DeviceDetailView(DetailView):
