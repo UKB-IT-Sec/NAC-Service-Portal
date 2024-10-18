@@ -36,7 +36,8 @@ def command():
 )
 @patch('nac.management.commands.import_devices_from_csv.transaction.atomic')
 @patch('nac.management.commands.import_devices_from_csv.logging')
-def test_check_device(mock_logging, mock_atomic, appl_NAC_ForceDot1X,
+@patch('nac.management.commands.import_devices_from_csv.check_existing_mac')
+def test_check_device(mock_check_existing_mac, mock_logging, mock_atomic, appl_NAC_ForceDot1X,
                       appl_NAC_AllowAccessVPN,
                       appl_NAC_Certificate, appl_NAC_AllowAccessAIR,
                       appl_NAC_macAddressAIR, appl_NAC_AllowAccessCAB,
@@ -48,6 +49,7 @@ def test_check_device(mock_logging, mock_atomic, appl_NAC_ForceDot1X,
     test_authorization_group.DeviceRoleInst.set([test_deviceRoleInst])
     test_authorization_group.DeviceRoleProd.set([test_deviceRoleProd])
     command.auth_group = 'test'
+    command.update = True
     data = {
         "name": "test",
         "objectClass": "appl-NAC-Device",
@@ -74,8 +76,11 @@ def test_check_device(mock_logging, mock_atomic, appl_NAC_ForceDot1X,
             command.check_device(data)
         mock_atomic.assert_called()
     else:
-        command.check_device(data)
-        mock_logging.debug.assert_called_once_with(
+        command.update = False
+        mock_check_existing_mac.return_value = False, None
+        result = command.check_device(data)
+        assert type(result) is dict
+        mock_logging.debug.assert_any_call(
             f"Device {data.get('name')} is valid")
 
 
@@ -85,7 +90,9 @@ def test_check_device(mock_logging, mock_atomic, appl_NAC_ForceDot1X,
 @patch('nac.management.commands.import_devices_from_csv.Command.str_to_bool')
 @patch('nac.management.commands.import_devices_from_csv.logging')
 @patch('nac.management.commands.import_devices_from_csv.DeviceForm')
+@patch('nac.management.commands.import_devices_from_csv.check_existing_mac')
 def test_check_device_exceptions(
+        mock_check_existing_mac,
         mock_device_form, mock_logging,
         mock_str_to_bool, mock_atomic, mock_device_filter, command):
     test_deviceRoleProd = DeviceRoleProd.objects.create(name="test")
@@ -202,6 +209,7 @@ def test_check_device_exceptions(
         "authorization_group": test_authorization_group,
         "appl-NAC-DeviceRoleProd": test_deviceRoleProd,
         "appl-NAC-DeviceRoleInst": test_deviceRoleInst}
+    mock_check_existing_mac.return_value = True, 0
     with pytest.raises(ValidationError,
                        match="Device host exists and will not get updated"):
         command.check_device(valid_device)
@@ -212,20 +220,28 @@ def test_check_device_exceptions(
     mock_logging.debug.assert_any_call(
         "Updating Device host"
     )
-    mock_device_filter.return_value.delete.assert_called_once()
+    mock_device_filter.return_value.update.assert_called_once()
 
 
 @pytest.mark.django_db
 @patch('nac.management.commands.import_devices_from_csv.Device.objects.create')
 @patch('nac.management.commands.import_devices_from_csv.logging')
-def test_add_device_to_db(mock_logging, mock_create, command):
-    device = {"name": "test"}
-    mock_create.return_value = None
-    assert command.add_device_to_db(device) is True
-    mock_create.assert_called()
-    mock_logging.info.assert_called()
-    mock_logging.debug.assert_called_once_with(
-        f"Import device {device['name']} to database: SUCCESSFUL")
+@patch('nac.management.commands.import_devices_from_csv.create_mac_list_entry')
+def test_add_device_to_db_success(mock_create_mac_list_entry, mock_logging, mock_create, command):
+    device = {
+        "name": "test_device",
+        "id": 1,
+    }
+    mock_create.return_value = MagicMock(spec=['__dict__'])
+    mock_create.return_value.__dict__ = device
+
+    result = command.add_device_to_db(device)
+
+    assert result is True
+    mock_create.assert_called_once_with(**device)
+    mock_create_mac_list_entry.assert_called_once_with(device)
+    mock_logging.info.assert_called_once_with(f"Import device {device['name']} to database")
+    mock_logging.debug.assert_called_once_with(f"Import device {device['name']} to database: SUCCESSFUL")
 
 
 @pytest.mark.django_db
@@ -238,7 +254,7 @@ def test_add_device_to_db_exception(mock_logging, mock_create,
     mock_create.side_effect = Exception("Failed")
     assert command.add_device_to_db(device) is False
     mock_logging.error.assert_called_with(
-        "Import device test to database: FAILED")
+        "Import device test to database: FAILED -> Failed")
     mock_atomic.assert_called_once()
 
 
@@ -394,7 +410,7 @@ def test_handle_deviceObject_invalid_Device(
     mock_check_device.assert_called_once_with(device)
     mock_add_device_to_db.assert_not_called()
     mock_save_invalid_devices.assert_called_once_with(device)
-    mock_logging.error.assert_not_called()
+    mock_logging.error.assert_called_once_with("Invalid Device -> ['Invalid device']")
 
 
 @pytest.mark.django_db

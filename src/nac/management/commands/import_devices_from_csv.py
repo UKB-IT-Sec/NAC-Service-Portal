@@ -8,6 +8,8 @@ from nac.models import Device, AuthorizationGroup, DeviceRoleProd, DeviceRoleIns
 from nac.forms import DeviceForm
 from helper.logging import setup_console_logger
 from helper.filesystem import get_resources_directory, get_existing_path
+from helper.database import check_existing_mac, create_mac_list_entry
+
 
 DEFAULT_SOURCE_FILE = get_resources_directory() / 'ldapObjects.csv'
 SAVE_FILE = get_resources_directory() / "invalid_devices.csv"
@@ -83,8 +85,10 @@ class Command(BaseCommand):
     def handle_deviceObject(self, deviceObject):
         try:
             device = self.check_device(deviceObject)
-            self.add_device_to_db(device)
-        except ValidationError:
+            if device:
+                self.add_device_to_db(device)
+        except ValidationError as e:
+            logging.error(f"Invalid Device -> {e}")
             self.save_invalid_devices(deviceObject)
         except Exception as e:
             logging.error(f"Error: Handling device Object failed -> {e}")
@@ -170,14 +174,16 @@ class Command(BaseCommand):
                 device_form = DeviceForm(device_data)
                 if device_form.is_valid():
                     logging.debug(f"Device {device_data.get('name')} is valid")
-                    if Device.objects.filter(appl_NAC_Hostname=deviceObject.get('appl-NAC-Hostname')).exists():
+                    exists, device_id = check_existing_mac(device_form.cleaned_data)
+                    if exists:
                         logging.debug(f"Device {deviceObject.get('appl-NAC-Hostname')} already exists")
                         if self.update:
                             logging.debug(f"Updating Device {deviceObject.get('appl-NAC-Hostname')}")
-                            Device.objects.filter(appl_NAC_Hostname=deviceObject.get('appl-NAC-Hostname')).delete()
+                            Device.objects.filter(id=device_id).update(**device_form.cleaned_data)
+                            return None
                         else:
                             raise ValidationError(f"Device {deviceObject.get('appl-NAC-Hostname')} exists and will not get updated")
-                    return device_data
+                    return device_form.cleaned_data
                 else:
                     logging.error(
                         f"Device {device_data.get('name')} is not valid"
@@ -205,16 +211,17 @@ class Command(BaseCommand):
         )
         try:
             with transaction.atomic():
-                Device.objects.create(**deviceObject_valid)
+                new_device = Device.objects.create(**deviceObject_valid)
+                create_mac_list_entry(new_device.__dict__)
                 logging.debug(
                     f"Import device {deviceObject_valid.get('name')} to "
                     f"database: SUCCESSFUL"
                 )
                 return True
-        except Exception:
+        except Exception as e:
             logging.error(
                 f"Import device {deviceObject_valid.get('name')} to database: "
-                f"FAILED"
+                f"FAILED -> {e}"
             )
             return False
 
