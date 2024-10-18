@@ -35,7 +35,7 @@ class DeviceListView(ListView):
         # filter by device role prod
         selected_device_roles_prod = self.request.GET.getlist("device_role_prod")
         if selected_device_roles_prod:
-            device_list = device_list.filter(device_role_prod__in=selected_device_roles_prod)
+            device_list = device_list.filter(appl_NAC_DeviceRoleProd__in=selected_device_roles_prod)
         return device_list
 
     # we need this for the drop-down menus with filtering options
