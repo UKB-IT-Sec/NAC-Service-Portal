@@ -8,7 +8,7 @@ from nac.models import Device, AuthorizationGroup, DeviceRoleProd, DeviceRoleIns
 from nac.forms import DeviceForm
 from helper.logging import setup_console_logger
 from helper.filesystem import get_resources_directory, get_existing_path
-from helper.database import check_existing_mac, create_mac_list_entry
+from helper.database import MacList
 
 
 DEFAULT_SOURCE_FILE = get_resources_directory() / 'ldapObjects.csv'
@@ -40,6 +40,7 @@ class Command(BaseCommand):
         setup_console_logger(options['verbosity'])
         self.source_file = get_existing_path(options['csv_file'])
         self.update = options['update']
+        self.mac_list = MacList()
         if not self.source_file:
             logging.error(
                 f"The path '{options['csv_file']}'does not exist.")
@@ -174,7 +175,7 @@ class Command(BaseCommand):
                 device_form = DeviceForm(device_data)
                 if device_form.is_valid():
                     logging.debug(f"Device {device_data.get('name')} is valid")
-                    exists, device_id = check_existing_mac(device_form.cleaned_data)
+                    exists, device_id = self.mac_list.check_existing_mac(device_form.cleaned_data)
                     if exists:
                         logging.debug(f"Device {deviceObject.get('appl-NAC-Hostname')} already exists")
                         if self.update:
@@ -212,7 +213,7 @@ class Command(BaseCommand):
         try:
             with transaction.atomic():
                 new_device = Device.objects.create(**deviceObject_valid)
-                create_mac_list_entry(new_device.__dict__)
+                self.mac_list.update_mac_list(new_device.__dict__)
                 logging.debug(
                     f"Import device {deviceObject_valid.get('name')} to "
                     f"database: SUCCESSFUL"

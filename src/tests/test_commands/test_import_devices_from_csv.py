@@ -5,6 +5,7 @@ from unittest.mock import patch, mock_open, MagicMock
 from django.core.exceptions import ValidationError
 from django.core.management.base import CommandError
 from nac.models import AuthorizationGroup, DeviceRoleProd, DeviceRoleInst, Device
+from helper.database import MacList
 
 
 @pytest.fixture
@@ -36,7 +37,7 @@ def command():
 )
 @patch('nac.management.commands.import_devices_from_csv.transaction.atomic')
 @patch('nac.management.commands.import_devices_from_csv.logging')
-@patch('nac.management.commands.import_devices_from_csv.check_existing_mac')
+@patch('helper.database.MacList.check_existing_mac')
 def test_check_device(mock_check_existing_mac, mock_logging, mock_atomic, appl_NAC_ForceDot1X,
                       appl_NAC_AllowAccessVPN,
                       appl_NAC_Certificate, appl_NAC_AllowAccessAIR,
@@ -50,6 +51,7 @@ def test_check_device(mock_check_existing_mac, mock_logging, mock_atomic, appl_N
     test_authorization_group.DeviceRoleProd.set([test_deviceRoleProd])
     command.auth_group = 'test'
     command.update = True
+    command.mac_list = MacList()
     data = {
         "name": "test",
         "objectClass": "appl-NAC-Device",
@@ -90,7 +92,7 @@ def test_check_device(mock_check_existing_mac, mock_logging, mock_atomic, appl_N
 @patch('nac.management.commands.import_devices_from_csv.Command.str_to_bool')
 @patch('nac.management.commands.import_devices_from_csv.logging')
 @patch('nac.management.commands.import_devices_from_csv.DeviceForm')
-@patch('nac.management.commands.import_devices_from_csv.check_existing_mac')
+@patch('helper.database.MacList.check_existing_mac')
 def test_check_device_exceptions(
         mock_check_existing_mac,
         mock_device_form, mock_logging,
@@ -99,6 +101,7 @@ def test_check_device_exceptions(
     test_deviceRoleInst = DeviceRoleInst.objects.create(name="test")
     test_authorization_group = AuthorizationGroup.objects.create(name="test")
     command.auth_group = 'test'
+    command.mac_list = MacList()
     test_authorization_group.DeviceRoleProd.set([test_deviceRoleProd])
     test_authorization_group.DeviceRoleInst.set([test_deviceRoleInst])
     invalid_device = {
@@ -226,12 +229,13 @@ def test_check_device_exceptions(
 @pytest.mark.django_db
 @patch('nac.management.commands.import_devices_from_csv.Device.objects.create')
 @patch('nac.management.commands.import_devices_from_csv.logging')
-@patch('nac.management.commands.import_devices_from_csv.create_mac_list_entry')
-def test_add_device_to_db_success(mock_create_mac_list_entry, mock_logging, mock_create, command):
+@patch('helper.database.MacList.update_mac_list')
+def test_add_device_to_db_success(mock_update_mac_list, mock_logging, mock_create, command):
     device = {
         "name": "test_device",
         "id": 1,
     }
+    command.mac_list = MacList()
     mock_create.return_value = MagicMock(spec=['__dict__'])
     mock_create.return_value.__dict__ = device
 
@@ -239,7 +243,7 @@ def test_add_device_to_db_success(mock_create_mac_list_entry, mock_logging, mock
 
     assert result is True
     mock_create.assert_called_once_with(**device)
-    mock_create_mac_list_entry.assert_called_once_with(device)
+    mock_update_mac_list.assert_called_once_with(device)
     mock_logging.info.assert_called_once_with(f"Import device {device['name']} to database")
     mock_logging.debug.assert_called_once_with(f"Import device {device['name']} to database: SUCCESSFUL")
 
