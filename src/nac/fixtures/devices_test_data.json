@@ -28,7 +28,7 @@
     "fields": {
       "name": "dev2",
       "authorization_group": 1,
-      "appl_NAC_DeviceRoleProd": 1,
+      "appl_NAC_DeviceRoleProd": 2,
       "synchronized": false,
       "appl_NAC_FQDN": "fqdn2",
       "appl_NAC_Hostname": "s",
@@ -50,7 +50,7 @@
     "pk": 3,
     "fields": {
       "name": "dev3",
-      "authorization_group": 1,
+      "authorization_group": 2,
       "appl_NAC_DeviceRoleProd": 1,
       "synchronized": false,
       "appl_NAC_FQDN": "s",
@@ -73,8 +73,8 @@
     "pk": 4,
     "fields": {
       "name": "dev4",
-      "authorization_group": 1,
-      "appl_NAC_DeviceRoleProd": 1,
+      "authorization_group": 2,
+      "appl_NAC_DeviceRoleProd": 2,
       "synchronized": false,
       "appl_NAC_FQDN": "s",
       "appl_NAC_Hostname": "host",
@@ -120,7 +120,20 @@
     "fields": {
       "name": "Authorisation Group 1",
       "DeviceRoleProd": [
+        1,2
+      ],
+      "DeviceRoleInst": [
         1
+      ]
+    }
+  },
+  {
+    "model": "nac.authorizationgroup",
+    "pk": 2,
+    "fields": {
+      "name": "Authorisation Group 2",
+      "DeviceRoleProd": [
+        1,2
       ],
       "DeviceRoleInst": [
         1
@@ -131,7 +144,14 @@
     "model": "nac.deviceRoleProd",
     "pk": 1,
     "fields": {
-      "name": "DeviceRoleProd"
+      "name": "DeviceRoleProd1"
+    }
+  },
+  {
+    "model": "nac.deviceRoleProd",
+    "pk": 2,
+    "fields": {
+      "name": "DeviceRoleProd2"
     }
   },
   {
