@@ -61,6 +61,7 @@ class Device(models.Model):
         return reverse("device_detail", kwargs={"pk": self.pk})
 
     def format_mac(self, mac):
+        mac = mac.upper()
         return ":".join(mac[i:i+2] for i in range(0, 12, 2))
 
     def get_appl_NAC_macAddressAIR(self):

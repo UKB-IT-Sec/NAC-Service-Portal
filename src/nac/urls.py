@@ -9,7 +9,9 @@ from .views import (
     DeviceRoleProdAutocomplete,
     DeviceRoleInstAutocomplete,
     AuthorizationGroupAutocomplete,
-    ArmisView
+    ArmisView,
+    AccountSettings,
+    change_password,
 )
 
 urlpatterns = [
@@ -22,5 +24,7 @@ urlpatterns = [
     path("armis/", ArmisView.as_view(), name="armis_import"),
     path("DeviceRoleProd-autocomplete/", DeviceRoleProdAutocomplete.as_view(), name="DeviceRoleProd-autocomplete"),
     path("DeviceRoleInst-autocomplete/", DeviceRoleInstAutocomplete.as_view(), name="DeviceRoleInst-autocomplete"),
-    path("authorization-group-autocomplete/", AuthorizationGroupAutocomplete.as_view(), name="authorization-group-autocomplete")
+    path("authorization-group-autocomplete/", AuthorizationGroupAutocomplete.as_view(), name="authorization-group-autocomplete"),
+    path("account-settings/", AccountSettings.as_view(), name="account-settings"),
+    path("change_password/", change_password, name='change_password'),
 ]
