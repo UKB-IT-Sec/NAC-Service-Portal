@@ -159,6 +159,9 @@ cython_debug/
 # Django
 src/nac/migrations/0*.py
 
+resources/invalid_devices.csv
+
+
 # DS_Store
 .DS_Store
 

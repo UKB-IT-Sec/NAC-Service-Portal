@@ -23,14 +23,14 @@ from helper.logging import setup_console_logger
 from helper.ldap import connect_to_ldap_server, map_device_data
 
 
-DEFAULT_CONFIG = get_config_directory() / 'export.cnf'
+DEFAULT_CONFIG = get_config_directory() / 'ldap.cfg'
 
 
 class Command(BaseCommand):
     help = "Export Devices to LDAP server"
 
     def add_arguments(self, parser):
-        parser.add_argument('-c', '--config_file', default=DEFAULT_CONFIG, help='use a specific config file [src/export.cnf]')
+        parser.add_argument('-c', '--config_file', default=DEFAULT_CONFIG, help='use a specific config file [src/ldap.cfg]')
 
     def handle(self, *args, **options):
         setup_console_logger(options['verbosity'])
