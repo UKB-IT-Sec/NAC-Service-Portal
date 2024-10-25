@@ -20,7 +20,7 @@ from helper.filesystem import get_config_directory
 from nac.models import Device
 from helper.config import get_config_from_file
 from helper.logging import setup_console_logger
-from helper.ldap import connect_to_ldap_server, map_device_data
+from helper.ldap import connect_to_ldap_server, delete_device, add_device, device_exists
 
 
 DEFAULT_CONFIG = get_config_directory() / 'ldap.cfg'
@@ -56,28 +56,6 @@ class Command(BaseCommand):
 
     def _add_or_update_device_in_ldap_database(self, device):
         logging.debug('processing %s', device.name)
-        if self._device_exists(device.name):
-            self._delete_device(device)
-        self._add_device(device)
-
-    def _device_exists(self, devicename):
-        return self.ldap_connection.search('appl-NAC-Hostname={},ou=Devices,dc=ukbonn,dc=de'.format(devicename), '(objectclass=appl-NAC-Device)')
-
-    def _delete_device(self, device):
-        if self.ldap_connection.delete('appl-NAC-Hostname={},ou=Devices,dc=ukbonn,dc=de'.format(device.name)):
-            logging.info('%s deleted', device.name)
-        else:
-            logging.error('failed to delete %s', device.name)
-
-    def _add_device(self, device):
-        if self.ldap_connection.add('appl-NAC-Hostname={},ou=Devices,dc=ukbonn,dc=de'.format(device.name),
-                                    'appl-NAC-Device',
-                                    map_device_data(device)
-                                    ):
-            logging.info('%s added', device.name)
-            device.synchronized = True
-            device.save()
-            return True
-        else:
-            logging.error('failed to add %s', device.name)
-        return False
+        if device_exists(device.name, self.ldap_connection, self.config['ldap-server']['search_base']):
+            delete_device(device.name, self.ldap_connection, self.config['ldap-server']['search_base'])
+        add_device(device, self.ldap_connection, self.config['ldap-server']['search_base'])

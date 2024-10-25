@@ -22,7 +22,7 @@ from helper.filesystem import get_config_directory
 from nac.models import Device
 from helper.config import get_config_from_file
 from helper.logging import setup_console_logger
-from helper.ldap import connect_to_ldap_server
+from helper.ldap import connect_to_ldap_server, delete_device
 
 
 DEFAULT_CONFIG = get_config_directory() / 'ldap.cfg'
@@ -39,6 +39,8 @@ class Command(BaseCommand):
         setup_console_logger(options['verbosity'])
         self.config = get_config_from_file(options['config_file'])
 
+        logging.info('dry run? %s', options['dry_run'])
+
         self.ldap_connection = connect_to_ldap_server(
             self.config['ldap-server']['address'],
             self.config['ldap-server']['user'],
@@ -47,19 +49,18 @@ class Command(BaseCommand):
             tls=self.config['ldap-server'].getboolean('tls')
             )
 
-        entry_generator = self.ldap_connection.extend.standard.paged_search(search_base = 'dc=ukbonn,dc=de',
-                                                          search_filter = '(objectClass=appl-NAC-Device)',
-                                                          search_scope = SUBTREE,
-                                                          attributes = ['appl-NAC-Hostname'],
-                                                          paged_size = 5,
-                                                          generator = True)
+        entry_generator = self.ldap_connection.extend.standard.paged_search(search_base=self.config['ldap-server']['search_base'],
+                                                                            search_filter='(objectClass=appl-NAC-Device)',
+                                                                            search_scope=SUBTREE,
+                                                                            attributes=['appl-NAC-Hostname'],
+                                                                            paged_size=5,
+                                                                            generator=True)
         for entry in entry_generator:
             logging.debug('checking device %s', entry['attributes']['appl-NAC-Hostname'])
-            try: 
+            try:
                 Device.objects.get(appl_NAC_Hostname=entry['attributes']['appl-NAC-Hostname'])
             except ObjectDoesNotExist:
-                logging.warning('deleting device %s', entry['attributes']['appl-NAC-Hostname'])
-            logging.warning(entry['dn'])
-            logging.warning(entry['attributes'])
+                if not options['dry_run']:
+                    delete_device(entry['attributes']['appl-NAC-Hostname'], self.ldap_connection, self.config['ldap-server']['search_base'])
 
         self.ldap_connection.unbind()
