@@ -23,7 +23,7 @@ def test_device_search(query, result):
     test_user = CustomUser.objects.create(name="test")
     test_user.authorization_group.set([AuthorizationGroup.objects.get(pk=1), AuthorizationGroup.objects.get(pk=2)])
 
-    request = RequestFactory().get(reverse_lazy("devices") + "?q=" + query)
+    request = RequestFactory().get(reverse_lazy("devices") + "?search_string=" + query)
     request.user = test_user
     view = DeviceListView()
     view.request = request

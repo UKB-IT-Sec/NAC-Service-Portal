@@ -20,7 +20,7 @@ class DeviceListView(ListView):
         # only show devices from authorization_groups the user is authorized to see
         device_list = Device.objects.filter(authorization_group__in=self.request.user.authorization_group.all())
         # filter for search results
-        query = self.request.GET.get("q")
+        query = self.request.GET.get("search_string")
         if query:
             device_list = device_list.filter(
                 Q(name__icontains=query) | Q(appl_NAC_Hostname__icontains=query) |
