@@ -38,19 +38,6 @@ def delete_device(device_name, ldap_connection, search_base):
         logging.error('failed to delete %s', device_name)
 
 
-def add_device(device, ldap_connection, search_base):
-    if ldap_connection.add('appl-NAC-Hostname={},{}'.format(device.name, search_base),
-                           'appl-NAC-Device',
-                           map_device_data(device)):
-        logging.info('%s added', device.name)
-        device.synchronized = True
-        device.save()
-        return True
-    else:
-        logging.error('failed to add %s', device.name)
-    return False
-
-
 def map_device_data(device):
     device_data = {
         'appl-NAC-FQDN': device.appl_NAC_FQDN,
