@@ -31,12 +31,16 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('-c', '--config_file', default=DEFAULT_CONFIG, help='use a specific config file [src/ldap.cfg]')
+        parser.add_argument('-a', '--all', action='store_true', help='sync all devices')
 
     def handle(self, *args, **options):
         setup_console_logger(options['verbosity'])
         self.config = get_config_from_file(options['config_file'])
 
-        devices_to_sync = self._get_all_changed_devices()
+        if options['all']:
+            devices_to_sync = Device.objects.all()
+        else:
+            devices_to_sync = self._get_all_changed_devices()
 
         self.ldap_connection = connect_to_ldap_server(
             self.config['ldap-server']['address'],

@@ -39,8 +39,6 @@ class Command(BaseCommand):
         setup_console_logger(options['verbosity'])
         self.config = get_config_from_file(options['config_file'])
 
-        logging.info('dry run? %s', options['dry_run'])
-
         self.ldap_connection = connect_to_ldap_server(
             self.config['ldap-server']['address'],
             self.config['ldap-server']['user'],
@@ -60,7 +58,9 @@ class Command(BaseCommand):
             try:
                 Device.objects.get(appl_NAC_Hostname=entry['attributes']['appl-NAC-Hostname'])
             except ObjectDoesNotExist:
-                if not options['dry_run']:
+                if options['dry_run']:
+                    logging.warning('%s would be deleted (DRY RUN)', entry['attributes']['appl-NAC-Hostname'])
+                else:
                     delete_device(entry['attributes']['appl-NAC-Hostname'], self.ldap_connection, self.config['ldap-server']['search_base'])
 
         self.ldap_connection.unbind()
