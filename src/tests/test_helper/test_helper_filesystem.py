@@ -6,7 +6,7 @@ def test_get_src_directory():
 
 
 def test_get_config_directory():
-    assert (get_config_directory() / 'export.cnf').exists()
+    assert (get_config_directory() / 'ldap.cfg').exists()
 
 
 def test_get_resources_directory():
