@@ -1,5 +1,5 @@
 '''
-    NSSP - Export to ldap server
+    NSSP - Clean ldap server
     Copyright (C) 2024 Universitaetsklinikum Bonn AoeR
 
     This program is free software: you can redistribute it and/or modify
@@ -15,32 +15,29 @@
 '''
 import logging
 from django.core.management.base import BaseCommand
+from django.core.exceptions import ObjectDoesNotExist
+from ldap3 import SUBTREE
 
 from helper.filesystem import get_config_directory
 from nac.models import Device
 from helper.config import get_config_from_file
 from helper.logging import setup_console_logger
-from helper.ldap import connect_to_ldap_server, delete_device, device_exists, map_device_data
+from helper.ldap import connect_to_ldap_server, delete_device
 
 
 DEFAULT_CONFIG = get_config_directory() / 'ldap.cfg'
 
 
 class Command(BaseCommand):
-    help = "Export Devices to LDAP server"
+    help = "Remove devices on ldap not present in NSSP"
 
     def add_arguments(self, parser):
         parser.add_argument('-c', '--config_file', default=DEFAULT_CONFIG, help='use a specific config file [src/ldap.cfg]')
-        parser.add_argument('-a', '--all', action='store_true', help='sync all devices')
+        parser.add_argument('-d', '--dry_run', action='store_true', help='do not delete devices on ldap')
 
     def handle(self, *args, **options):
         setup_console_logger(options['verbosity'])
         self.config = get_config_from_file(options['config_file'])
-
-        if options['all']:
-            devices_to_sync = Device.objects.all()
-        else:
-            devices_to_sync = self._get_all_changed_devices()
 
         self.ldap_connection = connect_to_ldap_server(
             self.config['ldap-server']['address'],
@@ -50,28 +47,20 @@ class Command(BaseCommand):
             tls=self.config['ldap-server'].getboolean('tls')
             )
 
-        for entry in devices_to_sync:
-            self._add_or_update_device_in_ldap_database(entry)
+        entry_generator = self.ldap_connection.extend.standard.paged_search(search_base=self.config['ldap-server']['search_base'],
+                                                                            search_filter='(objectClass=appl-NAC-Device)',
+                                                                            search_scope=SUBTREE,
+                                                                            attributes=['appl-NAC-Hostname'],
+                                                                            paged_size=5,
+                                                                            generator=True)
+        for entry in entry_generator:
+            logging.debug('checking device %s', entry['attributes']['appl-NAC-Hostname'])
+            try:
+                Device.objects.get(appl_NAC_Hostname=entry['attributes']['appl-NAC-Hostname'])
+            except ObjectDoesNotExist:
+                if options['dry_run']:
+                    logging.warning('%s would be deleted (DRY RUN)', entry['attributes']['appl-NAC-Hostname'])
+                else:
+                    delete_device(entry['attributes']['appl-NAC-Hostname'], self.ldap_connection, self.config['ldap-server']['search_base'])
 
         self.ldap_connection.unbind()
-
-    def _get_all_changed_devices(self):
-        return Device.objects.all().filter(synchronized=False)
-
-    def _add_device(self, device):
-        if self.ldap_connection.add('appl-NAC-Hostname={},{}'.format(device.name, self.config['ldap-server']['search_base']),
-                                    'appl-NAC-Device',
-                                    map_device_data(device)):
-            logging.info('%s added', device.name)
-            device.synchronized = True
-            device.save()
-            return True
-        else:
-            logging.error('failed to add %s', device.name)
-        return False
-
-    def _add_or_update_device_in_ldap_database(self, device):
-        logging.debug('processing %s', device.name)
-        if device_exists(device.name, self.ldap_connection, self.config['ldap-server']['search_base']):
-            delete_device(device.name, self.ldap_connection, self.config['ldap-server']['search_base'])
-        self._add_device(device)
