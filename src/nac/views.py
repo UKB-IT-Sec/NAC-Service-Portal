@@ -28,15 +28,15 @@ class DeviceListView(ListView):
                 | Q(appl_NAC_FQDN__icontains=query))
 
         # filter by authorization group
-        selected_authorization_groups = self.request.GET.getlist("authorization_group")
+        selected_authorization_groups = self.request.GET.get("authorization_group")
         if selected_authorization_groups:
             device_list = device_list.filter(authorization_group__in=selected_authorization_groups)
 
         # filter by device role prod
-        selected_device_roles_prod = self.request.GET.getlist("device_role_prod")
+        selected_device_roles_prod = self.request.GET.get("device_role_prod")
         if selected_device_roles_prod:
             device_list = device_list.filter(appl_NAC_DeviceRoleProd__in=selected_device_roles_prod)
-        return device_list
+        return device_list.order_by("name")
 
     # we need this for the drop-down menus with filtering options
     def get_context_data(self, *, object_list=None, **kwargs):

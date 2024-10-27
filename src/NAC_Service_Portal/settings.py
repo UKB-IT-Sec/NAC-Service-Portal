@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'nac.apps.NacConfig',
     'crispy_forms',
     'crispy_bootstrap5',
+    'sortable_listview',
 ]
 
 MIDDLEWARE = [

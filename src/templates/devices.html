@@ -6,7 +6,13 @@
 <div class="container">
 	<h1>Devices</h1>
 	 <form action="{% url 'devices' %}" method="get">
-        {{ search_form | crispy }}
+		 <div class="row">
+			 {% for field in search_form %}
+			 <div class="col-md-4 ">
+				{{ field | as_crispy_field }}
+			 </div>
+			 {% endfor %}
+		 </div>
         <button type="submit">Filter</button>
     </form>
 	<table class="table table-striped">
@@ -20,6 +26,7 @@
 				<th scope="col" width="60"></th>
 			</tr>
 		</thead>
+
 	{% for device in device_list %}
 		<tr>
 			<td>

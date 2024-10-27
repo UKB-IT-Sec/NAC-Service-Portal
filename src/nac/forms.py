@@ -24,13 +24,13 @@ class DeviceSearchForm(forms.Form):
         self.user = user
         super(DeviceSearchForm, self).__init__(*args, **kwargs)
 
-        self.fields['authorization_group'] = forms.ModelMultipleChoiceField(AuthorizationGroup.objects.filter(
+        self.fields['authorization_group'] = forms.ModelChoiceField(AuthorizationGroup.objects.filter(
             id__in=user.authorization_group.all()), required=False, label="Authorization Group")
 
     search_string = forms.CharField(
         label="Search for name, FQDN, hostname or MAC address:", max_length=100, required=False)
-    device_role_prod = forms.ModelMultipleChoiceField(DeviceRoleProd.objects.all(),
-                                                      required=False, label="Device Role Prod:")
+    device_role_prod = forms.ModelChoiceField(DeviceRoleProd.objects.all(),
+                                              required=False, label="Device Role Prod:")
 
 
 class DeviceForm(ModelForm):
