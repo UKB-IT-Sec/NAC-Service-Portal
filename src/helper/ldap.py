@@ -27,6 +27,17 @@ def connect_to_ldap_server(address, username, password, port=389, tls=False):
     return ldap_connection
 
 
+def device_exists(device_name, ldap_connection, search_base):
+    return ldap_connection.search('appl-NAC-Hostname={},{}'.format(device_name, search_base), '(objectclass=appl-NAC-Device)')
+
+
+def delete_device(device_name, ldap_connection, search_base):
+    if ldap_connection.delete('appl-NAC-Hostname={},{}'.format(device_name, search_base)):
+        logging.info('%s deleted', device_name)
+    else:
+        logging.error('failed to delete %s', device_name)
+
+
 def map_device_data(device):
     device_data = {
         'appl-NAC-FQDN': device.appl_NAC_FQDN,
@@ -40,9 +51,9 @@ def map_device_data(device):
         'appl-NAC-AllowAccessCEL': device.appl_NAC_AllowAccessCEL
         }
     if device.appl_NAC_DeviceRoleProd:
-        device_data['appl-NAC-DeviceRoleProd'] = device.appl_NAC_DeviceRoleProd
+        device_data['appl-NAC-DeviceRoleProd'] = device.appl_NAC_DeviceRoleProd.__str__()
     if device.appl_NAC_DeviceRoleInst:
-        device_data['appl-NAC-DeviceRoleInst'] = device.appl_NAC_DeviceRoleInst
+        device_data['appl-NAC-DeviceRoleInst'] = device.appl_NAC_DeviceRoleInst.__str__()
     if device.appl_NAC_macAddressCAB:
         device_data['appl-NAC-macAddressCAB'] = device.appl_NAC_macAddressCAB
     if device.appl_NAC_macAddressAIR:

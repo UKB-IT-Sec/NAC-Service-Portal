@@ -1,0 +1,67 @@
+{
+    "entries": [
+        {
+            "attributes": {
+                "appl-NAC-Active": true,
+                "appl-NAC-AllowAccessAIR": false,
+                "appl-NAC-AllowAccessCAB": true,
+                "appl-NAC-AllowAccessCEL": false,
+                "appl-NAC-AllowAccessVPN": false,
+                "appl-NAC-DeviceRoleInst": "A-Netz",
+                "appl-NAC-DeviceRoleProd": "A_komplett",
+                "appl-NAC-FQDN": "testDeviceCable.ukbonn.de",
+                "appl-NAC-ForceDot1X": false,
+                "appl-NAC-Hostname": "testDeviceCable",
+                "appl-NAC-Install": false,
+                "appl-NAC-macAddressCAB": [
+                    "aabbccddeeff"
+                ],
+                "objectClass": [
+                    "appl-NAC-Device"
+                ]
+            },
+            "dn": "appl-NAC-Hostname=testDeviceCable,ou=Devices,dc=ukbonn,dc=de",
+            "raw": {
+                "appl-NAC-Active": [
+                    "TRUE"
+                ],
+                "appl-NAC-AllowAccessAIR": [
+                    "FALSE"
+                ],
+                "appl-NAC-AllowAccessCAB": [
+                    "TRUE"
+                ],
+                "appl-NAC-AllowAccessCEL": [
+                    "FALSE"
+                ],
+                "appl-NAC-AllowAccessVPN": [
+                    "FALSE"
+                ],
+                "appl-NAC-DeviceRoleInst": [
+                    "A-Netz"
+                ],
+                "appl-NAC-DeviceRoleProd": [
+                    "A_komplett"
+                ],
+                "appl-NAC-FQDN": [
+                    "testDeviceCable.ukbonn.de"
+                ],
+                "appl-NAC-ForceDot1X": [
+                    "FALSE"
+                ],
+                "appl-NAC-Hostname": [
+                    "testDeviceCable"
+                ],
+                "appl-NAC-Install": [
+                    "FALSE"
+                ],
+                "appl-NAC-macAddressCAB": [
+                    "aabbccddeeff"
+                ],
+                "objectClass": [
+                    "appl-NAC-Device"
+                ]
+            }
+        }
+    ]
+}

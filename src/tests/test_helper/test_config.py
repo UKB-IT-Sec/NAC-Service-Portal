@@ -9,7 +9,7 @@ SRC_DIR = get_src_directory()
 
 
 def test_config_loaded_success():
-    conf_file = CONFIG_DIR / 'export.cnf'
+    conf_file = CONFIG_DIR / 'ldap.cfg'
     configuration = get_config_from_file(conf_file)
     assert 'ldap-server' in configuration
 
