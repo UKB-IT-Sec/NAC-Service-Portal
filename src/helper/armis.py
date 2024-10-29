@@ -40,7 +40,7 @@ def get_devices(site):  # gets Devices based on a specific site, can be filtered
     vlan_blacklist = armis_config['armis-server'].get('vlan_blacklist', '')
     vlan_bl = f"!networkInterface:(vlans:{vlan_blacklist})" if vlan_blacklist else ""
     deviceList = acloud.get_devices(
-        asq=f'in:devices site:"{site.get('name')}" timeFrame:"7 Days" {vlan_bl}',
+        asq=f'in:devices site:"{site.get("name")}" timeFrame:"7 Days" {vlan_bl}',
         fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries']
     )
     return _remove_existing_devices(deviceList)
