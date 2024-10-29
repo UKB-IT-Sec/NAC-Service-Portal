@@ -19,7 +19,7 @@ def get_or_create_armis_cloud():  # connects to armis cloud
 
 
 def _filter_sort_sites(sites):  # removes all sites that dont match the regex-Pattern
-    pattern = rf'{armis_config['armis-server']['sites_pattern']}'
+    pattern = rf"{armis_config['armis-server']['sites_pattern']}"
     filtered_sites = {key: value for key, value in sites.items() if re.match(pattern, value['name'])}
     return dict(sorted(filtered_sites.items(), key=lambda x: x[1]['name']))
 
