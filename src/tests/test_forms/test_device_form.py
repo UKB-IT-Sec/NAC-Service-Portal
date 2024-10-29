@@ -6,15 +6,15 @@ from nac.models import AuthorizationGroup, DeviceRoleProd, DeviceRoleInst
 @pytest.mark.django_db
 @pytest.mark.parametrize("appl_NAC_ForceDot1X, appl_NAC_AllowAccessVPN, appl_NAC_Certificate, appl_NAC_AllowAccessAIR, "
                          "appl_NAC_macAddressAIR, appl_NAC_AllowAccessCAB, appl_NAC_macAddressCAB, validity",
-                         [(True, True, "test", True, "001122334455", True, "001122334455", True),
-                          (True, True, None, True, "001122334455", True, "001122334455", False),
-                          (True, True, "test", True, None, True, "001122334455", False),
-                          (True, True, "test", True, "001122334455", True, None, False),
-                          (False, True, None, True, "001122334455", True, "001122334455", False),
-                          (True, False, None, True, "001122334455", True, "001122334455", False),
-                          (False, False, None, True, "001122334455", True, "001122334455", True),
-                          (True, True, "test", False, None, True, "001122334455", True),
-                          (True, True, "test", True, "001122334455", False, None, True)])
+                         [(True, True, "test", True, "001132334455", True, "001132334455", True),
+                          (True, True, None, True, "001142334455", True, "001142334455", False),
+                          (True, True, "test", True, None, True, "001152334455", False),
+                          (True, True, "test", True, "001162334455", True, None, False),
+                          (False, True, None, True, "001172334455", True, "001172334455", False),
+                          (True, False, None, True, "001182334455", True, "001182334455", False),
+                          (False, False, None, True, "001192334455", True, "001192334455", True),
+                          (True, True, "test", False, None, True, "001123334455", True),
+                          (True, True, "test", True, "001122434455", False, None, True)])
 def test_clean(appl_NAC_ForceDot1X, appl_NAC_AllowAccessVPN, appl_NAC_Certificate, appl_NAC_AllowAccessAIR,
                appl_NAC_macAddressAIR, appl_NAC_AllowAccessCAB, appl_NAC_macAddressCAB, validity):
     test_DeviceRoleProd = DeviceRoleProd.objects.create(name="test")
@@ -41,5 +41,4 @@ def test_clean(appl_NAC_ForceDot1X, appl_NAC_AllowAccessVPN, appl_NAC_Certificat
        "appl_NAC_Certificate": appl_NAC_Certificate,
        "synchronized": False,
     })
-
     assert form.is_valid() is validity

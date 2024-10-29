@@ -32,7 +32,7 @@ def test_get_or_create_mac_list(mac_list, mock_device_objects):
 
 def test_check_existing_mac(mac_list):
     with patch.object(mac_list, '_get_or_create_mac_list'):
-        mac_list._mac_list = {'00:11:22:33:44:55': 1}
+        mac_list._mac_list = {'001122334455': 1}
 
         result, device_id = mac_list.check_existing_mac({'appl_NAC_macAddressCAB': '00:11:22:33:44:55'})
         assert result is True
@@ -46,17 +46,17 @@ def test_check_existing_mac(mac_list):
 def test_update_mac_list(mac_list):
     device = {
         'id': 1,
-        'appl_NAC_macAddressCAB': '00:11:22:33:44:55, 66:77:88:99:AA:BB',
-        'appl_NAC_macAddressAIR': 'CC:DD:EE:FF:00:11'
+        'appl_NAC_macAddressCAB': '001122334455, 66778899aabb',
+        'appl_NAC_macAddressAIR': 'ccddeeff0011'
     }
     mac_list.update_mac_list(device)
 
     assert len(mac_list._mac_list) == 3
-    assert mac_list._mac_list['00:11:22:33:44:55'] == 1
-    assert mac_list._mac_list['66:77:88:99:AA:BB'] == 1
-    assert mac_list._mac_list['CC:DD:EE:FF:00:11'] == 1
+    assert mac_list._mac_list['001122334455'] == 1
+    assert mac_list._mac_list['66778899aabb'] == 1
+    assert mac_list._mac_list['ccddeeff0011'] == 1
 
-    assert set(mac_list._mac_list.keys()) == {'00:11:22:33:44:55', '66:77:88:99:AA:BB', 'CC:DD:EE:FF:00:11'}
+    assert set(mac_list._mac_list.keys()) == {'001122334455', '66778899aabb', 'ccddeeff0011'}
 
 
 def test_update_mac_list_empty_macs(mac_list):

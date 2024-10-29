@@ -1,6 +1,8 @@
 {% extends "base.html" %}
-
+{% load static %}
+{% load crispy_forms_tags %}
 {% block content %}
+<div class="container">
 <h1>Armis Sites:</h1>
 <form method="POST" action="{% url 'armis_import' %}">
   {% csrf_token %}
@@ -20,71 +22,184 @@
     <span id="pageInfo">Seite <span id="currentPage">1</span> von <span id="totalPages">1</span></span>
     <button id="nextPage">Nächste</button>
   </div>
-  <table id="deviceTable">
+  <table id="deviceTable" class="table table-striped">
     <thead>
+      <style>
+        .modal {
+          display: none;
+          position: fixed;
+          z-index: 1;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          overflow: auto;
+          background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+          background-color: #fefefe;
+          margin: 15% auto;
+          padding: 20px;
+          border: 1px solid #888;
+          width: 80%;
+        }
+        .close {
+          color: #aaa;
+          float: right;
+          font-size: 28px;
+          font-weight: bold;
+          cursor: pointer;
+        }
+        .close:hover,
+        .close:focus {
+          color: black;
+          text-decoration: none;
+          cursor: pointer;
+        }
+        .address-link {
+          color: blue;
+          cursor: pointer;
+        }
+      </style>
       <tr>
-        <th>Device Name</th>
-        <th>MAC Address</th>
-        <th>IP Address</th>
+        <th scope="col">Device Name</th>
+        <th scope="col">MAC Address</th>
+        <th scope="col">IP Address</th>
+        <th scope="col">Boundaries</th>
+        <th scope="col"></th>
       </tr>
     </thead>
     <tbody>
-      <!-- Tabellendaten werden hier dynamisch eingefügt -->
     </tbody>
   </table>
+  
+  <div id="detailModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2 id="modalTitle"></h2>
+      <ul id="modalList"></ul>
+    </div>
+  </div>
   {%endif%}
-  <script>
+</div>
+<script>
   const itemsPerPage = 50;
   let currentPage = 1;
   let data = [
       {% for device in devices %}
           {
               name: "{{ device.name }}",
-              macAddress: "{{ device.macAddress }}",
-              ipAddress: "{{ device.ipAddress }}"
+              macAddress: "{{ device.macAddress}}",
+              ipAddress: "{{ device.ipAddress }}",
+              boundaries: "{{ device.boundaries }}"
           },
       {% endfor %}
   ];
-  
   function displayTable(page) {
-      const tableBody = document.querySelector("#deviceTable tbody");
-      tableBody.innerHTML = "";
+    const tableBody = document.querySelector("#deviceTable tbody");
+    tableBody.innerHTML = "";
+    
+    const start = (page - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    const pageData = data.slice(start, end);
+    
+    pageData.forEach((device, index) => {
+        const row = tableBody.insertRow();
+        row.insertCell().textContent = device.name;
+        
+        const macCell = row.insertCell();
+        const macAddresses = device.macAddress.split(",");
+        const macTotal = macAddresses.length;
+        macCell.innerHTML = `${macAddresses[0]} <span class="icon-desc address-link" desc="${device.macAddress}">${macTotal > 1 ? '(' + macTotal + ')' : ''}</span>`;
+        if (macTotal > 1) {
+            macCell.querySelector('span').addEventListener("click", () => showDetails("MAC-Adressen", device.macAddress));
+        } else {
+            macCell.querySelector('span').addEventListener("click", () => showDetails("MAC-Adresse", device.macAddress));
+        }
+
+        const ipCell = row.insertCell();
+        const ipAddresses = device.ipAddress.split(",");
+        const ipTotal = ipAddresses.length;
+        ipCell.innerHTML = `${ipAddresses[0]} <span class="icon-desc address-link" desc="${device.ipAddress}">${ipTotal > 1 ? '(' + ipTotal + ')' : ''}</span>`;
+        if (ipTotal > 1) {
+            ipCell.querySelector('span').addEventListener("click", () => showDetails("IP-Adressen", device.ipAddress));
+        } else {
+            ipCell.querySelector('span').addEventListener("click", () => showDetails("IP-Adresse", device.ipAddress));
+        }
+        row.insertCell().textContent = device.boundaries;
+
+        const importCell = row.insertCell();
+        importCell.innerHTML = `
+          <form action="{% url 'device_new' %}" method="POST">
+              {% csrf_token %}
+              <input type="hidden" name="device_data" value='${JSON.stringify(device)}'>
+              <button type="submit">Import</button>
+          </form>
+      `;
+    });
+    
+    document.getElementById("currentPage").textContent = page;
+    document.getElementById("totalPages").textContent = Math.ceil(data.length / itemsPerPage);
+}
+  
+  function showDetails(title, addresses) {
+      const modal = document.getElementById("detailModal");
+      const modalTitle = document.getElementById("modalTitle");
+      const modalList = document.getElementById("modalList");
       
-      const start = (page - 1) * itemsPerPage;
-      const end = start + itemsPerPage;
-      const pageData = data.slice(start, end);
+      modalTitle.textContent = title;
+      modalList.innerHTML = "";
       
-      pageData.forEach(device => {
-          const row = tableBody.insertRow();
-          row.insertCell().textContent = device.name;
-          row.insertCell().textContent = device.macAddress;
-          row.insertCell().textContent = device.ipAddress;
+      addresses.split(",").forEach(address => {
+          const li = document.createElement("li");
+          li.textContent = address.trim();
+          modalList.appendChild(li);
       });
       
-      document.getElementById("currentPage").textContent = page;
-      document.getElementById("totalPages").textContent = Math.ceil(data.length / itemsPerPage);
+      modal.style.display = "block";
   }
   
   function setupPagination() {
-      const prevButton = document.getElementById("prevPage");
-      const nextButton = document.getElementById("nextPage");
+    const prevButton = document.getElementById("prevPage");
+    const nextButton = document.getElementById("nextPage");
+    
+    prevButton.addEventListener("click", () => {
+        if (currentPage > 1) {
+            currentPage--;
+            displayTable(currentPage);
+        }
+    });
+    
+    nextButton.addEventListener("click", () => {
+        if (currentPage < Math.ceil(data.length / itemsPerPage)) {
+            currentPage++;
+            displayTable(currentPage);
+        }
+    });
+  }
+  
+  function setupModal() {
+      const modal = document.getElementById("detailModal");
+      const span = document.getElementsByClassName("close")[0];
       
-      prevButton.addEventListener("click", () => {
-          if (currentPage > 1) {
-              currentPage--;
-              displayTable(currentPage);
-          }
-      });
+      span.onclick = function() {
+          modal.style.display = "none";
+      }
       
-      nextButton.addEventListener("click", () => {
-          if (currentPage < Math.ceil(data.length / itemsPerPage)) {
-              currentPage++;
-              displayTable(currentPage);
+      window.onclick = function(event) {
+          if (event.target == modal) {
+              modal.style.display = "none";
           }
-      });
+      }
   }
   
   displayTable(currentPage);
   setupPagination();
-  </script>
+  setupModal();
+</script>
 {% endblock content %}
+
+
+
+
+#Tests schreiben, prüfen wegen unique
