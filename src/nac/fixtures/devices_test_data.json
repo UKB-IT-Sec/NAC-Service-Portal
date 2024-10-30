@@ -41,7 +41,7 @@
       "appl_NAC_AllowAccessCEL": false,
       "appl_NAC_DeviceRoleInst": 1,
       "appl_NAC_macAddressCAB": "000000000000",
-      "appl_NAC_macAddressAIR": "002596123456",
+      "appl_NAC_macAddressAIR": "102596123456",
       "appl_NAC_Certificate": "s"
     }
   },
@@ -63,8 +63,8 @@
       "appl_NAC_AllowAccessVPN": false,
       "appl_NAC_AllowAccessCEL": false,
       "appl_NAC_DeviceRoleInst": 1,
-      "appl_NAC_macAddressCAB": "002596123456",
-      "appl_NAC_macAddressAIR": "123456789000,002596123456",
+      "appl_NAC_macAddressCAB": "202596123456",
+      "appl_NAC_macAddressAIR": "123456789000,302596123456",
       "appl_NAC_Certificate": "s"
     }
   },
@@ -86,8 +86,8 @@
       "appl_NAC_AllowAccessVPN": false,
       "appl_NAC_AllowAccessCEL": false,
       "appl_NAC_DeviceRoleInst": 1,
-      "appl_NAC_macAddressCAB": "002596123456",
-      "appl_NAC_macAddressAIR": "002596123456",
+      "appl_NAC_macAddressCAB": "402596123456",
+      "appl_NAC_macAddressAIR": "502596123456",
       "appl_NAC_Certificate": "s"
     }
   },
@@ -109,8 +109,8 @@
       "appl_NAC_AllowAccessVPN": false,
       "appl_NAC_AllowAccessCEL": false,
       "appl_NAC_DeviceRoleInst": 1,
-      "appl_NAC_macAddressCAB": "002596123456",
-      "appl_NAC_macAddressAIR": "002596123456",
+      "appl_NAC_macAddressCAB": "602596123456",
+      "appl_NAC_macAddressAIR": "702596123456",
       "appl_NAC_Certificate": "s"
     }
   },
