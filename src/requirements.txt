@@ -10,3 +10,5 @@ django-crispy-forms
 crispy-bootstrap5
 ldap3
 armis
+django-sortable-listview
+
