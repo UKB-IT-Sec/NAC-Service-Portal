@@ -1,12 +1,20 @@
 {% extends "base.html" %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 <div class="container">
 	<h1>Devices</h1>
-	<form action="{% url 'devices' %}" method="get">
-		<input name="q" type="text" placeholder="Search device...">
-	</form>
+	 <form action="{% url 'devices' %}" method="get">
+		 <div class="row">
+			 {% for field in search_form %}
+			 <div class="col-md-4 ">
+				{{ field | as_crispy_field }}
+			 </div>
+			 {% endfor %}
+		 </div>
+        <button type="submit">Filter</button>
+    </form>
 	<table class="table table-striped">
 		<thead>
 			<tr>
@@ -18,6 +26,7 @@
 				<th scope="col" width="60"></th>
 			</tr>
 		</thead>
+
 	{% for device in device_list %}
 		<tr>
 			<td>
@@ -41,7 +50,7 @@
 			</td>
 			<td>
 				{% for mac in device.get_appl_NAC_macAddressAIR %}
-					<b> 
+					<b>
 						{% if mac != None %}
 							<span class="icon-desc" desc="macAddressAIR"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_macAddressAIR" height="14" width="14" class="icon-zoom"/></span>
 							<b> {{mac}}</b> <br />
@@ -49,7 +58,7 @@
 					</b>
 				{% endfor %}
 				{% for mac in device.get_appl_NAC_macAddressCAB %}
-					<b> 
+					<b>
 						{% if mac != None %}
 						<span class="icon-desc" desc="macAddressCAB"><img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_macAddressCAB" height="14" width="14" class="icon-zoom"/></span>
 							<b> {{mac}}</b> <br />
@@ -60,7 +69,7 @@
 			<td>
 				<a href="{% url 'device_edit' device.pk %}">
 					<span class="icon-desc" desc="edit"><img src="{% static 'icons/pencil-square.svg' %}" alt="edit" height="16" width="16" class="icon-zoom"/></span>
-					
+
 				</a>
 				<a href="{% url 'device_delete' device.pk %}">
 					<span class="icon-desc" desc="delete"><img src="{% static 'icons/trash.svg' %}" alt="delete" height="16" width="16" class="icon-zoom"/></span>
