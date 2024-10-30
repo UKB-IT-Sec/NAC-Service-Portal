@@ -1,5 +1,5 @@
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from .models import CustomUser, Device
+from .models import CustomUser, Device, AuthorizationGroup, DeviceRoleProd
 from django import forms
 from django.forms import ModelForm, CheckboxInput
 from dal import autocomplete
@@ -17,6 +17,20 @@ class CustomUserChangeForm(UserChangeForm):
     class Meta:
         model = CustomUser
         fields = UserChangeForm.Meta.fields
+
+
+class DeviceSearchForm(forms.Form):
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super(DeviceSearchForm, self).__init__(*args, **kwargs)
+
+        self.fields['authorization_group'] = forms.ModelChoiceField(AuthorizationGroup.objects.filter(
+            id__in=user.authorization_group.all()), required=False, label="Authorization Group")
+
+    search_string = forms.CharField(
+        label="Search for name, FQDN, hostname or MAC address:", max_length=100, required=False)
+    device_role_prod = forms.ModelChoiceField(DeviceRoleProd.objects.all(),
+                                              required=False, label="Device Role Prod:")
 
 
 class DeviceForm(ModelForm):
