@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.shortcuts import render, redirect
-
+from .validation import normalize_mac
 
 class HomePageView(TemplateView):
     template_name = "home.html"
@@ -28,7 +28,7 @@ class DeviceListView(ListView):
         if query:
             device_list = device_list.filter(
                 Q(name__icontains=query) | Q(appl_NAC_Hostname__icontains=query) |
-                Q(appl_NAC_macAddressAIR__icontains=query) | Q(appl_NAC_macAddressCAB__icontains=query)
+                Q(appl_NAC_macAddressAIR__icontains=normalize_mac(query)) | Q(appl_NAC_macAddressCAB__icontains=normalize_mac(query))
                 | Q(appl_NAC_FQDN__icontains=query))
 
         # filter by authorization group
