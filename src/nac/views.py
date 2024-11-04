@@ -11,6 +11,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.shortcuts import render, redirect
 from .validation import normalize_mac
 
+
 class HomePageView(TemplateView):
     template_name = "home.html"
 
