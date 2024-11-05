@@ -19,20 +19,22 @@ def command():
     "appl_NAC_AllowAccessAIR, appl_NAC_macAddressAIR, appl_NAC_AllowAccessCAB,"
     "appl_NAC_macAddressCAB, expected_result",
     [
-        (True, True, "test", True, "001122334455", True, "001122334455", None),
+        (True, True, "test", True, "001112334455", True, "001112334455", None),
+        (False, False, None, True, "001122334455", True, "001122334455",
+         ValidationError),
         (True, True, None, True, "001122334455", True, "001122334455",
          ValidationError),
-        (True, True, "test", True, None, True, "001122334455",
+        (True, True, "test", True, None, True, "001132334455",
          ValidationError),
-        (True, True, "test", True, "001122334455", True, None,
+        (True, True, "test", True, "001142334455", True, None,
          ValidationError),
-        (False, True, None, True, "001122334455", True, "001122334455",
+        (False, True, None, True, "001152334455", True, "001152334455",
          ValidationError),
-        (True, False, None, True, "001122334455", True, "001122334455",
+        (True, False, None, True, "001162334455", True, "001162334455",
          ValidationError),
-        (False, False, None, True, "001122334455", True, "001122334455", None),
-        (True, True, "test", False, None, True, "001122334455", None),
-        (True, True, "test", True, "001122334455", False, None, None)
+        (False, False, None, True, "001172334455", True, "001172334455", None),
+        (True, True, "test", False, None, True, "001182334455", None),
+        (True, True, "test", True, "001192334455", False, None, None)
     ]
 )
 @patch('nac.management.commands.import_devices_from_csv.transaction.atomic')
@@ -50,7 +52,7 @@ def test_check_device(mock_check_existing_mac, mock_logging, mock_atomic, appl_N
     test_authorization_group.DeviceRoleInst.set([test_deviceRoleInst])
     test_authorization_group.DeviceRoleProd.set([test_deviceRoleProd])
     command.auth_group = 'test'
-    command.update = True
+    command.update = False
     command.mac_list = MacList()
     data = {
         "name": "test",
@@ -78,7 +80,6 @@ def test_check_device(mock_check_existing_mac, mock_logging, mock_atomic, appl_N
             command.check_device(data)
         mock_atomic.assert_called()
     else:
-        command.update = False
         mock_check_existing_mac.return_value = False, None
         result = command.check_device(data)
         assert type(result) is dict

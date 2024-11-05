@@ -49,9 +49,11 @@ class Device(models.Model):
     appl_NAC_AllowAccessAIR = models.BooleanField(null=True)
     appl_NAC_AllowAccessVPN = models.BooleanField(null=True)
     appl_NAC_AllowAccessCEL = models.BooleanField(null=True)
-    appl_NAC_macAddressCAB = models.TextField(null=True, blank=True)
+    appl_NAC_macAddressCAB = models.TextField(null=True,
+                                              blank=True, unique=True)
     appl_NAC_macAddressAIR = models.CharField(null=True,
-                                              max_length=100, blank=True)
+                                              max_length=100,
+                                              blank=True, unique=True)
     appl_NAC_Certificate = models.TextField(null=True, blank=True)
 
     def __str__(self):

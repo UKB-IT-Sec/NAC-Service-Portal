@@ -1,14 +1,17 @@
-from django.views.generic import TemplateView, ListView, DetailView
+from django.views.generic import TemplateView, ListView, DetailView, View
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.db.models import Q
 from django.urls import reverse_lazy
 from dal import autocomplete
 from .models import Device, DeviceRoleProd, AuthorizationGroup, DeviceRoleInst
+from django.core.cache import cache
+from helper.armis import get_armis_sites, get_devices
 from .forms import DeviceForm, DeviceSearchForm
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.shortcuts import render, redirect
+import json
 
 
 class HomePageView(TemplateView):
@@ -51,6 +54,33 @@ class DeviceListView(ListView):
         return context
 
 
+class ArmisView(View):
+    template_name = "armis_import.html"
+
+    def _get_context(self):  # sets the site-context for armis_import.html, uses cache to be less time consuming
+        context = {}
+        armis_sites = cache.get('armis_sites')
+        if armis_sites is None:
+            armis_sites = get_armis_sites()
+            cache.set('armis_sites', armis_sites, 3600)
+        context['armis_sites'] = armis_sites
+        return context
+
+    def get(self, request, *args, **kwargs):  # rendering the html base with site-context
+        context = self._get_context()
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):  # gets site-id chosen in html-dropdown, gets Devices based on site-id, shows them via device-context
+        context = self._get_context()
+
+        selected_site = request.POST.get('site-id')
+        context['selected_site'] = selected_site if selected_site else ''
+        if selected_site:
+            context['devices'] = get_devices(context['armis_sites'][selected_site])
+
+        return render(request, self.template_name, context)
+
+
 class DeviceDetailView(DetailView):
     model = Device
     template_name = "device_detail.html"
@@ -70,8 +100,30 @@ class DeviceDeleteView(DeleteView):
 
 class DeviceCreateView(CreateView):
     model = Device
-    template_name = "device_new.html"
     form_class = DeviceForm
+    template_name = "device_new.html"
+
+    def get_initial(self):  # sets up the data for DeviceForm if a device gets imported via armis
+        initial = super().get_initial()
+        device_data = self.request.POST.get('device_data')
+        if device_data:
+            device = json.loads(device_data)
+            initial.update({  # specify which attributes can/should be pre-filled
+                'name': device.get('name'),
+                'appl_NAC_Hostname': device.get('name'),
+                'appl_NAC_macAddressCAB': device.get('macAddress'),
+                'appl_NAC_FQDN': device.get('name'),
+                'appl_NAC_Active': True,
+                'appl_NAC_ForceDot1X': False,
+            })
+        return initial
+
+    def post(self, request, *args, **kwargs):  # handles POST-Methods for new Devices
+        if 'device_data' in request.POST:
+            form = self.form_class(initial=self.get_initial())  # pre-fills the DeviceForm if a device gets imported via armis
+            return render(request, self.template_name, {'form': form})
+        else:
+            return super().post(request, *args, **kwargs)  # else no pre-fill
 
 
 class DeviceRoleProdAutocomplete(autocomplete.Select2QuerySetView):
