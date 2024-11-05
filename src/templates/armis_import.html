@@ -3,7 +3,7 @@
 {% load crispy_forms_tags %}
 {% block content %}
 <div class="container">
-<h1>Armis Sites:</h1>
+<h1>Armis Import</h1>
 <form method="POST" action="{% url 'armis_import' %}">
   {% csrf_token %}
     <select name="site-id">
@@ -14,13 +14,17 @@
         </option>
       {% endfor %}
     </select>
-    <button type="submit">Auswählen</button>
+    <button type="submit" class="btn btn-secondary btn-sm">select</button>
   </form>
   {%if devices%}
   <div id="pagination">
-    <button id="prevPage">Vorherige</button>
-    <span id="pageInfo">Seite <span id="currentPage">1</span> von <span id="totalPages">1</span></span>
-    <button id="nextPage">Nächste</button>
+    <button id="prevPage" class="link-button">
+		<span class="icon-desc" desc="previous page"><img src="{% static 'icons/caret-left-square.svg' %}" alt="previous page" height="16" width="16" class="icon-zoom"/> </span>
+	</button>
+    <span id="pageInfo"><span id="currentPage">1</span> / <span id="totalPages">1</span></span>
+    <button id="nextPage" class="link-button">
+		<span class="icon-desc" desc="next page"><img src="{% static 'icons/caret-right-square.svg' %}" alt="next page" height="16" width="16" class="icon-zoom"/> </span>
+	</button>
   </div>
   <table id="deviceTable" class="table table-striped">
     <thead>
@@ -81,6 +85,7 @@
     </div>
   </div>
   {%endif%}
+  
 </div>
 <script>
   const itemsPerPage = 50;
@@ -133,7 +138,9 @@
           <form action="{% url 'device_new' %}" method="POST">
               {% csrf_token %}
               <input type="hidden" name="device_data" value='${JSON.stringify(device)}'>
-              <button type="submit">Import</button>
+              <button type="submit" class="link-button">
+				<span class="icon-desc" desc="add device"><img src="{% static 'icons/plus-circle.svg' %}" alt="add device" height="16" width="16" class="icon-zoom"/> </span>
+		      </button>
           </form>
       `;
     });
