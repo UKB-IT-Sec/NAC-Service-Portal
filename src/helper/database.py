@@ -1,4 +1,5 @@
 from nac.models import Device
+from nac.validation import normalize_mac
 
 
 class MacList:
@@ -17,10 +18,11 @@ class MacList:
         self._get_or_create_mac_list()
         air_macs = deviceObject.get("appl_NAC_macAddressAIR") or ""
         cab_macs = deviceObject.get("appl_NAC_macAddressCAB") or ""
-
-        for mac in air_macs.split(",") + cab_macs.split(","):
-            if mac.strip() in self._mac_list:
-                return True, self._mac_list[mac]
+        armis_macs = deviceObject.get("macAddress") or ""
+        for mac in air_macs.split(",") + cab_macs.split(",") + armis_macs.split(","):
+            normalized_mac = normalize_mac(mac.strip())
+            if normalized_mac in self._mac_list:
+                return True, self._mac_list[normalized_mac]
 
         return False, None
 
