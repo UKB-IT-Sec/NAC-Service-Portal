@@ -17,7 +17,7 @@ from django.views.generic import View
 from django.core.cache import cache
 from django.shortcuts import render
 
-from helper.armis import get_armis_sites, get_devices
+from helper.armis import get_armis_sites, get_devices, get_tenant_url
 
 
 class ArmisView(View):
@@ -30,6 +30,7 @@ class ArmisView(View):
             armis_sites = get_armis_sites()
             cache.set('armis_sites', armis_sites, 3600)
         context['armis_sites'] = armis_sites
+        context['tenant_url'] = get_tenant_url()
         return context
 
     def get(self, request, *args, **kwargs):  # rendering the html base with site-context
