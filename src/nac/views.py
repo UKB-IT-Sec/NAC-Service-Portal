@@ -1,11 +1,9 @@
-from django.views.generic import TemplateView, ListView, DetailView, View
+from django.views.generic import TemplateView, ListView, DetailView
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.db.models import Q
 from django.urls import reverse_lazy
 from dal import autocomplete
 from .models import Device, DeviceRoleProd, AuthorizationGroup, DeviceRoleInst
-from django.core.cache import cache
-from helper.armis import get_armis_sites, get_devices
 from .forms import DeviceForm, DeviceSearchForm
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
@@ -53,33 +51,6 @@ class DeviceListView(ListView):
         context["device_role_prod_list"] = DeviceRoleProd.objects.all()
         context["search_form"] = DeviceSearchForm(user=self.request.user)
         return context
-
-
-class ArmisView(View):
-    template_name = "armis_import.html"
-
-    def _get_context(self):  # sets the site-context for armis_import.html, uses cache to be less time consuming
-        context = {}
-        armis_sites = cache.get('armis_sites')
-        if armis_sites is None:
-            armis_sites = get_armis_sites()
-            cache.set('armis_sites', armis_sites, 3600)
-        context['armis_sites'] = armis_sites
-        return context
-
-    def get(self, request, *args, **kwargs):  # rendering the html base with site-context
-        context = self._get_context()
-        return render(request, self.template_name, context)
-
-    def post(self, request, *args, **kwargs):  # gets site-id chosen in html-dropdown, gets Devices based on site-id, shows them via device-context
-        context = self._get_context()
-
-        selected_site = request.POST.get('site-id')
-        context['selected_site'] = selected_site if selected_site else ''
-        if selected_site:
-            context['devices'] = get_devices(context['armis_sites'][selected_site])
-
-        return render(request, self.template_name, context)
 
 
 class DeviceDetailView(DetailView):

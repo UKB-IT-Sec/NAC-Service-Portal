@@ -5,7 +5,7 @@ from helper.armis import (
     _filter_sort_sites,
     get_armis_sites,
     _remove_existing_devices,
-    get_devices,
+    get_devices, get_tenant_url,
 )
 
 
@@ -102,3 +102,8 @@ def test_get_devices(mock_remove_existing_devices, mock_config):
         fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries']
     )
     mock_remove_existing_devices.assert_called_once_with(mock_devices)
+
+
+def test_get_tenent_url(mock_config):
+    with patch('helper.armis.armis_config', mock_config):
+        assert get_tenant_url() == "https://test_host"

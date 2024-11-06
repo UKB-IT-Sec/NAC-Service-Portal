@@ -2,7 +2,7 @@ import pytest
 from django.test import RequestFactory
 from django.core.cache import cache
 from unittest.mock import patch
-from nac.views import ArmisView
+from nac.subviews.armis import ArmisView
 
 
 @pytest.fixture
@@ -18,7 +18,7 @@ def rf():
 @pytest.mark.django_db
 class TestArmisView:
 
-    @patch('nac.views.get_armis_sites')
+    @patch('nac.subviews.armis.get_armis_sites')
     def test_get_context(self, mock_get_armis_sites, armis_view):
         mock_sites = {'1': {'name': 'Site1'}, '2': {'name': 'Site2'}}
         mock_get_armis_sites.return_value = mock_sites
@@ -33,8 +33,8 @@ class TestArmisView:
         assert context['armis_sites'] == mock_sites
         mock_get_armis_sites.assert_not_called()  # Shouldnt be called because Cache isnt empty anymore
 
-    @patch('nac.views.ArmisView._get_context')
-    @patch('nac.views.render')
+    @patch('nac.subviews.armis.ArmisView._get_context')
+    @patch('nac.subviews.armis.render')
     def test_get(self, mock_render, mock_get_context, armis_view, rf):
         mock_context = {'armis_sites': {'1': {'name': 'Site1'}}}
         mock_get_context.return_value = mock_context
@@ -44,9 +44,9 @@ class TestArmisView:
 
         mock_render.assert_called_once_with(request, armis_view.template_name, mock_context)
 
-    @patch('nac.views.ArmisView._get_context')
-    @patch('nac.views.get_devices')
-    @patch('nac.views.render')
+    @patch('nac.subviews.armis.ArmisView._get_context')
+    @patch('nac.subviews.armis.get_devices')
+    @patch('nac.subviews.armis.render')
     def test_post_with_site(self, mock_render, mock_get_devices, mock_get_context, armis_view, rf):
         mock_context = {'armis_sites': {'1': {'name': 'Site1'}}}
         mock_get_context.return_value = mock_context
@@ -64,8 +64,8 @@ class TestArmisView:
         mock_render.assert_called_once_with(request, armis_view.template_name, expected_context)
         mock_get_devices.assert_called_once_with({'name': 'Site1'})
 
-    @patch('nac.views.ArmisView._get_context')
-    @patch('nac.views.render')
+    @patch('nac.subviews.armis.ArmisView._get_context')
+    @patch('nac.subviews.armis.render')
     def test_post_without_site(self, mock_render, mock_get_context, armis_view, rf):
         mock_context = {'armis_sites': {'1': {'name': 'Site1'}}}
         mock_get_context.return_value = mock_context

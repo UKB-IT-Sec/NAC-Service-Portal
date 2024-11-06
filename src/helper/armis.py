@@ -51,3 +51,6 @@ def get_devices(acloud, site):
     )
     return _remove_existing_devices(deviceList)
 # flake8: qa
+
+def get_tenant_url():
+    return 'https://{}'.format(armis_config['armis-server']['tenant_hostname'])

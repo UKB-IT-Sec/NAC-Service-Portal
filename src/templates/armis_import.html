@@ -93,10 +93,11 @@
   let data = [
       {% for device in devices %}
           {
-              name: "{{ device.name }}",
+			  name: "{{ device.name }}",
               macAddress: "{{ device.macAddress}}",
               ipAddress: "{{ device.ipAddress }}",
-              boundaries: "{{ device.boundaries }}"
+              boundaries: "{{ device.boundaries }}",
+			  url: "{{tenant_url}}/inventory/devices/{{ device.id }}"
           },
       {% endfor %}
   ];
@@ -110,7 +111,8 @@
     
     pageData.forEach((device, index) => {
         const row = tableBody.insertRow();
-        row.insertCell().textContent = device.name;
+		const nameCell = row.insertCell();
+        nameCell.innerHTML = `<a href="${device.url}"><span class="icon-desc" desc="view device in Armis"><img src="{% static 'icons/info-circle.svg' %}" alt="device info" height="16" width="16" class="icon-zoom"/></span></a> ${device.name} `;
         
         const macCell = row.insertCell();
         const macAddresses = device.macAddress.split(",");
@@ -139,7 +141,7 @@
               {% csrf_token %}
               <input type="hidden" name="device_data" value='${JSON.stringify(device)}'>
               <button type="submit" class="link-button">
-				<span class="icon-desc" desc="add device"><img src="{% static 'icons/plus-circle.svg' %}" alt="add device" height="16" width="16" class="icon-zoom"/> </span>
+				<span class="icon-desc" desc="add device"><img src="{% static 'icons/plus-circle.svg' %}" alt="add device" height="16" width="16" class="icon-zoom"/></span>
 		      </button>
           </form>
       `;

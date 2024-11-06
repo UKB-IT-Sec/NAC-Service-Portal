@@ -9,10 +9,11 @@ from .views import (
     DeviceRoleProdAutocomplete,
     DeviceRoleInstAutocomplete,
     AuthorizationGroupAutocomplete,
-    ArmisView,
     AccountSettings,
     change_password,
 )
+from .subviews.armis import ArmisView
+
 
 urlpatterns = [
     path("", HomePageView.as_view(), name="home"),
