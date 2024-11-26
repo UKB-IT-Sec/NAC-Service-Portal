@@ -1,6 +1,6 @@
 import pytest
 from nac.models import Device, AuthorizationGroup, CustomUser
-from nac.views import DeviceListView
+from nac.subviews.device_management import DeviceListView
 from django.test import RequestFactory
 from django.urls import reverse_lazy
 from pytest_django.asserts import assertQuerySetEqual
