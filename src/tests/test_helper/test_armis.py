@@ -21,11 +21,6 @@ def mock_config():
     }
 
 
-@pytest.fixture
-def mock_armis_cloud():
-    return MagicMock()
-
-
 @patch('helper.armis.armis_config', new_callable=MagicMock)
 @patch('helper.armis.ArmisCloud')
 def test_armiscloud_decorator(mock_armis_cloud, mock_armis_config, mock_config):
@@ -94,7 +89,7 @@ def test_get_devices(mock_remove_existing_devices, mock_config):
 
     #  manually call original function without decorator to prevent argument error
     with patch('helper.armis.armis_config', mock_config):
-        result = get_devices.__wrapped__(mock_armis_cloud, {'name': 'TestSite'})
+        result = get_devices.__wrapped__(mock_armis_cloud, {'TestSite'})
 
     assert result == mock_devices
     mock_armis_cloud.get_devices.assert_called_once_with(

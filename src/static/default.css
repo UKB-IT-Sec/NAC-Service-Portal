@@ -81,3 +81,25 @@ td {
 	white-space: nowrap;
 	z-index: 2000;
   }
+  .checkbox-container {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 10px 20px;
+	padding: 10px;
+  }
+  
+  .checkbox-item {
+	display: flex;
+	align-items: center;
+  }
+  
+  .checkbox-label {
+	margin-left: 8px;
+	cursor: pointer;
+  }
+  
+  .custom-checkbox {
+	width: 20px;
+	height: 20px;
+	cursor: pointer;
+  }

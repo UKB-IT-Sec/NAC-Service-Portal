@@ -41,16 +41,29 @@ def _remove_existing_devices(deviceList):
 
 # flake8: noqa: E231
 @armiscloud
-def get_devices(acloud, site):
+def get_devices(acloud, sites):
     vlan_bl = ""
     vlan_blacklist = armis_config['armis-server'].get('vlan_blacklist', '')
     vlan_bl = f"!networkInterface:(vlans:{vlan_blacklist})" if vlan_blacklist else ""
+    sites = ','.join(f'"{site}"' for site in sites)
     deviceList = acloud.get_devices(
-        asq=f'in:devices site:"{site.get("name")}" timeFrame:"7 Days" {vlan_bl}',
+        asq=f'in:devices site:{sites} timeFrame:"7 Days" {vlan_bl}',
         fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries']
     )
     return _remove_existing_devices(deviceList)
 # flake8: qa
 
+
+def get_boundaries(deviceList):
+    unique_boundaries = set()
+    for device in deviceList:
+        boundaries = [b.strip() for b in device['boundaries'].split(',')]
+        unique_boundaries.update(boundaries)
+        
+    return sorted(list(unique_boundaries))
+
 def get_tenant_url():
     return 'https://{}'.format(armis_config['armis-server']['tenant_hostname'])
+
+def map_ids_to_names(selectedSiteIds, armisServerSites):
+    return [armisServerSites[id]['name'] for id in selectedSiteIds if id in armisServerSites]
