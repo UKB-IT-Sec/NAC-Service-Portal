@@ -1,17 +1,25 @@
 from django.urls import path
-from .views import (
-    HomePageView,
+from .views import HomePageView
+
+from .subviews.device_management import (
     DeviceListView,
     DeviceDetailView,
     DeviceUpdateView,
     DeviceDeleteView,
     DeviceCreateView,
+)
+
+from .subviews.autocomplete import (
     DeviceRoleProdAutocomplete,
     DeviceRoleInstAutocomplete,
     AuthorizationGroupAutocomplete,
+)
+
+from .subviews.account import (
     AccountSettings,
     change_password,
 )
+
 from .subviews.armis import ArmisView
 
 
