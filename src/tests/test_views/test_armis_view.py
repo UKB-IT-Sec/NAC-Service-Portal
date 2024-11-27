@@ -50,19 +50,21 @@ class TestArmisView:
     def test_post_with_site(self, mock_render, mock_get_devices, mock_get_context, armis_view, rf):
         mock_context = {'armis_sites': {'1': {'name': 'Site1'}}}
         mock_get_context.return_value = mock_context
-        mock_devices = [{'name': 'Device1'}, {'name': 'Device2'}]
+        mock_devices = [{'name': 'Device1', 'boundaries': 'boundary1'}, {'name': 'Device2', 'boundaries': 'boundary2'}]
         mock_get_devices.return_value = mock_devices
 
-        request = rf.post('/armis/', {'site-id': '1'})
+        request = rf.post('/armis/', {'site-ids[]': '1'})
         armis_view.post(request)
 
         expected_context = {
             'armis_sites': {'1': {'name': 'Site1'}},
-            'selected_site': '1',
-            'devices': mock_devices
+            'display': False,
+            'selected_sites': ['1'],
+            'devices': mock_devices,
+            'boundaries': ['boundary1', 'boundary2']
         }
         mock_render.assert_called_once_with(request, armis_view.template_name, expected_context)
-        mock_get_devices.assert_called_once_with({'name': 'Site1'})
+        mock_get_devices.assert_called_once_with(['Site1'])
 
     @patch('nac.subviews.armis.ArmisView._get_context')
     @patch('nac.subviews.armis.render')
@@ -75,6 +77,7 @@ class TestArmisView:
 
         expected_context = {
             'armis_sites': {'1': {'name': 'Site1'}},
-            'selected_site': ''
+            'display': True,
+            'selected_sites': ''
         }
         mock_render.assert_called_once_with(request, armis_view.template_name, expected_context)

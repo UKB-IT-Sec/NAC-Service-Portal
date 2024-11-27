@@ -17,7 +17,7 @@ from django.views.generic import View
 from django.core.cache import cache
 from django.shortcuts import render
 
-from helper.armis import get_armis_sites, get_devices, get_tenant_url
+from helper.armis import get_armis_sites, get_devices, get_tenant_url, get_boundaries, map_ids_to_names
 
 
 class ArmisView(View):
@@ -35,14 +35,16 @@ class ArmisView(View):
 
     def get(self, request, *args, **kwargs):  # rendering the html base with site-context
         context = self._get_context()
+        context['display'] = True
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):  # gets site-id chosen in html-dropdown, gets Devices based on site-id, shows them via device-context
         context = self._get_context()
-
-        selected_site = request.POST.get('site-id')
-        context['selected_site'] = selected_site if selected_site else ''
-        if selected_site:
-            context['devices'] = get_devices(context['armis_sites'][selected_site])
+        selected_sites = request.POST.getlist('site-ids[]')
+        context['display'] = False if selected_sites else True
+        context['selected_sites'] = selected_sites if selected_sites else ''
+        if selected_sites:
+            context['devices'] = get_devices(map_ids_to_names(selected_sites, context['armis_sites']))
+            context['boundaries'] = get_boundaries(context['devices'])
 
         return render(request, self.template_name, context)
