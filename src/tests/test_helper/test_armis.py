@@ -1,4 +1,5 @@
 import pytest
+from django.test import RequestFactory
 from unittest.mock import patch, MagicMock
 from helper.armis import (
     armiscloud,
@@ -7,6 +8,8 @@ from helper.armis import (
     _remove_existing_devices,
     get_devices, get_tenant_url,
 )
+from nac.context_processors import armis_context
+from django.core.cache import cache
 
 
 @pytest.fixture
@@ -104,6 +107,27 @@ def test_get_devices(mock_remove_existing_devices, mock_config):
     mock_remove_existing_devices.assert_called_once_with(mock_devices)
 
 
-def test_get_tenent_url(mock_config):
+def test_get_tenant_url(mock_config):
     with patch('helper.armis.armis_config', mock_config):
         assert get_tenant_url() == "https://test_host"
+
+
+@pytest.mark.parametrize("tenant_hostname, validity", [
+    ("", False),
+    ("test_host", True),
+])
+def test_armis_context(tenant_hostname, validity):
+
+    mock_config = {
+        'armis-server': {
+            'api_secret_key': 'test_key',
+            'tenant_hostname': tenant_hostname,
+            'sites_pattern': 'Site\\d+',  # 'Site' + one or more numeric id's
+            'vlan_blacklist': '100,200'
+        }
+    }
+    with patch('helper.armis.armis_config', mock_config):
+        cache.clear()
+        factory = RequestFactory()
+        request = factory.get("/")
+        assert armis_context(request)["armis_is_configured"] == validity
