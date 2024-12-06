@@ -1,11 +1,12 @@
 import pytest
 from nac.management.commands.import_devices_from_csv import Command, \
-    DEFAULT_SOURCE_FILE, SAVE_FILE
+    DEFAULT_SOURCE_FILE, DEFAULT_SAVE_FILE, DEFAULT_OU_MAPPING, DEFAULT_CSV_MAPPING
 from unittest.mock import patch, mock_open, MagicMock
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.core.management.base import CommandError
 from nac.models import AuthorizationGroup, DeviceRoleProd, DeviceRoleInst, Device
 from helper.database import MacList
+from helper.config import get_config_from_json
 
 
 @pytest.fixture
@@ -53,6 +54,7 @@ def test_check_device(mock_check_existing_mac, mock_logging, mock_atomic, appl_N
     test_authorization_group.DeviceRoleProd.set([test_deviceRoleProd])
     command.auth_group = 'test'
     command.update = False
+    command.csv_mapping = get_config_from_json(DEFAULT_CSV_MAPPING)
     command.mac_list = MacList()
     data = {
         "name": "test",
@@ -102,6 +104,7 @@ def test_check_device_exceptions(
     test_deviceRoleInst = DeviceRoleInst.objects.create(name="test")
     test_authorization_group = AuthorizationGroup.objects.create(name="test")
     command.auth_group = 'test'
+    command.csv_mapping = get_config_from_json(DEFAULT_CSV_MAPPING)
     command.mac_list = MacList()
     test_authorization_group.DeviceRoleProd.set([test_deviceRoleProd])
     test_authorization_group.DeviceRoleInst.set([test_deviceRoleInst])
@@ -110,7 +113,9 @@ def test_check_device_exceptions(
         "objectClass": "appl-NAC-Device",
         "authorization_group": test_authorization_group,
         "appl-NAC-DeviceRoleProd": test_deviceRoleProd,
-        "appl-NAC-DeviceRoleInst": test_deviceRoleInst}
+        "appl-NAC-DeviceRoleInst": test_deviceRoleInst,
+        "appl-NAC-Hostname": "test"
+        }
     mock_form = MagicMock()
     mock_form.is_valid.return_value = False
     mock_form.errors = {"Type": ["Reason"]}
@@ -291,7 +296,7 @@ def test_save_invalid_devices_empty_file(mock_logging, mock_stat,
     mock_writer_instance = MagicMock()
     mock_writer.return_value = mock_writer_instance
     command.save_invalid_devices(device)
-    mocked_file.assert_called_once_with(SAVE_FILE,
+    mocked_file.assert_called_once_with(DEFAULT_SAVE_FILE,
                                         'a', newline="")
     mock_writer.assert_called_once_with(mocked_file(),
                                         fieldnames=device.keys(),
@@ -299,9 +304,9 @@ def test_save_invalid_devices_empty_file(mock_logging, mock_stat,
     mock_writer_instance.writeheader.assert_called_once()
     mock_writer_instance.writerows.assert_called_once_with([device])
     mock_logging.info.assert_called_once_with(
-        f"Writing invalid device to {SAVE_FILE}")
+        f"Writing invalid device to {DEFAULT_SAVE_FILE}")
     mock_logging.debug.assert_called_once_with(
-        f"Writing invalid device to {SAVE_FILE}: SUCCESSFUL")
+        f"Writing invalid device to {DEFAULT_SAVE_FILE}: SUCCESSFUL")
 
 
 @patch('builtins.open', new_callable=mock_open)
@@ -324,7 +329,7 @@ def test_save_invalid_devices_exception(mock_file, mock_logging, command):
     command.save_invalid_devices(device)
     mock_logging.error.assert_called_once_with(
         f"Writing invalid device to "
-        f"{SAVE_FILE}: FAILED -> Failed")
+        f"{DEFAULT_SAVE_FILE}: FAILED -> Failed")
 
 
 @patch('builtins.open', new_callable=mock_open, read_data="name\n;test")
@@ -363,9 +368,9 @@ def test_read_csv_exception(mock_logging, mock_handler,
 @patch('nac.management.commands.import_devices_from_csv.logging')
 def test_clear_invalid_devices_file(mock_logging, mock_file, command):
     command.clear_invalid_devices_file()
-    mock_file.assert_called_once_with(SAVE_FILE, "w")
+    mock_file.assert_called_once_with(DEFAULT_SAVE_FILE, "w")
     mock_logging.info.assert_called_once_with(
-        f"Removing all entries in {SAVE_FILE}")
+        f"Removing all entries in {DEFAULT_SAVE_FILE}")
 
 
 @patch('builtins.open', side_effect=Exception("Failed"))
@@ -373,9 +378,9 @@ def test_clear_invalid_devices_file(mock_logging, mock_file, command):
 def test_clear_invalid_devices_file_exception(mock_logging,
                                               mock_file, command):
     command.clear_invalid_devices_file()
-    mock_file.assert_called_once_with(SAVE_FILE, "w")
+    mock_file.assert_called_once_with(DEFAULT_SAVE_FILE, "w")
     mock_logging.error.assert_called_once_with(
-        f"Removing all entries in {SAVE_FILE} FAILED -> Failed"
+        f"Removing all entries in {DEFAULT_SAVE_FILE} FAILED -> Failed"
         )
 
 
@@ -470,7 +475,9 @@ def test_handle(mock_read_csv, mock_clear_invalid_devices_file,
         'verbosity': 0,
         'csv_file': 'test.csv',
         'auth_group': 'testag',
-        'update': False
+        'update': False,
+        'csv_config': DEFAULT_CSV_MAPPING,
+        'ou_config': DEFAULT_OU_MAPPING
     }
     mock_get_existing_path.return_value = 'mockpath/to/test.csv'
     command.handle(**options)
@@ -510,3 +517,115 @@ def test_check_valid_auth_group_not_exists(mock_logging, command):
     mock_logging.error.assert_called_once_with(
         "Authorization Group-Object: dummy not in Database")
     assert result is None
+
+
+def test_get_set_or_default(command):
+
+    assert command.get_set_or_default({'SET': 'value', 'DEFAULT': 'default'}) == 'value'
+    assert command.get_set_or_default({'SET': None, 'DEFAULT': 'default'}) == 'default'
+
+    with pytest.raises(KeyError):
+        command.get_set_or_default({'DEFAULT': 'default'})
+
+
+def test_get_deviceRole_ou_mapping(command):
+    command.csv_mapping = {
+        "DeviceRoleCriteria": {
+            "DEFAULT": "OU",
+            "SET": None,
+            "MAPPING": True
+        }
+    }
+    command.ou_mapping = {
+        "DEFAULT": {
+            "DeviceRoleProd": "DeviceRoleProdDefault",
+            "DeviceRoleInst": "DeviceRoleInstDefault"
+        },
+        "OU": {
+            "DeviceRoleProd": "DeviceRoleProd",
+            "DeviceRoleInst": "DeviceRoleInst"
+        }
+    }
+    device_object = {'OU': 'OU'}
+    mock_deviceroleprod = MagicMock()
+    mock_deviceroleinst = MagicMock()
+
+    with patch('nac.models.DeviceRoleProd.objects.get', return_value=mock_deviceroleprod) as mock_prod_get, \
+            patch('nac.models.DeviceRoleInst.objects.get', return_value=mock_deviceroleinst) as mock_inst_get:
+
+        result = command.get_deviceRole(device_object)
+
+        mock_prod_get.assert_called_once_with(name='DeviceRoleProd')
+        mock_inst_get.assert_called_once_with(name='DeviceRoleInst')
+        assert result == (mock_deviceroleprod, mock_deviceroleinst)
+
+    device_object = {'OU': '404'}
+    mock_deviceroleprod = MagicMock()
+    mock_deviceroleinst = MagicMock()
+
+    with patch('nac.models.DeviceRoleProd.objects.get', return_value=mock_deviceroleprod) as mock_prod_get, \
+            patch('nac.models.DeviceRoleInst.objects.get', return_value=mock_deviceroleinst) as mock_inst_get:
+
+        result = command.get_deviceRole(device_object)
+
+        mock_prod_get.assert_called_once_with(name='DeviceRoleProdDefault')
+        mock_inst_get.assert_called_once_with(name='DeviceRoleInstDefault')
+        assert result == (mock_deviceroleprod, mock_deviceroleinst)
+
+
+def test_get_deviceRole_csv_mapping(command):
+    command.csv_mapping = {
+        "DeviceRoleCriteria": {
+            "MAPPING": False
+        },
+        "appl-NAC-DeviceRoleProd": {
+            "DEFAULT": "appl-NAC-DeviceRoleProd",
+            "SET": None
+        },
+        "appl-NAC-DeviceRoleInst": {
+            "DEFAULT": "appl-NAC-DeviceRoleInst",
+            "SET": None
+        }
+    }
+    device_object = {'appl-NAC-DeviceRoleProd': 'DeviceRoleProd1', 'appl-NAC-DeviceRoleInst': 'DeviceRoleInst1'}
+    mock_deviceroleprod = MagicMock()
+    mock_deviceroleinst = MagicMock()
+
+    with patch('nac.models.DeviceRoleProd.objects.get', return_value=mock_deviceroleprod) as mock_prod_get, \
+            patch('nac.models.DeviceRoleInst.objects.get', return_value=mock_deviceroleinst) as mock_inst_get:
+
+        result = command.get_deviceRole(device_object)
+
+        mock_prod_get.assert_called_once_with(name='DeviceRoleProd1')
+        mock_inst_get.assert_called_once_with(name='DeviceRoleInst1')
+        assert result == (mock_deviceroleprod, mock_deviceroleinst)
+
+
+def test_get_deviceRole_ou_mapping_validation_errors(command):
+    command.csv_mapping = {
+        "DeviceRoleCriteria": {
+            "DEFAULT": "OU",
+            "SET": None,
+            "MAPPING": True
+        }
+    }
+    command.ou_mapping = {
+        "OU": {
+            "DeviceRoleProd": "DeviceRoleProd1",
+            "DeviceRoleInst": "DeviceRoleInst1"
+        }
+    }
+    device_object = {'OU': 'OU'}
+
+    with patch('nac.models.DeviceRoleProd.objects.get', side_effect=ObjectDoesNotExist()), \
+            pytest.raises(ValidationError) as excinfo:
+        command.get_deviceRole(device_object)
+
+    assert "DeviceRoleProd: DeviceRoleProd1 not in Database" in str(excinfo.value)
+
+    with patch('nac.models.DeviceRoleProd.objects.get', return_value=MagicMock()), \
+            patch('nac.models.DeviceRoleInst.objects.get', side_effect=ObjectDoesNotExist()), \
+            pytest.raises(ValidationError) as excinfo:
+        command.get_deviceRole(device_object)
+
+    assert "DeviceRoleInst: DeviceRoleInst1 not in Database" in str(excinfo.value)

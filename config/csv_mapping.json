@@ -1,11 +1,16 @@
 {
     "name": {
         "DEFAULT": "name",
-        "SET": "Testname"
+        "SET": null
+    },
+    "DeviceRoleCriteria": {
+        "DEFAULT": "OU",
+        "SET": "orgaUnit",
+        "MAPPING": false
     },
     "objectClass": {
-        "DEFAULT": "DefaultClass",
-        "SET": "objectClass"
+        "DEFAULT": "objectClass",
+        "SET": null
     },
     "appl-NAC-DeviceRoleProd": {
         "DEFAULT": "appl-NAC-DeviceRoleProd",
