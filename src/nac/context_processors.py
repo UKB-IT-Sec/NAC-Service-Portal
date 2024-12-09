@@ -1,9 +1,11 @@
 from helper.armis import get_tenant_url
+from django.core.cache import cache
 
 
 # is armis configured? We need this to render to nav-bar correctly
 def armis_context(request):
-    # if no tenant url is given in the config, get_tenant_url() returns "https://"
-    armis_is_configured = get_tenant_url() != "https://"
-    print(get_tenant_url())
+    armis_is_configured = cache.get("armis_is_configured")
+    if armis_is_configured is None:
+        armis_is_configured = get_tenant_url() != "https://"
+        cache.set("armis_is_configured", armis_is_configured)
     return {"armis_is_configured": armis_is_configured}
