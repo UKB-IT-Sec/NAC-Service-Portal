@@ -86,6 +86,8 @@ td {
 	grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* displays checkbox in 100pt width columns, as many as possible based on window size*/
 	gap: 10px 20px;
 	padding: 10px;
+	flex: 1;
+    margin-right: 20px;
   }
   
   .checkbox-item {
@@ -103,3 +105,23 @@ td {
 	height: 20px;
 	cursor: pointer;
   }
+
+  .split-content {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+  }
+
+  .vlan-blacklist-box {
+    display: inline-block;
+    border: 1px solid #000000;
+    background-color: #cfcdcdb8;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.vlan-blacklist-box strong {
+    display: block;
+    margin-bottom: 1px;
+    font-size: 1.3em;
+}
