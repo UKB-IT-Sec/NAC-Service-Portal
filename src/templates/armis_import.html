@@ -10,14 +10,26 @@
   <div id="formContainer" style="display: {% if display %}block{% else %}none{% endif %}">
     <form id="siteSubmitForm" method="POST" action="{% url 'armis_import' %}">
         {% csrf_token %}
-        <div class="checkbox-container">
-            {% for site_id, site_info in armis_sites.items %}
-                <div class="checkbox-item">
-                    <input type="checkbox" id="site-{{ site_id }}" name="site-ids[]" value="{{ site_id }}" class="custom-checkbox">
-                    <label for="site-{{ site_id }}" class="checkbox-label">{{ site_info.name }}</label>
-                </div>
+        <div class="split-content">
+          <div class="checkbox-container">
+              {% for site_id, site_info in armis_sites.items %}
+                  <div class="checkbox-item">
+                      <input type="checkbox" id="site-{{ site_id }}" name="site-ids[]" value="{{ site_id }}" class="custom-checkbox">
+                      <label for="site-{{ site_id }}" class="checkbox-label">{{ site_info.name }}</label>
+                  </div>
+              {% endfor %}
+          </div>
+          {% if vlan_blacklist %}
+          <div class="vlan-blacklist-box">
+            <strong>VLAN Blacklist:</strong>
+            <ul>
+            {% for vlan in vlan_blacklist %}
+              <li>{{ vlan }}</li>
             {% endfor %}
-        </div>
+            </ul>
+          </div>
+          {% endif %}
+      </div>
         <button type="submit" class="btn btn-secondary btn-sm">Select</button>
     </form>
   </div>
