@@ -4,6 +4,16 @@
 {% block content %}
 <div class="container">
   <h1>Armis Import</h1>
+  <div id="searchContainer" style="display: {% if display or not devices %}block{% else %}none{% endif %}">
+    <form id="deviceSubmitForm" method="POST" action="{% url 'armis_import' %}">
+    {% csrf_token %}
+      <div class="search-container">
+        <input type="text" id="deviceSearch" name="deviceName" placeholder="Search for Device..." class="form-control">
+      </div>
+      <button type="submit" id="searchButton" class="btn btn-secondary btn-sm">Search</button>
+    </form>
+    <br></br>
+  </div>
   <button id="toggleSiteForm" class="btn btn-secondary btn-sm">
     {% if display %}Hide Sites{% else %}Show Sites{% endif %}
   </button>
@@ -11,6 +21,11 @@
     <form id="siteSubmitForm" method="POST" action="{% url 'armis_import' %}">
         {% csrf_token %}
         <div class="checkbox-container">
+          <div class="checkbox-item">
+            <input type="checkbox" id="select-all" class="custom-checkbox">
+            <label for="select-all" class="checkbox-label">Select all</label>
+        </div>
+          <div
             {% for site_id, site_info in armis_sites.items %}
                 <div class="checkbox-item">
                     <input type="checkbox" id="site-{{ site_id }}" name="site-ids[]" value="{{ site_id }}" class="custom-checkbox">
@@ -21,7 +36,7 @@
         <button type="submit" class="btn btn-secondary btn-sm">Select</button>
     </form>
   </div>
-  {%if devices%}
+  {%if devices %}
   <div id="pagination">
     <button id="prevPage" class="link-button">
 		<span class="icon-desc" desc="previous page"><img src="{% static 'icons/caret-left-square.svg' %}" alt="previous page" height="16" width="16" class="icon-zoom"/> </span>
@@ -109,6 +124,10 @@
       <ul id="modalList"></ul>
     </div>
   </div>
+  {% elif not display %}
+  <div class="alert alert-info" role="alert">
+    No Devices found...
+  </div>
   {%endif%}
   
 </div>
@@ -130,6 +149,25 @@
   let sortOrder = 'asc';
   let searchTerm = '';
   
+  document.addEventListener('DOMContentLoaded', function() {
+    var selectAll = document.getElementById('select-all');
+    var siteCheckboxes = document.querySelectorAll('.custom-checkbox'); // gets all elements with given CSS-Class
+
+    selectAll.addEventListener('change', function() {
+        siteCheckboxes.forEach(function(checkbox) {
+            checkbox.checked = selectAll.checked;
+        });
+    });
+
+    siteCheckboxes.forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            selectAll.checked = Array.from(siteCheckboxes).every(function(checkbox) { // checks select-all checkbox only if every checkbox is selected
+                return checkbox.checked;
+            });
+        });
+    });
+  });
+
   document.getElementById('toggleSiteForm').addEventListener('click', function() {
     var formContainer = document.getElementById('formContainer');
     if (formContainer.style.display === 'none') {

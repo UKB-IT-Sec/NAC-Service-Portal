@@ -67,17 +67,22 @@ class TestArmisView:
         mock_get_devices.assert_called_once_with(['Site1'])
 
     @patch('nac.subviews.armis.ArmisView._get_context')
+    @patch('nac.subviews.armis.get_single_device')
+    @patch('nac.subviews.armis.get_boundaries')
     @patch('nac.subviews.armis.render')
-    def test_post_without_site(self, mock_render, mock_get_context, armis_view, rf):
+    def test_post_without_site(self, mock_render, mock_get_boundaries, mock_get_single_device, mock_get_context, armis_view, rf):
         mock_context = {'armis_sites': {'1': {'name': 'Site1'}}}
         mock_get_context.return_value = mock_context
-
+        mock_get_single_device.return_value = {'device': 'Default'}
+        mock_get_boundaries.return_value = {'boundary'}
         request = rf.post('/armis/')
         armis_view.post(request)
 
         expected_context = {
             'armis_sites': {'1': {'name': 'Site1'}},
             'display': True,
-            'selected_sites': ''
+            'selected_sites': '',
+            'devices': {'device': 'Default'},
+            'boundaries': {'boundary'}
         }
         mock_render.assert_called_once_with(request, armis_view.template_name, expected_context)

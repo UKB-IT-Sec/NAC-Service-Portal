@@ -6,6 +6,7 @@ from helper.armis import (
     get_armis_sites,
     _remove_existing_devices,
     get_devices, get_tenant_url,
+    get_single_device,
 )
 
 
@@ -102,3 +103,19 @@ def test_get_devices(mock_remove_existing_devices, mock_config):
 def test_get_tenent_url(mock_config):
     with patch('helper.armis.armis_config', mock_config):
         assert get_tenant_url() == "https://test_host"
+
+
+def test_get_single_device(mock_config):
+    mock_devices = [{'id': '1', 'name': 'Device1'}]
+    mock_armis_cloud = MagicMock()
+    mock_armis_cloud.get_devices.return_value = mock_devices
+
+    #  manually call original function without decorator to prevent argument error
+    with patch('helper.armis.armis_config', mock_config):
+        result = get_single_device.__wrapped__(mock_armis_cloud, 'Device1')
+
+    assert result == mock_devices
+    mock_armis_cloud.get_devices.assert_called_once_with(
+        asq='in:devices name:Device1 timeFrame:"7 Days"',
+        fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries']
+    )
