@@ -4,6 +4,8 @@ from django.db.models import Q
 from django.urls import reverse_lazy
 from django.shortcuts import render
 import json
+from django.http import JsonResponse
+from django.template.loader import render_to_string
 
 from ..models import Device, AuthorizationGroup, DeviceRoleProd
 from ..forms import DeviceForm, DeviceSearchForm
@@ -38,8 +40,18 @@ class DeviceListView(ListView):
             device_list = device_list.filter(appl_NAC_DeviceRoleProd__in=selected_device_roles_prod)
         return device_list.order_by("name")
 
+    def get(self, request, *args, **kwargs):
+        # Check if the request is an AJAX request
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            # Handle AJAX request by rendering only the relevant part of the template
+            html = render_to_string('devices_results.html', {"device_list": self.get_queryset()})
+            return JsonResponse({'html': html})
+
+        # Otherwise, handle a normal HTTP request
+        return super().get(request, *args, **kwargs)
+
     # we need this for the drop-down menus with filtering options
-    def get_context_data(self, *, object_list=None, **kwargs):
+    def get_context_data(self, **kwargs):
         context = super(DeviceListView, self).get_context_data(**kwargs)
         context["auth_group_list"] = AuthorizationGroup.objects.filter(id__in=self.request.user.authorization_group.all())
         context["device_role_prod_list"] = DeviceRoleProd.objects.all()
