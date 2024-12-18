@@ -7,10 +7,10 @@
   <div id="searchContainer" style="display: {% if display or not devices %}block{% else %}none{% endif %}">
     <form id="deviceSubmitForm" method="POST" action="{% url 'armis_import' %}">
     {% csrf_token %}
-      <div class="search-container">
-        <input type="text" id="deviceSearch" name="deviceName" placeholder="Search for Device..." class="form-control">
-      </div>
+    <div class="search-container">
+      <input type="text" id="deviceSearch" name="deviceName" placeholder="Search for Device..." class="form-control" style="width: 300px;">
       <button type="submit" id="searchButton" class="btn btn-secondary btn-sm">Search</button>
+    </div>
     </form>
     <br></br>
   </div>
@@ -91,7 +91,7 @@
       </style>
       <tr>
         <th scope="col">
-          <input type="text" id="searchInput" placeholder="Search Name, IP, or MAC">
+          <input type="text" id="searchInput" placeholder="Search for Name, IP, Mac or Site" style="width: 300px;">
         </th>
         <th scope="col"></th>
         <th scope="col"></th>
@@ -109,6 +109,7 @@
       <th scope="col">Device Name <span class="sort-icon" data-column="name">▲</span></th>
       <th scope="col">MAC Address <span class="sort-icon" data-column="macAddress">▲</span></th>
       <th scope="col">IP Address <span class="sort-icon" data-column="ipAddress">▲</span></th>
+      <th scope="col">Site <span class="sort-icon" data-column="site">▲</span></th>
       <th scope="col">Boundaries</th>
       <th scope="col"></th>
     </tr>
@@ -137,11 +138,12 @@
   let data = [
       {% for device in devices %}
           {
-			  name: "{{ device.name }}",
+			        name: "{{ device.name }}",
               macAddress: "{{ device.macAddress}}",
               ipAddress: "{{ device.ipAddress }}",
               boundaries: "{{ device.boundaries }}",
-			  url: "{{tenant_url}}/inventory/devices/{{ device.id }}"
+              site: "{{ device.site.name}}",
+			        url: "{{tenant_url}}/inventory/devices/{{ device.id }}"
           },
       {% endfor %}
   ];
@@ -252,7 +254,7 @@
   
     filteredData = data.filter(function(device) { // filters for devices where the function returns true
       const matchesBoundary = !selectedBoundary || device.boundaries.split(',').map(b => b.trim()).includes(selectedBoundary); // sets selectedBoundary to True if boundary isnt set, 
-      const matchesSearch = device.name.toLowerCase().startsWith(searchTerm) || device.name.toLowerCase().includes(searchTerm) ||
+      const matchesSearch = device.name.toLowerCase().startsWith(searchTerm) || device.name.toLowerCase().includes(searchTerm) || device.site.toLowerCase().replace(" ","").startsWith(searchTerm) ||
                             device.ipAddress.toLowerCase().replace(/[^0-9]/g, '').startsWith(searchTerm.replace(/[^a-z0-9]/g, '') || false) || // replace everything that is not in 0-9 range
                             device.macAddress.toLowerCase().replace(/[^a-f0-9]/g, '').startsWith(searchTerm.replace(/[^a-z0-9]/g, '') || false); // replace everything that is not in hex (a-f,0-9) range
       return matchesBoundary && matchesSearch; // and-Operator so devices can get filtered by boundary AND searchTerm, otherwise it would filter for either one
@@ -295,6 +297,7 @@
         } else {
             ipCell.querySelector('span').addEventListener("click", () => showDetails("IP-Adresse", device.ipAddress));
         }
+        row.insertCell().textContent = device.site
         row.insertCell().textContent = device.boundaries;
 
         const importCell = row.insertCell();
