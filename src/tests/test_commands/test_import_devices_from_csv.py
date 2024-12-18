@@ -55,6 +55,8 @@ def test_check_device(mock_check_existing_mac, mock_logging, mock_atomic, appl_N
     command.auth_group = 'test'
     command.update = False
     command.csv_mapping = get_config_from_json(DEFAULT_CSV_MAPPING)
+    command.csv_mapping['DeviceRoleCriteria']['MAPPING'] = False
+    command.ou_mapping = {}
     command.mac_list = MacList()
     data = {
         "name": "test",
@@ -105,6 +107,8 @@ def test_check_device_exceptions(
     test_authorization_group = AuthorizationGroup.objects.create(name="test")
     command.auth_group = 'test'
     command.csv_mapping = get_config_from_json(DEFAULT_CSV_MAPPING)
+    command.csv_mapping['DeviceRoleCriteria']['MAPPING'] = False
+    command.ou_mapping = {}
     command.mac_list = MacList()
     test_authorization_group.DeviceRoleProd.set([test_deviceRoleProd])
     test_authorization_group.DeviceRoleInst.set([test_deviceRoleInst])

@@ -5,8 +5,8 @@
     },
     "DeviceRoleCriteria": {
         "DEFAULT": "OU",
-        "SET": "orgaUnit",
-        "MAPPING": false
+        "SET": null,
+        "MAPPING": true
     },
     "objectClass": {
         "DEFAULT": "objectClass",
