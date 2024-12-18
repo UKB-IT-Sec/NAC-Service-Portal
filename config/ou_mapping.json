@@ -1,0 +1,14 @@
+{
+  "DEFAULT": {
+    "DeviceRoleProd": "DeviceRoleProdDefault",
+    "DeviceRoleInst": "DeviceRoleInstDefault"
+  },
+  "OU1": {
+    "DeviceRoleProd": "DeviceRoleProd1",
+    "DeviceRoleInst": "DeviceRoleInst1"
+  },
+  "OU2": {
+    "DeviceRoleProd": "DeviceRoleProd2",
+    "DeviceRoleInst": "DeviceRoleInst2"
+  }
+}

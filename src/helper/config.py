@@ -14,6 +14,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 import logging
+import json
 from pathlib import Path
 from configparser import ConfigParser
 
@@ -32,3 +33,14 @@ def get_config_from_file(file_path):
     config = ConfigParser()
     config.read(file_path)
     return config
+
+
+def get_config_from_json(file_path):
+    logging.debug('mapping file: {}'.format(file_path))
+    file_path = Path(file_path)
+    if not file_path.exists():
+        raise ConfigFileNotFound(file_path)
+
+    with open(file_path, 'r') as file:
+        json_config = json.load(file)
+    return json_config
