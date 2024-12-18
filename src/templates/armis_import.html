@@ -3,19 +3,24 @@
 {% load crispy_forms_tags %}
 {% block content %}
 <div class="container">
-<h1>Armis Import</h1>
-<form method="POST" action="{% url 'armis_import' %}">
-  {% csrf_token %}
-    <select name="site-id">
-      <option value="" disabled {% if not selected_site %}selected{% endif %}>Choose site...</option>
-      {% for site_id, site_info in armis_sites.items %}
-        <option value="{{ site_id }}" {% if site_id == selected_site %}selected{% endif %}>
-          {{ site_info.name }}
-        </option>
-      {% endfor %}
-    </select>
-    <button type="submit" class="btn btn-secondary btn-sm">select</button>
-  </form>
+  <h1>Armis Import</h1>
+  <button id="toggleSiteForm" class="btn btn-secondary btn-sm">
+    {% if display %}Hide Sites{% else %}Show Sites{% endif %}
+  </button>
+  <div id="formContainer" style="display: {% if display %}block{% else %}none{% endif %}">
+    <form id="siteSubmitForm" method="POST" action="{% url 'armis_import' %}">
+        {% csrf_token %}
+        <div class="checkbox-container">
+            {% for site_id, site_info in armis_sites.items %}
+                <div class="checkbox-item">
+                    <input type="checkbox" id="site-{{ site_id }}" name="site-ids[]" value="{{ site_id }}" class="custom-checkbox">
+                    <label for="site-{{ site_id }}" class="checkbox-label">{{ site_info.name }}</label>
+                </div>
+            {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-secondary btn-sm">Select</button>
+    </form>
+  </div>
   {%if devices%}
   <div id="pagination">
     <button id="prevPage" class="link-button">
@@ -64,18 +69,38 @@
           color: blue;
           cursor: pointer;
         }
+        .sort-icon {
+          cursor: pointer;
+          user-select: none;
+        }
       </style>
       <tr>
-        <th scope="col">Device Name</th>
-        <th scope="col">MAC Address</th>
-        <th scope="col">IP Address</th>
-        <th scope="col">Boundaries</th>
+        <th scope="col">
+          <input type="text" id="searchInput" placeholder="Search Name, IP, or MAC">
+        </th>
         <th scope="col"></th>
-      </tr>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
+        <th scope="col"></th>
+        <th scope="col">
+            <select id="boundaryFilter">
+                <option value="">Filter Boundaries / All</option>
+                {% for boundary in boundaries %}
+                    <option value="{{ boundary }}">{{ boundary }}</option>
+                {% endfor %}
+            </select>
+        </th>
+        <th scope="col"></th>
+    </tr>
+    <tr>
+      <th scope="col">Device Name <span class="sort-icon" data-column="name">▲</span></th>
+      <th scope="col">MAC Address <span class="sort-icon" data-column="macAddress">▲</span></th>
+      <th scope="col">IP Address <span class="sort-icon" data-column="ipAddress">▲</span></th>
+      <th scope="col">Boundaries</th>
+      <th scope="col"></th>
+    </tr>
+</thead>
+<tbody>
+</tbody>
+</table>
   
   <div id="detailModal" class="modal">
     <div class="modal-content">
@@ -101,13 +126,112 @@
           },
       {% endfor %}
   ];
+  let filteredData = [...data]; // copies array to prevent changes on original data
+  let sortOrder = 'asc';
+  let searchTerm = '';
+  
+  document.getElementById('toggleSiteForm').addEventListener('click', function() {
+    var formContainer = document.getElementById('formContainer');
+    if (formContainer.style.display === 'none') {
+      formContainer.style.display = 'block';
+      this.textContent = 'Hide Sites';
+    } else {
+      formContainer.style.display = 'none';
+      this.textContent = 'Show Sites';
+    }
+  });
+  function setupFilters() { 
+    const boundaryFilter = document.getElementById("boundaryFilter");
+    const searchInput = document.getElementById("searchInput");
+
+    boundaryFilter.addEventListener("change", applyFilters); // calls applyFilter function on select
+    searchInput.addEventListener("input", applyFilters); // calls applyFilter function on every input
+  }
+
+  function setupSorting() {
+    const sortIcons = document.querySelectorAll('.sort-icon'); //Get all html-elements that are sort-elements
+    sortIcons.forEach(icon => {
+        icon.addEventListener('click', () => {
+            const column = icon.getAttribute('data-column'); //determines which column to order
+            sortData(column);
+        });
+    });
+  }
+
+  function sortData(column) {
+    sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'; //switches asc to desc or desc to asc for every click so user can switch between order
+
+    filteredData.sort((a, b) => { // sorts data-array by providing a function that returns <0, 0, >0 for specific comparisons 
+        const valueA = a[column];
+        const valueB = b[column];
+        
+        if (valueA === "None" && valueB === "None") return 0;
+        if (valueA === "None") return sortOrder === 'asc' ? -1 : 1; // short for if (sortOrder === 'asc') { return -1;} else {return 1;}
+        if (valueB === "None") return sortOrder === 'asc' ? 1 : -1;
+
+        if (column === 'macAddress' || column === 'ipAddress') {
+            return compareAddresses(valueA, valueB);
+        }
+
+        return sortOrder === 'asc' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA); // returns 0,1,-1 for string comparison
+    });
+
+    currentPage = 1;
+    displayTable(currentPage);
+    updateSortIcons(column);
+  }
+
+  function compareAddresses(addrA, addrB) {
+      const partsA = addrA.split(/[.:]/).map(part => parseInt(part, 16) || 0); //splits mac or ip Adress into integer blocks
+      const partsB = addrB.split(/[.:]/).map(part => parseInt(part, 16) || 0);
+
+      for (let i = 0; i < Math.max(partsA.length, partsB.length); i++) {
+          if (partsA[i] === undefined) return sortOrder === 'asc' ? -1 : 1;
+          if (partsB[i] === undefined) return sortOrder === 'asc' ? 1 : -1;
+          if (partsA[i] !== partsB[i]) {
+              return sortOrder === 'asc' 
+                  ? partsA[i] - partsB[i] //return <0 if block of A is smaller than block of B -> A comes before B
+                  : partsB[i] - partsA[i];
+          }
+      }
+      return 0; //mac or IPAddress are equal
+  }
+
+  function updateSortIcons(sortedColumn) { // switches icon so user knows if order is asc oder desc
+      const sortIcons = document.querySelectorAll('.sort-icon');
+      sortIcons.forEach(icon => {
+          const column = icon.getAttribute('data-column');
+          if (column === sortedColumn) {
+              icon.textContent = sortOrder === 'asc' ? '▲' : '▼';
+          } else {
+              icon.textContent = '▲';
+          }
+      });
+  }
+  function applyFilters() {
+    const selectedBoundary = document.getElementById("boundaryFilter").value;
+    searchTerm = document.getElementById("searchInput").value.toLowerCase();
+  
+    filteredData = data.filter(function(device) { // filters for devices where the function returns true
+      const matchesBoundary = !selectedBoundary || device.boundaries.split(',').map(b => b.trim()).includes(selectedBoundary); // sets selectedBoundary to True if boundary isnt set, 
+      const matchesSearch = device.name.toLowerCase().startsWith(searchTerm) || device.name.toLowerCase().includes(searchTerm) ||
+                            device.ipAddress.toLowerCase().replace(/[^0-9]/g, '').startsWith(searchTerm.replace(/[^a-z0-9]/g, '') || false) || // replace everything that is not in 0-9 range
+                            device.macAddress.toLowerCase().replace(/[^a-f0-9]/g, '').startsWith(searchTerm.replace(/[^a-z0-9]/g, '') || false); // replace everything that is not in hex (a-f,0-9) range
+      return matchesBoundary && matchesSearch; // and-Operator so devices can get filtered by boundary AND searchTerm, otherwise it would filter for either one
+    });
+  
+    currentPage = 1;
+    displayTable(currentPage);
+  }
+
   function displayTable(page) {
+
     const tableBody = document.querySelector("#deviceTable tbody");
     tableBody.innerHTML = "";
     
     const start = (page - 1) * itemsPerPage;
     const end = start + itemsPerPage;
-    const pageData = data.slice(start, end);
+    const pageData = filteredData.slice(start, end);
     
     pageData.forEach((device, index) => {
         const row = tableBody.insertRow();
@@ -148,7 +272,7 @@
     });
     
     document.getElementById("currentPage").textContent = page;
-    document.getElementById("totalPages").textContent = Math.ceil(data.length / itemsPerPage);
+    document.getElementById("totalPages").textContent = Math.ceil(filteredData.length / itemsPerPage);
 }
   
   function showDetails(title, addresses) {
@@ -205,10 +329,7 @@
   displayTable(currentPage);
   setupPagination();
   setupModal();
+  setupFilters();
+  setupSorting();
 </script>
 {% endblock content %}
-
-
-
-
-#Tests schreiben, prüfen wegen unique
