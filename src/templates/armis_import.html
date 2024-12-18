@@ -4,9 +4,21 @@
 {% block content %}
 <div class="container">
   <h1>Armis Import</h1>
+  <p>
   <button id="toggleSiteForm" class="btn btn-secondary btn-sm">
     {% if display %}Hide Sites{% else %}Show Sites{% endif %}
   </button>
+    <button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#vlan_blacklist" aria-expanded="false" aria-controls="vlan_blacklist">
+      VLAN Blacklist
+    </button>
+  </p>
+  <div>
+    <div class="collapse" id="vlan_blacklist">
+      <div class="card card-body" style="background-color:rgb(190, 190, 190);">
+        <strong>{{vlan_blacklist}}</strong>
+      </div>
+    </div>
+  </div>
   <div id="formContainer" style="display: {% if display %}block{% else %}none{% endif %}">
     <form id="siteSubmitForm" method="POST" action="{% url 'armis_import' %}">
         {% csrf_token %}
@@ -19,16 +31,6 @@
                   </div>
               {% endfor %}
           </div>
-          {% if vlan_blacklist %}
-          <div class="vlan-blacklist-box">
-            <strong>VLAN Blacklist:</strong>
-            <ul>
-            {% for vlan in vlan_blacklist %}
-              <li>{{ vlan }}</li>
-            {% endfor %}
-            </ul>
-          </div>
-          {% endif %}
       </div>
         <button type="submit" class="btn btn-secondary btn-sm">Select</button>
     </form>

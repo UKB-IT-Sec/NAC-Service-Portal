@@ -111,17 +111,3 @@ td {
     justify-content: space-between;
     margin-bottom: 15px;
   }
-
-  .vlan-blacklist-box {
-    display: inline-block;
-    border: 1px solid #000000;
-    background-color: #cfcdcdb8;
-    padding: 10px;
-    border-radius: 5px;
-}
-
-.vlan-blacklist-box strong {
-    display: block;
-    margin-bottom: 1px;
-    font-size: 1.3em;
-}
