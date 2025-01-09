@@ -34,6 +34,28 @@ def test_device_search(query, result):
 
 
 @pytest.mark.django_db
+def test_result_rendering(client):
+    test_user = CustomUser.objects.create(name="test")
+    test_user.set_password("test")
+    test_user.authorization_group.set([AuthorizationGroup.objects.get(pk=1)])
+    test_user.save()
+
+    client.force_login(test_user)
+
+    url = reverse_lazy('devices')
+    response = client.get(url)
+    assert response.status_code == 200
+
+    ajax_response = client.get(
+        url,  # The URL where the AJAX request is sent
+        {"search_string": "", "authorization_group": "", "device_role_prod": ""},  # Parameters to be sent in the AJAX request
+        HTTP_X_REQUESTED_WITH='XMLHttpRequest'  # Indicate it's an AJAX request
+    )
+
+    assert ajax_response.status_code == 200
+
+
+@pytest.mark.django_db
 @pytest.mark.parametrize("auth_group, device_role_prod, result",
                          [("", "", [1, 2, 3, 4, 5]),
                           ("", 1, [1, 3, 5]),
