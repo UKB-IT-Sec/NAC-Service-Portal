@@ -19,7 +19,7 @@ from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-from helper.armis import get_armis_sites, get_devices, get_tenant_url, get_boundaries, map_ids_to_names
+from helper.armis import get_armis_sites, get_devices, get_tenant_url, get_boundaries, map_ids_to_names, get_vlan_blacklist
 
 
 class ArmisView(LoginRequiredMixin, View):
@@ -33,6 +33,7 @@ class ArmisView(LoginRequiredMixin, View):
             cache.set('armis_sites', armis_sites, 3600)
         context['armis_sites'] = armis_sites
         context['tenant_url'] = get_tenant_url()
+        context['vlan_blacklist'] = get_vlan_blacklist()
         return context
 
     def get(self, request, *args, **kwargs):  # rendering the html base with site-context
