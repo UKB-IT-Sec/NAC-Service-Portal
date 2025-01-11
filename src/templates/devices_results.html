@@ -1,0 +1,66 @@
+{% load static %}
+
+<table class="table table-striped">
+			<thead>
+				<tr>
+					<th scope="col">Name</th>
+					<th scope="col">Status</th>
+					<th scope="col">FQDN</th>
+					<th scope="col">Device Role Prod</th>
+					<th scope="col">MAC</th>
+					<th scope="col" width="60"></th>
+				</tr>
+			</thead>
+
+		{% for device in device_list %}
+			<tr>
+				<td>
+					<a href="{% url 'device_detail' device.pk %}">{{ device.name }}</a>
+				</td>
+				<td>
+					{% if device.appl_NAC_Active %}
+						<span class="icon-desc" desc="Active Device"><img src="{% static 'icons/check-lg.svg' %}" alt="appl_NAC_Active_True" height="25" width="25" class="icon-zoom" /></span>
+					{% else %}
+						<span class="icon-desc" desc="Inactive Device"><img src="{% static 'icons/x-lg.svg' %}" alt="appl_NAC_Active_False" height="25" width="25" class="icon-zoom" /></span>
+					{% endif %}
+					{% if device.appl_NAC_Install %}
+						<span class="icon-desc" desc="Install"><img src="{% static 'icons/wrench.svg' %}" alt="appl_NAC_Install" height="25" width="25" class="icon-zoom"/></span>
+					{% endif %}
+				</td>
+				<td>
+					{{ device.appl_NAC_FQDN }}
+				</td>
+				<td>
+					{{ device.appl_NAC_DeviceRoleProd }}
+				</td>
+				<td>
+					{% for mac in device.get_appl_NAC_macAddressAIR %}
+						<b>
+							{% if mac != None %}
+								<span class="icon-desc" desc="macAddressAIR"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_macAddressAIR" height="14" width="14" class="icon-zoom"/></span>
+								<b> {{mac}}</b> <br />
+							{% endif %}
+						</b>
+					{% endfor %}
+					{% for mac in device.get_appl_NAC_macAddressCAB %}
+						<b>
+							{% if mac != None %}
+							<span class="icon-desc" desc="macAddressCAB"><img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_macAddressCAB" height="14" width="14" class="icon-zoom"/></span>
+								<b> {{mac}}</b> <br />
+							{% endif %}
+						</b>
+					{% endfor %}
+				</td>
+				<td>
+					<a href="{% url 'device_edit' device.pk %}">
+						<span class="icon-desc" desc="edit"><img src="{% static 'icons/pencil-square.svg' %}" alt="edit" height="16" width="16" class="icon-zoom"/></span>
+
+					</a>
+					<a href="{% url 'device_delete' device.pk %}">
+						<span class="icon-desc" desc="delete"><img src="{% static 'icons/trash.svg' %}" alt="delete" height="16" width="16" class="icon-zoom"/></span>
+					</a>
+				</td>
+			</tr>
+		{% endfor %}
+		</table>
+	</div>
