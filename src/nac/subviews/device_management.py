@@ -3,6 +3,7 @@ from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.db.models import Q
 from django.urls import reverse_lazy
 from django.shortcuts import render
+from django.contrib.auth.mixins import LoginRequiredMixin
 import json
 from django.http import JsonResponse
 from django.template.loader import render_to_string
@@ -12,7 +13,7 @@ from ..forms import DeviceForm, DeviceSearchForm
 from ..validation import normalize_mac
 
 
-class DeviceListView(ListView):
+class DeviceListView(LoginRequiredMixin, ListView):
     model = Device
     template_name = "devices.html"
     context_object_name = "device_list"
@@ -59,24 +60,24 @@ class DeviceListView(ListView):
         return context
 
 
-class DeviceDetailView(DetailView):
+class DeviceDetailView(LoginRequiredMixin, DetailView):
     model = Device
     template_name = "device_detail.html"
 
 
-class DeviceUpdateView(UpdateView):
+class DeviceUpdateView(LoginRequiredMixin, UpdateView):
     model = Device
     form_class = DeviceForm
     template_name = "device_edit.html"
 
 
-class DeviceDeleteView(DeleteView):
+class DeviceDeleteView(LoginRequiredMixin, DeleteView):
     model = Device
     template_name = "device_delete.html"
     success_url = reverse_lazy("devices")
 
 
-class DeviceCreateView(CreateView):
+class DeviceCreateView(LoginRequiredMixin, CreateView):
     model = Device
     form_class = DeviceForm
     template_name = "device_new.html"
