@@ -455,7 +455,7 @@ def test_add_arguments(command):
     )
     mock_parser.add_argument.assert_any_call(
         '-a', '--auth_group',
-        default='DefaultAG',
+        default='AuthGroupDefault',
         help='specify the Device Authorization Group'
     )
     mock_parser.add_argument.assert_any_call(

@@ -31,7 +31,7 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             '-a', '--auth_group',
-            default='DefaultAG',
+            default='AuthGroupDefault',
             help='specify the Device Authorization Group'
         )
         parser.add_argument(
@@ -117,47 +117,46 @@ class Command(BaseCommand):
 
     def get_deviceRole(self, deviceObject):
         DeviceRoleCriteria = self.csv_mapping['DeviceRoleCriteria']
-        if DeviceRoleCriteria['MAPPING']:  # True -> DeviceRoles based on OU-Mapping, False -> DeviceRoles based on CSV-Mapping
-            ou = deviceObject.get(self.get_set_or_default(DeviceRoleCriteria))
-            if ou not in self.ou_mapping.keys():
-                ou = self.ou_mapping["DEFAULT"]
-            else:
-                ou = self.ou_mapping[ou]
-            try:
-                deviceRoleProd = DeviceRoleProd.objects.get(
-                    name=ou['DeviceRoleProd'])
-            except ObjectDoesNotExist:
-                raise ValidationError(
-                    f"DeviceRoleProd: "
-                    f"{ou['DeviceRoleProd']} "
-                    f"not in Database")
-            try:
-                deviceRoleInst = DeviceRoleInst.objects.get(
-                    name=ou['DeviceRoleInst'])
-            except ObjectDoesNotExist:
-                raise ValidationError(
-                    f"DeviceRoleInst: "
-                    f"{ou['DeviceRoleInst']} "
-                    f"not in Database")
+        if DeviceRoleCriteria['MAPPING']:
+            return self.get_deviceRole_from_ou_mapping(deviceObject)
         else:
-            deviceRoleProd = self.get_set_or_default(self.csv_mapping['appl-NAC-DeviceRoleProd'])
-            deviceRoleInst = self.get_set_or_default(self.csv_mapping['appl-NAC-DeviceRoleInst'])
-            try:
-                deviceRoleProd = DeviceRoleProd.objects.get(
-                    name=deviceObject.get(deviceRoleProd))
-            except ObjectDoesNotExist:
-                raise ValidationError(
-                    f"DeviceRoleProd: "
-                    f"{deviceObject.get(deviceRoleProd)} "
-                    f"not in Database")
-            try:
-                deviceRoleInst = DeviceRoleInst.objects.get(
-                    name=deviceObject.get(deviceRoleInst))
-            except ObjectDoesNotExist:
-                raise ValidationError(
-                    f"DeviceRoleInst: "
-                    f"{deviceObject.get(deviceRoleInst)} "
-                    f"not in Database")
+            return self.get_deviceRole_from_csv_mapping(deviceObject)
+
+    def get_deviceRole_from_ou_mapping(self, deviceObject):
+        DeviceRoleCriteria = self.csv_mapping['DeviceRoleCriteria']
+        ou = deviceObject.get(self.get_set_or_default(DeviceRoleCriteria))
+
+        if ou not in self.ou_mapping.keys():
+            ou = self.ou_mapping["DEFAULT"]
+        else:
+            ou = self.ou_mapping[ou]
+
+        try:
+            deviceRoleProd = DeviceRoleProd.objects.get(name=ou['DeviceRoleProd'])
+        except ObjectDoesNotExist:
+            raise ValidationError(f"DeviceRoleProd: {ou['DeviceRoleProd']} not in Database")
+
+        try:
+            deviceRoleInst = DeviceRoleInst.objects.get(name=ou['DeviceRoleInst'])
+        except ObjectDoesNotExist:
+            raise ValidationError(f"DeviceRoleInst: {ou['DeviceRoleInst']} not in Database")
+
+        return deviceRoleProd, deviceRoleInst
+
+    def get_deviceRole_from_csv_mapping(self, deviceObject):
+        deviceRoleProd = self.get_set_or_default(self.csv_mapping['appl-NAC-DeviceRoleProd'])
+        deviceRoleInst = self.get_set_or_default(self.csv_mapping['appl-NAC-DeviceRoleInst'])
+
+        try:
+            deviceRoleProd = DeviceRoleProd.objects.get(name=deviceObject.get(deviceRoleProd))
+        except ObjectDoesNotExist:
+            raise ValidationError(f"DeviceRoleProd: {deviceObject.get(deviceRoleProd)} not in Database")
+
+        try:
+            deviceRoleInst = DeviceRoleInst.objects.get(name=deviceObject.get(deviceRoleInst))
+        except ObjectDoesNotExist:
+            raise ValidationError(f"DeviceRoleInst: {deviceObject.get(deviceRoleInst)} not in Database")
+
         return deviceRoleProd, deviceRoleInst
 
     def check_device(self, deviceObject):
