@@ -1,8 +1,9 @@
 from dal import autocomplete
 from ..models import DeviceRoleProd, AuthorizationGroup, DeviceRoleInst
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-class DeviceRoleProdAutocomplete(autocomplete.Select2QuerySetView):
+class DeviceRoleProdAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
     def get_queryset(self):
         if not self.request.user.is_authenticated:
             return DeviceRoleProd.objects.none()
@@ -23,7 +24,7 @@ class DeviceRoleProdAutocomplete(autocomplete.Select2QuerySetView):
         return qs
 
 
-class DeviceRoleInstAutocomplete(autocomplete.Select2QuerySetView):
+class DeviceRoleInstAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
     def get_queryset(self):
         if not self.request.user.is_authenticated:
             return DeviceRoleInst.objects.none()
@@ -40,7 +41,7 @@ class DeviceRoleInstAutocomplete(autocomplete.Select2QuerySetView):
         return qs
 
 
-class AuthorizationGroupAutocomplete(autocomplete.Select2QuerySetView):
+class AuthorizationGroupAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
     def get_queryset(self):
         if not self.request.user.is_authenticated:
             return AuthorizationGroup.objects.none()

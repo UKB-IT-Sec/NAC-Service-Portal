@@ -14,12 +14,25 @@
     </form>
     <br></br>
   </div>
+  <p>
   <button id="toggleSiteForm" class="btn btn-secondary btn-sm">
     {% if display %}Hide Sites{% else %}Show Sites{% endif %}
   </button>
+    <button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#vlan_blacklist" aria-expanded="false" aria-controls="vlan_blacklist">
+      VLAN Blacklist
+    </button>
+  </p>
+  <div>
+    <div class="collapse" id="vlan_blacklist">
+      <div class="card card-body" style="background-color:rgb(190, 190, 190);">
+        <strong>{{vlan_blacklist}}</strong>
+      </div>
+    </div>
+  </div>
   <div id="formContainer" style="display: {% if display %}block{% else %}none{% endif %}">
     <form id="siteSubmitForm" method="POST" action="{% url 'armis_import' %}">
         {% csrf_token %}
+  <div class="split-content">
         <div class="checkbox-container">
           <div class="checkbox-item">
             <input type="checkbox" id="select-all" class="custom-checkbox">
@@ -32,7 +45,8 @@
                     <label for="site-{{ site_id }}" class="checkbox-label">{{ site_info.name }}</label>
                 </div>
             {% endfor %}
-        </div>
+          </div>
+    </div>
         <button type="submit" class="btn btn-secondary btn-sm">Select</button>
     </form>
   </div>

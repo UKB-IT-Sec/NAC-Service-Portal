@@ -39,6 +39,9 @@ def _remove_existing_devices(deviceList):
     _mac_list = MacList()
     return [device for device in deviceList if not _mac_list.check_existing_mac(device)[0]]
 
+def get_vlan_blacklist():
+    return armis_config['armis-server'].get('vlan_blacklist', '').strip() or None
+
 # flake8: noqa: E231
 @armiscloud
 def get_devices(acloud, sites):
