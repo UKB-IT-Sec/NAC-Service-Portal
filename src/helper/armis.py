@@ -62,7 +62,6 @@ def get_single_device(acloud, deviceName):
         asq=f'in:devices name:{deviceName.strip()} timeFrame:"7 Days"',
         fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries', 'site']
     )
-    print(device)
     return device
 
 def get_boundaries(deviceList):
