@@ -4,6 +4,16 @@
 {% block content %}
 <div class="container">
   <h1>Armis Import</h1>
+  <div id="searchContainer" style="display: {% if display or not devices %}block{% else %}none{% endif %}">
+    <form id="deviceSubmitForm" method="POST" action="{% url 'armis_import' %}">
+    {% csrf_token %}
+    <div class="search-container">
+      <input type="text" id="deviceSearch" name="deviceName" placeholder="Search for Device..." class="form-control" style="width: 300px;">
+      <button type="submit" id="searchButton" class="btn btn-secondary btn-sm">Search</button>
+    </div>
+    </form>
+    <br></br>
+  </div>
   <p>
   <button id="toggleSiteForm" class="btn btn-secondary btn-sm">
     {% if display %}Hide Sites{% else %}Show Sites{% endif %}
@@ -22,20 +32,25 @@
   <div id="formContainer" style="display: {% if display %}block{% else %}none{% endif %}">
     <form id="siteSubmitForm" method="POST" action="{% url 'armis_import' %}">
         {% csrf_token %}
-        <div class="split-content">
-          <div class="checkbox-container">
-              {% for site_id, site_info in armis_sites.items %}
-                  <div class="checkbox-item">
-                      <input type="checkbox" id="site-{{ site_id }}" name="site-ids[]" value="{{ site_id }}" class="custom-checkbox">
-                      <label for="site-{{ site_id }}" class="checkbox-label">{{ site_info.name }}</label>
-                  </div>
-              {% endfor %}
+  <div class="split-content">
+        <div class="checkbox-container">
+          <div class="checkbox-item">
+            <input type="checkbox" id="select-all" class="custom-checkbox">
+            <label for="select-all" class="checkbox-label">Select all</label>
+        </div>
+          <div
+            {% for site_id, site_info in armis_sites.items %}
+                <div class="checkbox-item">
+                    <input type="checkbox" id="site-{{ site_id }}" name="site-ids[]" value="{{ site_id }}" class="custom-checkbox">
+                    <label for="site-{{ site_id }}" class="checkbox-label">{{ site_info.name }}</label>
+                </div>
+            {% endfor %}
           </div>
-      </div>
+    </div>
         <button type="submit" class="btn btn-secondary btn-sm">Select</button>
     </form>
   </div>
-  {%if devices%}
+  {%if devices %}
   <div id="pagination">
     <button id="prevPage" class="link-button">
 		<span class="icon-desc" desc="previous page"><img src="{% static 'icons/caret-left-square.svg' %}" alt="previous page" height="16" width="16" class="icon-zoom"/> </span>
@@ -90,7 +105,7 @@
       </style>
       <tr>
         <th scope="col">
-          <input type="text" id="searchInput" placeholder="Search Name, IP, or MAC">
+          <input type="text" id="searchInput" placeholder="Search for Name, IP, Mac or Site" style="width: 300px;">
         </th>
         <th scope="col"></th>
         <th scope="col"></th>
@@ -108,6 +123,7 @@
       <th scope="col">Device Name <span class="sort-icon" data-column="name">▲</span></th>
       <th scope="col">MAC Address <span class="sort-icon" data-column="macAddress">▲</span></th>
       <th scope="col">IP Address <span class="sort-icon" data-column="ipAddress">▲</span></th>
+      <th scope="col">Site <span class="sort-icon" data-column="site">▲</span></th>
       <th scope="col">Boundaries</th>
       <th scope="col"></th>
     </tr>
@@ -123,6 +139,10 @@
       <ul id="modalList"></ul>
     </div>
   </div>
+  {% elif not display %}
+  <div class="alert alert-info" role="alert">
+    No Devices found...
+  </div>
   {%endif%}
   
 </div>
@@ -132,11 +152,12 @@
   let data = [
       {% for device in devices %}
           {
-			  name: "{{ device.name }}",
+			        name: "{{ device.name }}",
               macAddress: "{{ device.macAddress}}",
               ipAddress: "{{ device.ipAddress }}",
               boundaries: "{{ device.boundaries }}",
-			  url: "{{tenant_url}}/inventory/devices/{{ device.id }}"
+              site: "{{ device.site.name}}",
+			        url: "{{tenant_url}}/inventory/devices/{{ device.id }}"
           },
       {% endfor %}
   ];
@@ -144,6 +165,25 @@
   let sortOrder = 'asc';
   let searchTerm = '';
   
+  document.addEventListener('DOMContentLoaded', function() {
+    var selectAll = document.getElementById('select-all');
+    var siteCheckboxes = document.querySelectorAll('.custom-checkbox'); // gets all elements with given CSS-Class
+
+    selectAll.addEventListener('change', function() {
+        siteCheckboxes.forEach(function(checkbox) {
+            checkbox.checked = selectAll.checked;
+        });
+    });
+
+    siteCheckboxes.forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            selectAll.checked = Array.from(siteCheckboxes).every(function(checkbox) { // checks select-all checkbox only if every checkbox is selected
+                return checkbox.checked;
+            });
+        });
+    });
+  });
+
   document.getElementById('toggleSiteForm').addEventListener('click', function() {
     var formContainer = document.getElementById('formContainer');
     if (formContainer.style.display === 'none') {
@@ -228,7 +268,7 @@
   
     filteredData = data.filter(function(device) { // filters for devices where the function returns true
       const matchesBoundary = !selectedBoundary || device.boundaries.split(',').map(b => b.trim()).includes(selectedBoundary); // sets selectedBoundary to True if boundary isnt set, 
-      const matchesSearch = device.name.toLowerCase().startsWith(searchTerm) || device.name.toLowerCase().includes(searchTerm) ||
+      const matchesSearch = device.name.toLowerCase().startsWith(searchTerm) || device.name.toLowerCase().includes(searchTerm) || device.site.toLowerCase().replace(" ","").startsWith(searchTerm) ||
                             device.ipAddress.toLowerCase().replace(/[^0-9]/g, '').startsWith(searchTerm.replace(/[^a-z0-9]/g, '') || false) || // replace everything that is not in 0-9 range
                             device.macAddress.toLowerCase().replace(/[^a-f0-9]/g, '').startsWith(searchTerm.replace(/[^a-z0-9]/g, '') || false); // replace everything that is not in hex (a-f,0-9) range
       return matchesBoundary && matchesSearch; // and-Operator so devices can get filtered by boundary AND searchTerm, otherwise it would filter for either one
@@ -271,6 +311,7 @@
         } else {
             ipCell.querySelector('span').addEventListener("click", () => showDetails("IP-Adresse", device.ipAddress));
         }
+        row.insertCell().textContent = device.site
         row.insertCell().textContent = device.boundaries;
 
         const importCell = row.insertCell();

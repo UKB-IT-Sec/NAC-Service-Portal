@@ -17,9 +17,7 @@ from django.views.generic import View
 from django.core.cache import cache
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
-
-
-from helper.armis import get_armis_sites, get_devices, get_tenant_url, get_boundaries, map_ids_to_names, get_vlan_blacklist
+from helper.armis import get_armis_sites, get_devices, get_tenant_url, get_boundaries, map_ids_to_names, get_single_device, get_vlan_blacklist
 
 
 class ArmisView(LoginRequiredMixin, View):
@@ -41,13 +39,17 @@ class ArmisView(LoginRequiredMixin, View):
         context['display'] = True
         return render(request, self.template_name, context)
 
-    def post(self, request, *args, **kwargs):  # gets site-id chosen in html-dropdown, gets Devices based on site-id, shows them via device-context
+    def post(self, request, *args, **kwargs):  # gets site-id chosen in checkbox, gets Devices based on site-id, shows them via device-context
         context = self._get_context()
         selected_sites = request.POST.getlist('site-ids[]')
-        context['display'] = False if selected_sites else True
+        search_device = request.POST.get('deviceName')
+        context['display'] = False if selected_sites or search_device else True
         context['selected_sites'] = selected_sites if selected_sites else ''
-        if selected_sites:
+        if selected_sites and not search_device:
             context['devices'] = get_devices(map_ids_to_names(selected_sites, context['armis_sites']))
+            context['boundaries'] = get_boundaries(context['devices'])
+        else:
+            context['devices'] = get_single_device(search_device)
             context['boundaries'] = get_boundaries(context['devices'])
 
         return render(request, self.template_name, context)

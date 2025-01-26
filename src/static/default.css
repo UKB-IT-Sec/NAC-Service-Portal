@@ -105,7 +105,15 @@ td {
 	height: 20px;
 	cursor: pointer;
   }
-
+  .search-container {
+	display: flex;
+	align-items: center;
+  }
+  
+  .search-container input {
+	margin-right: 8px;
+  }
+  
   .split-content {
     display: flex;
     justify-content: space-between;

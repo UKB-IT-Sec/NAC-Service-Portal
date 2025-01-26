@@ -51,11 +51,18 @@ def get_devices(acloud, sites):
     sites = ','.join(f'"{site}"' for site in sites)
     deviceList = acloud.get_devices(
         asq=f'in:devices site:{sites} timeFrame:"7 Days" {vlan_bl}',
-        fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries']
+        fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries', 'site']
     )
     return _remove_existing_devices(deviceList)
 # flake8: qa
 
+@armiscloud
+def get_single_device(acloud, deviceName):
+    device = acloud.get_devices(
+        asq=f'in:devices name:{deviceName.strip()} timeFrame:"7 Days"',
+        fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries', 'site']
+    )
+    return device
 
 def get_boundaries(deviceList):
     unique_boundaries = set()
