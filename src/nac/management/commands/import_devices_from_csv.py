@@ -7,12 +7,16 @@ from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from nac.models import Device, AuthorizationGroup, DeviceRoleProd, DeviceRoleInst
 from nac.forms import DeviceForm
 from helper.logging import setup_console_logger
-from helper.filesystem import get_resources_directory, get_existing_path
+from helper.filesystem import get_resources_directory, get_existing_path, get_config_directory
+from helper.config import get_config_from_json
 from helper.database import MacList
+import traceback
 
 
 DEFAULT_SOURCE_FILE = get_resources_directory() / 'ldapObjects.csv'
-SAVE_FILE = get_resources_directory() / "invalid_devices.csv"
+DEFAULT_SAVE_FILE = get_resources_directory() / "invalid_devices.csv"
+DEFAULT_CSV_MAPPING = get_config_directory() / 'csv_mapping.json'
+DEFAULT_OU_MAPPING = get_config_directory() / 'ou_mapping.json'
 
 
 class Command(BaseCommand):
@@ -27,7 +31,7 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             '-a', '--auth_group',
-            default='DefaultAG',
+            default='AuthGroupDefault',
             help='specify the Device Authorization Group'
         )
         parser.add_argument(
@@ -35,11 +39,21 @@ class Command(BaseCommand):
             action='store_true',
             help='specify if existing Devices should be updated'
         )
+        parser.add_argument(
+            '-c', '--csv_config',
+            default=DEFAULT_CSV_MAPPING,
+            help='use a specific config file [src/csv_mapping.cfg]')
+        parser.add_argument(
+            '-o', '--ou_config',
+            default=DEFAULT_OU_MAPPING,
+            help='use a specific config file [src/ou_mapping.cfg]')
 
     def handle(self, *args, **options):
         setup_console_logger(options['verbosity'])
         self.source_file = get_existing_path(options['csv_file'])
         self.update = options['update']
+        self.csv_mapping = get_config_from_json(options['csv_config'])
+        self.ou_mapping = get_config_from_json(options['ou_config'])
         self.mac_list = MacList()
         if not self.source_file:
             logging.error(
@@ -56,6 +70,12 @@ class Command(BaseCommand):
         self.clear_invalid_devices_file()
         self.read_csv()
 
+    def get_set_or_default(self, json_config_key):
+        if json_config_key['SET'] is not None:
+            return json_config_key['SET']
+        else:
+            return json_config_key['DEFAULT']
+
     def check_valid_auth_group(self, auth_group):
         exists = AuthorizationGroup.objects.filter(name=auth_group).exists()
         if not exists:
@@ -65,11 +85,11 @@ class Command(BaseCommand):
 
     def clear_invalid_devices_file(self):
         try:
-            with open(SAVE_FILE, "w"):
-                logging.info(f"Removing all entries in {SAVE_FILE}")
+            with open(DEFAULT_SAVE_FILE, "w"):
+                logging.info(f"Removing all entries in {DEFAULT_SAVE_FILE}")
         except Exception as e:
             logging.error(
-                f"Removing all entries in {SAVE_FILE} FAILED -> {e}"
+                f"Removing all entries in {DEFAULT_SAVE_FILE} FAILED -> {e}"
             )
 
     def read_csv(self):
@@ -93,35 +113,65 @@ class Command(BaseCommand):
             self.save_invalid_devices(deviceObject)
         except Exception as e:
             logging.error(f"Error: Handling device Object failed -> {e}")
+            traceback.print_exc()
+
+    def get_deviceRole(self, deviceObject):
+        DeviceRoleCriteria = self.csv_mapping['DeviceRoleCriteria']
+        if DeviceRoleCriteria['MAPPING']:
+            return self.get_deviceRole_from_ou_mapping(deviceObject)
+        else:
+            return self.get_deviceRole_from_csv_mapping(deviceObject)
+
+    def get_deviceRole_from_ou_mapping(self, deviceObject):
+        DeviceRoleCriteria = self.csv_mapping['DeviceRoleCriteria']
+        ou = deviceObject.get(self.get_set_or_default(DeviceRoleCriteria))
+
+        if ou not in self.ou_mapping.keys():
+            ou = self.ou_mapping["DEFAULT"]
+        else:
+            ou = self.ou_mapping[ou]
+
+        try:
+            deviceRoleProd = DeviceRoleProd.objects.get(name=ou['DeviceRoleProd'])
+        except ObjectDoesNotExist:
+            raise ValidationError(f"DeviceRoleProd: {ou['DeviceRoleProd']} not in Database")
+
+        try:
+            deviceRoleInst = DeviceRoleInst.objects.get(name=ou['DeviceRoleInst'])
+        except ObjectDoesNotExist:
+            raise ValidationError(f"DeviceRoleInst: {ou['DeviceRoleInst']} not in Database")
+
+        return deviceRoleProd, deviceRoleInst
+
+    def get_deviceRole_from_csv_mapping(self, deviceObject):
+        deviceRoleProd = self.get_set_or_default(self.csv_mapping['appl-NAC-DeviceRoleProd'])
+        deviceRoleInst = self.get_set_or_default(self.csv_mapping['appl-NAC-DeviceRoleInst'])
+
+        try:
+            deviceRoleProd = DeviceRoleProd.objects.get(name=deviceObject.get(deviceRoleProd))
+        except ObjectDoesNotExist:
+            raise ValidationError(f"DeviceRoleProd: {deviceObject.get(deviceRoleProd)} not in Database")
+
+        try:
+            deviceRoleInst = DeviceRoleInst.objects.get(name=deviceObject.get(deviceRoleInst))
+        except ObjectDoesNotExist:
+            raise ValidationError(f"DeviceRoleInst: {deviceObject.get(deviceRoleInst)} not in Database")
+
+        return deviceRoleProd, deviceRoleInst
 
     def check_device(self, deviceObject):
         logging.info(f"Checking validity of device "
-                     f"{deviceObject.get('appl-NAC-Hostname')}")
+                     f"{deviceObject.get(self.get_set_or_default(self.csv_mapping['appl-NAC-Hostname']))}")
         try:
-            if deviceObject.get('objectClass') != 'appl-NAC-Device':
+            if deviceObject.get(self.get_set_or_default(self.csv_mapping['objectClass'])) != 'appl-NAC-Device':
                 raise ValidationError(
                     f"Invalid Object-type! EXPECTED: appl-NAC-Device <->"
-                    f" ACTUAL: {deviceObject.get('objectClass')}")
+                    f" ACTUAL: {deviceObject.get(self.get_set_or_default(self.csv_mapping['objectClass']))}")
             with transaction.atomic():
                 auth_group = AuthorizationGroup.objects.get(
                     name=self.auth_group
                 )
-                try:
-                    deviceRoleProd = DeviceRoleProd.objects.get(
-                        name=deviceObject.get("appl-NAC-DeviceRoleProd"))
-                except ObjectDoesNotExist:
-                    raise ValidationError(
-                        f"DeviceRoleProd: "
-                        f"{deviceObject.get('appl-NAC-DeviceRoleProd')} "
-                        f"not in Database")
-                try:
-                    deviceRoleInst = DeviceRoleInst.objects.get(
-                        name=deviceObject.get("appl-NAC-DeviceRoleInst"))
-                except ObjectDoesNotExist:
-                    raise ValidationError(
-                        f"DeviceRoleInst: "
-                        f"{deviceObject.get('appl-NAC-DeviceRoleInst')} "
-                        f"not in Database")
+                deviceRoleProd, deviceRoleInst = self.get_deviceRole(deviceObject)
                 if deviceRoleProd not in auth_group.DeviceRoleProd.all():
                     raise ValidationError(
                         f"DeviceRoleProd: {deviceRoleProd} "
@@ -132,44 +182,44 @@ class Command(BaseCommand):
                         f"not in authorization group: {auth_group}")
 
                 device_data = {
-                    "name": deviceObject.get("appl-NAC-Hostname"),
+                    "name": deviceObject.get(self.get_set_or_default(self.csv_mapping['appl-NAC-Hostname'])),
                     "authorization_group": auth_group,
                     "appl_NAC_DeviceRoleProd": deviceRoleProd,
                     "appl_NAC_DeviceRoleInst": deviceRoleInst,
-                    "appl_NAC_FQDN": deviceObject.get("appl-NAC-FQDN"),
-                    "appl_NAC_Hostname": deviceObject.get("appl-NAC-Hostname"),
+                    "appl_NAC_FQDN": deviceObject.get(self.get_set_or_default(self.csv_mapping['appl-NAC-FQDN'])),
+                    "appl_NAC_Hostname": deviceObject.get(self.get_set_or_default(self.csv_mapping['appl-NAC-Hostname'])),
                     "appl_NAC_Active": self.str_to_bool(
-                        deviceObject.get("appl-NAC-Active")
+                        deviceObject.get(self.get_set_or_default(self.csv_mapping['appl-NAC-Active']))
                     ),
                     "appl_NAC_ForceDot1X": self.str_to_bool(
-                        deviceObject.get("appl-NAC-ForceDot1X")
+                        deviceObject.get(self.get_set_or_default(self.csv_mapping['appl-NAC-ForceDot1X']))
                     ),
                     "appl_NAC_Install": self.str_to_bool(
-                        deviceObject.get("appl-NAC-Install")
+                        deviceObject.get(self.get_set_or_default(self.csv_mapping['appl-NAC-Install']))
                     ),
                     "appl_NAC_AllowAccessCAB": self.str_to_bool(
-                        deviceObject.get("appl-NAC-AllowAccessCAB")
+                        deviceObject.get(self.get_set_or_default(self.csv_mapping['appl-NAC-AllowAccessCAB']))
                     ),
                     "appl_NAC_AllowAccessAIR": self.str_to_bool(
-                        deviceObject.get("appl-NAC-AllowAccessAIR")
+                        deviceObject.get(self.get_set_or_default(self.csv_mapping['appl-NAC-AllowAccessAIR']))
                     ),
                     "appl_NAC_AllowAccessVPN": self.str_to_bool(
-                        deviceObject.get("appl-NAC-AllowAccessVPN")
+                        deviceObject.get(self.get_set_or_default(self.csv_mapping['appl-NAC-AllowAccessVPN']))
                     ),
                     "appl_NAC_AllowAccessCEL": self.str_to_bool(
-                        deviceObject.get("appl-NAC-AllowAccessCEL")
+                        deviceObject.get(self.get_set_or_default(self.csv_mapping['appl-NAC-AllowAccessCEL']))
                     ),
                     "appl_NAC_macAddressAIR": deviceObject.get(
-                        "appl-NAC-macAddressAIR"
+                        self.get_set_or_default(self.csv_mapping['appl-NAC-macAddressAIR'])
                     ),
                     "appl_NAC_macAddressCAB": deviceObject.get(
-                        "appl-NAC-macAddressCAB"
+                        self.get_set_or_default(self.csv_mapping['appl-NAC-macAddressCAB'])
                     ),
                     "appl_NAC_Certificate": deviceObject.get(
-                        "appl-NAC-Certificate"
+                        self.get_set_or_default(self.csv_mapping['appl-NAC-Certificate'])
                     ),
                     "synchronized": self.str_to_bool(
-                        deviceObject.get("synchronized")
+                        deviceObject.get(self.get_set_or_default(self.csv_mapping['synchronized']))
                     )
                 }
                 device_form = DeviceForm(device_data)
@@ -177,13 +227,13 @@ class Command(BaseCommand):
                     logging.debug(f"Device {device_data.get('name')} is valid")
                     exists, device_id = self.mac_list.check_existing_mac(device_form.cleaned_data)
                     if exists:
-                        logging.debug(f"Device {deviceObject.get('appl-NAC-Hostname')} already exists")
+                        logging.debug(f"Device {device_data.get('appl_NAC_Hostname')} already exists")
                         if self.update:
-                            logging.debug(f"Updating Device {deviceObject.get('appl-NAC-Hostname')}")
+                            logging.debug(f"Updating Device {device_data.get('appl_NAC_Hostname')}")
                             Device.objects.filter(id=device_id).update(**device_form.cleaned_data)
                             return None
                         else:
-                            raise ValidationError(f"Device {deviceObject.get('appl-NAC-Hostname')} exists and will not get updated")
+                            raise ValidationError(f"Device {device_data.get('appl_NAC_Hostname')} exists and will not get updated")
                     return device_form.cleaned_data
                 else:
                     logging.error(
@@ -198,7 +248,7 @@ class Command(BaseCommand):
             raise
         except Exception as e:
             logging.error(
-                f"Checking validity of device {deviceObject.get('name')}: "
+                f"Checking validity of device {deviceObject.get(self.get_set_or_default(self.csv_mapping['appl-NAC-Hostname']))}: "
                 f"FAILED -> {e}"
             )
             raise
@@ -229,20 +279,20 @@ class Command(BaseCommand):
     def save_invalid_devices(self, deviceObject_invalid):
         try:
             column_header = deviceObject_invalid.keys()
-            with open(SAVE_FILE, 'a', newline="") as csvfile:
-                logging.info(f"Writing invalid device to {SAVE_FILE}")
+            with open(DEFAULT_SAVE_FILE, 'a', newline="") as csvfile:
+                logging.info(f"Writing invalid device to {DEFAULT_SAVE_FILE}")
                 writer = DictWriter(
                     csvfile, fieldnames=column_header, delimiter=";"
                 )
-                if stat(SAVE_FILE).st_size == 0:
+                if stat(DEFAULT_SAVE_FILE).st_size == 0:
                     writer.writeheader()
                 writer.writerows([deviceObject_invalid])
                 logging.debug(
-                    f"Writing invalid device to {SAVE_FILE}: "
+                    f"Writing invalid device to {DEFAULT_SAVE_FILE}: "
                     f"SUCCESSFUL"
                 )
         except Exception as e:
             logging.error(
                 f"Writing invalid device to "
-                f"{SAVE_FILE}: FAILED -> {e}"
+                f"{DEFAULT_SAVE_FILE}: FAILED -> {e}"
             )
