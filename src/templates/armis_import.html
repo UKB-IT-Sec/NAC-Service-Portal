@@ -269,8 +269,8 @@
     filteredData = data.filter(function(device) { // filters for devices where the function returns true
       const matchesBoundary = !selectedBoundary || device.boundaries.split(',').map(b => b.trim()).includes(selectedBoundary); // sets selectedBoundary to True if boundary isnt set, 
       const matchesSearch = device.name.toLowerCase().startsWith(searchTerm) || device.name.toLowerCase().includes(searchTerm) || device.site.toLowerCase().replace(" ","").startsWith(searchTerm) ||
-                            device.ipAddress.toLowerCase().replace(/[^0-9]/g, '').startsWith(searchTerm.replace(/[^a-z0-9]/g, '') || false) || // replace everything that is not in 0-9 range
-                            device.macAddress.toLowerCase().replace(/[^a-f0-9]/g, '').startsWith(searchTerm.replace(/[^a-z0-9]/g, '') || false); // replace everything that is not in hex (a-f,0-9) range
+                            device.ipAddress.toLowerCase().replace(/[^0-9]/g, '').includes(searchTerm.replace(/[^a-z0-9]/g, '') || false) || // replace everything that is not in 0-9 range
+                            device.macAddress.toLowerCase().replace(/[^a-f0-9]/g, '').includes(searchTerm.replace(/[^a-z0-9]/g, '') || false); // replace everything that is not in hex (a-f,0-9) range
       return matchesBoundary && matchesSearch; // and-Operator so devices can get filtered by boundary AND searchTerm, otherwise it would filter for either one
     });
   
