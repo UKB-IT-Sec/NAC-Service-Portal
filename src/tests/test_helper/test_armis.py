@@ -7,6 +7,7 @@ from helper.armis import (
     get_armis_sites,
     _remove_existing_devices,
     get_devices, get_tenant_url,
+    get_single_device,
 )
 from nac.context_processors import armis_context
 from django.core.cache import cache
@@ -97,7 +98,7 @@ def test_get_devices(mock_remove_existing_devices, mock_config):
     assert result == mock_devices
     mock_armis_cloud.get_devices.assert_called_once_with(
         asq='in:devices site:"TestSite" timeFrame:"7 Days" !networkInterface:(vlans:100,200)',
-        fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries']
+        fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries', 'site']
     )
     mock_remove_existing_devices.assert_called_once_with(mock_devices)
 
@@ -105,6 +106,38 @@ def test_get_devices(mock_remove_existing_devices, mock_config):
 def test_get_tenant_url(mock_config):
     with patch('helper.armis.armis_config', mock_config):
         assert get_tenant_url() == "https://test_host"
+
+
+def test_get_single_device_by_name(mock_config):
+    mock_devices = [{'id': '1', 'name': 'Device1'}]
+    mock_armis_cloud = MagicMock()
+    mock_armis_cloud.get_devices.return_value = mock_devices
+
+    #  manually call original function without decorator to prevent argument error
+    with patch('helper.armis.armis_config', mock_config):
+        result = get_single_device.__wrapped__(mock_armis_cloud, 'Device1')
+
+    assert result == mock_devices
+    mock_armis_cloud.get_devices.assert_called_once_with(
+        asq='in:devices name:Device1 timeFrame:"7 Days"',
+        fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries', 'site']
+    )
+
+
+def test_get_single_device_by_mac(mock_config):
+    mock_devices = [{'id': '1', 'name': 'aabbccddeeff'}]
+    mock_armis_cloud = MagicMock()
+    mock_armis_cloud.get_devices.return_value = mock_devices
+
+    #  manually call original function without decorator to prevent argument error
+    with patch('helper.armis.armis_config', mock_config):
+        result = get_single_device.__wrapped__(mock_armis_cloud, 'aabbccddeeff')
+
+    assert result == mock_devices
+    mock_armis_cloud.get_devices.assert_called_once_with(
+        asq='in:devices macAddress:"AA:BB:CC:DD:EE:FF" timeFrame:"7 Days"',
+        fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries', 'site']
+    )
 
 
 @pytest.mark.parametrize("tenant_hostname, validity", [

@@ -4,9 +4,21 @@ from armis import ArmisCloud
 from .database import MacList
 import re
 from functools import wraps
+import macaddress
+
 
 armis_config = get_config_from_file(get_config_directory() / 'armis.cfg')
 
+def validate_and_format_mac(mac_string):
+    try:
+        mac = macaddress.MAC(mac_string)
+        class armisMAC(macaddress.MAC):
+            formats = ('xx:xx:xx:xx:xx:xx',) + macaddress.MAC.formats
+        armis_mac = armisMAC(str(mac))
+        
+        return str(armis_mac)
+    except ValueError:
+        return None
 
 def armiscloud(func):
     global global_acloud
@@ -51,11 +63,25 @@ def get_devices(acloud, sites):
     sites = ','.join(f'"{site}"' for site in sites)
     deviceList = acloud.get_devices(
         asq=f'in:devices site:{sites} timeFrame:"7 Days" {vlan_bl}',
-        fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries']
+        fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries', 'site']
     )
     return _remove_existing_devices(deviceList)
 # flake8: qa
 
+@armiscloud
+def get_single_device(acloud, device):
+    device_mac = validate_and_format_mac(device)
+    if device_mac:
+        device = acloud.get_devices(
+        asq=f'in:devices macAddress:"{device_mac}" timeFrame:"7 Days"',
+        fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries', 'site']
+    )
+    else:
+        device = acloud.get_devices(
+            asq=f'in:devices name:{device.strip()} timeFrame:"7 Days"',
+            fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries', 'site']
+        )
+    return device
 
 def get_boundaries(deviceList):
     unique_boundaries = set()
