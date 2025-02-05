@@ -3,7 +3,7 @@
 <table class="table table-striped">
 			<thead>
 				<tr>
-					<th scope="col">Name</th>
+					<th scope="col">Asset ID</th>
 					<th scope="col">Status</th>
 					<th scope="col">FQDN</th>
 					<th scope="col">Device Role Prod</th>
@@ -15,7 +15,7 @@
 		{% for device in device_list %}
 			<tr>
 				<td>
-					<a href="{% url 'device_detail' device.pk %}">{{ device.name }}</a>
+					<a href="{% url 'device_detail' device.pk %}">{{ device.asset_id }}</a>
 				</td>
 				<td>
 					{% if device.appl_NAC_Active %}

@@ -1,6 +1,20 @@
 from dal import autocomplete
-from ..models import DeviceRoleProd, AuthorizationGroup, DeviceRoleInst
+from ..models import DeviceRoleProd, AuthorizationGroup, DeviceRoleInst, DNSDomain
 from django.contrib.auth.mixins import LoginRequiredMixin
+
+
+class DNSDomainAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return DNSDomain.objects.none()
+
+        qs = DNSDomain.objects.all().order_by('id')
+
+#        autocomplete search results
+        if self.q:
+            qs = qs.filter(name__istartswith=self.q)
+
+        return qs
 
 
 class DeviceRoleProdAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):

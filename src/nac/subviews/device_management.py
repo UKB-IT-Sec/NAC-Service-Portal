@@ -25,7 +25,7 @@ class DeviceListView(LoginRequiredMixin, ListView):
         query = self.request.GET.get("search_string")
         if query:
             device_list = device_list.filter(
-                Q(name__icontains=query) | Q(appl_NAC_Hostname__icontains=query) |
+                Q(appl_NAC_Hostname__icontains=query) |
                 Q(appl_NAC_macAddressAIR__icontains=normalize_mac(query)) |
                 Q(appl_NAC_macAddressCAB__icontains=normalize_mac(query)) |
                 Q(appl_NAC_FQDN__icontains=query))
@@ -39,7 +39,7 @@ class DeviceListView(LoginRequiredMixin, ListView):
         selected_device_roles_prod = self.request.GET.get("device_role_prod")
         if selected_device_roles_prod:
             device_list = device_list.filter(appl_NAC_DeviceRoleProd__in=selected_device_roles_prod)
-        return device_list.order_by("name")
+        return device_list.order_by("appl_NAC_Hostname")
 
     def get(self, request, *args, **kwargs):
         # Check if the request is an AJAX request
@@ -88,8 +88,8 @@ class DeviceCreateView(LoginRequiredMixin, CreateView):
         if device_data:
             device = json.loads(device_data)
             initial.update({  # specify which attributes can/should be pre-filled
-                'name': device.get('name'),
-                'appl_NAC_Hostname': device.get('name'),
+                'asset_id': device.get('asset_id'),
+                'appl_NAC_Hostname': device.get('appl_NAC_Hostname'),
                 'appl_NAC_macAddressCAB': device.get('macAddress'),
                 'appl_NAC_FQDN': device.get('name'),
                 'appl_NAC_Active': True,

@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from .forms import CustomUserCreationForm, CustomUserChangeForm
-from .models import CustomUser, Device, AuthorizationGroup, DeviceRoleProd, DeviceRoleInst
+from .models import CustomUser, Device, AuthorizationGroup, DeviceRoleProd, DeviceRoleInst, DNSDomain
 
 
 class CustomUserAdmin(UserAdmin):
@@ -19,3 +19,4 @@ admin.site.register(Device)
 admin.site.register(AuthorizationGroup)
 admin.site.register(DeviceRoleProd)
 admin.site.register(DeviceRoleInst)
+admin.site.register(DNSDomain)

@@ -7,21 +7,31 @@
         <thead>
             <tr>
                 <th>
-                    <h4>Name</h4>
+                    <h4>Asset ID</h4>
                 </th>
                 <th>
-                    <h4>{{ device.name }}</h4>
+                    <h4>{{ device.asset_id }}</h4>
                 </th>
             </tr>
         </thead>
-        <tr>
-            <td>
-                <strong>Authorization Group</strong>
-            </td>
-            <td>
-                {{ device.authorization_group }}
-            </td>
-        </tr>
+        <p>
+            <tr>
+                <td>
+                    <strong>Hostname</strong>
+                </td>
+                <td>
+                    {{ device.appl_NAC_Hostname }}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>DNS Domain</strong>
+                </td>
+                <td>
+                    {{ device.dns_domain }}
+                </td>
+            </tr>
+        </p>
         <tr>
             <td>
                 <strong>FQDN</strong>
@@ -32,10 +42,10 @@
         </tr>
         <tr>
             <td>
-                <strong>Hostname</strong>
+                <strong>Authorization Group</strong>
             </td>
             <td>
-                {{ device.appl_NAC_Hostname }}
+                {{ device.authorization_group }}
             </td>
         </tr>
         <tr>
@@ -134,16 +144,7 @@
                 {% endfor %}
             </td>
         </tr>
-        <tr>
-            <td>
-                <strong>Certificate</strong>
-            </td>
-            <td>
-                {{ device.appl_NAC_Certificate }}
-            </td>
-        </tr>
     </table>
-
     <p><a href="{% url 'device_edit' device.pk %}">Edit</a> | <a href="{% url 'device_delete' device.pk %}">Delete</a></p>
     <p>Back to <a href="{% url 'devices' %}">All Devices</a></p>
 </div>

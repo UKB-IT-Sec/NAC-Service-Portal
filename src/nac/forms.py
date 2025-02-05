@@ -36,10 +36,10 @@ class DeviceSearchForm(forms.Form):
 class DeviceForm(ModelForm):
     class Meta:
         model = Device
-        fields = ["name",
-                  "authorization_group",
-                  "appl_NAC_FQDN",
+        fields = ["asset_id",
                   "appl_NAC_Hostname",
+                  "dns_domain",
+                  "authorization_group",
                   "appl_NAC_DeviceRoleProd",
                   "appl_NAC_DeviceRoleInst",
                   "appl_NAC_Active",
@@ -51,11 +51,11 @@ class DeviceForm(ModelForm):
                   "appl_NAC_AllowAccessCEL",
                   "appl_NAC_macAddressAIR",
                   "appl_NAC_macAddressCAB",
-                  "appl_NAC_Certificate",
                   "synchronized",
                   ]
 
-        widgets = {"authorization_group": autocomplete.ModelSelect2(url="authorization-group-autocomplete"),
+        widgets = {"dns_domain": autocomplete.ModelSelect2(url="dns_domain-autocomplete"),
+                   "authorization_group": autocomplete.ModelSelect2(url="authorization-group-autocomplete"),
                    "appl_NAC_DeviceRoleProd": autocomplete.ModelSelect2(url="DeviceRoleProd-autocomplete", forward=["authorization_group"], ),
                    "appl_NAC_DeviceRoleInst": autocomplete.ModelSelect2(url="DeviceRoleInst-autocomplete", forward=["authorization_group"], ),
                    "appl_NAC_Active": CheckboxInput,
@@ -70,9 +70,7 @@ class DeviceForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        dependencies = {"appl_NAC_ForceDot1X": "appl_NAC_Certificate",
-                        "appl_NAC_AllowAccessVPN": "appl_NAC_Certificate",
-                        "appl_NAC_AllowAccessAIR": "appl_NAC_macAddressAIR",
+        dependencies = {"appl_NAC_AllowAccessAIR": "appl_NAC_macAddressAIR",
                         "appl_NAC_AllowAccessCAB": "appl_NAC_macAddressCAB",
                         }
 
@@ -81,6 +79,9 @@ class DeviceForm(ModelForm):
                 self.add_error(dependencies[field],
                                ValidationError("This field cannot be empty while %(field)s is selected",
                                                params={"field": field}))
+        # prefill asset_id if not set
+        if not cleaned_data.get('asset_id') and cleaned_data.get('appl_NAC_Hostname') and cleaned_data.get('dns_domain'):
+            cleaned_data['asset_id'] = f"FQDN_{cleaned_data.get('appl_NAC_Hostname')}.{cleaned_data.get('dns_domain')}"
 
     def clean_appl_NAC_macAddressAIR(self):
         data = self.cleaned_data["appl_NAC_macAddressAIR"]
@@ -90,6 +91,12 @@ class DeviceForm(ModelForm):
         else:
             mac = None
         return mac
+
+    def clean_appl_NAC_Hostname(self):
+        hostname = self.cleaned_data.get("appl_NAC_Hostname")
+        if "." in hostname:
+            raise ValidationError("Hostname contains invalid character")
+        return hostname
 
     def clean_appl_NAC_macAddressCAB(self):
         data = self.cleaned_data["appl_NAC_macAddressCAB"]
