@@ -3,11 +3,11 @@
     "model": "nac.device",
     "pk": 1,
     "fields": {
-      "name": "dev1",
+      "asset_id": "dev1",
       "authorization_group": 1,
       "appl_NAC_DeviceRoleProd": 1,
       "synchronized": false,
-      "appl_NAC_FQDN": "fqdn1",
+      "dns_domain": 1,
       "appl_NAC_Hostname": "r",
       "appl_NAC_Active": true,
       "appl_NAC_ForceDot1X": true,
@@ -26,11 +26,11 @@
     "model": "nac.device",
     "pk": 2,
     "fields": {
-      "name": "dev2",
+      "asset_id": "dev2",
       "authorization_group": 1,
       "appl_NAC_DeviceRoleProd": 2,
       "synchronized": false,
-      "appl_NAC_FQDN": "fqdn2",
+      "dns_domain": 1,
       "appl_NAC_Hostname": "s",
       "appl_NAC_Active": false,
       "appl_NAC_ForceDot1X": false,
@@ -49,11 +49,11 @@
     "model": "nac.device",
     "pk": 3,
     "fields": {
-      "name": "dev3",
+      "asset_id": "dev3",
       "authorization_group": 2,
       "appl_NAC_DeviceRoleProd": 1,
       "synchronized": false,
-      "appl_NAC_FQDN": "s",
+      "dns_domain": 1,
       "appl_NAC_Hostname": "s",
       "appl_NAC_Active": false,
       "appl_NAC_ForceDot1X": false,
@@ -63,7 +63,7 @@
       "appl_NAC_AllowAccessVPN": false,
       "appl_NAC_AllowAccessCEL": false,
       "appl_NAC_DeviceRoleInst": 1,
-      "appl_NAC_macAddressCAB": "202596123456",
+      "appl_NAC_macAddressCAB": "202596123457",
       "appl_NAC_macAddressAIR": "123456789000,302596123456",
       "appl_NAC_Certificate": "s"
     }
@@ -72,11 +72,11 @@
     "model": "nac.device",
     "pk": 4,
     "fields": {
-      "name": "dev4",
+      "asset_id": "dev4",
       "authorization_group": 2,
       "appl_NAC_DeviceRoleProd": 2,
       "synchronized": false,
-      "appl_NAC_FQDN": "s",
+      "dns_domain": 1,
       "appl_NAC_Hostname": "host",
       "appl_NAC_Active": false,
       "appl_NAC_ForceDot1X": false,
@@ -95,11 +95,11 @@
     "model": "nac.device",
     "pk": 5,
     "fields": {
-      "name": "dev5",
+      "asset_id": "dev5",
       "authorization_group": 1,
       "appl_NAC_DeviceRoleProd": 1,
       "synchronized": false,
-      "appl_NAC_FQDN": "s",
+      "dns_domain": 1,
       "appl_NAC_Hostname": "s",
       "appl_NAC_Active": false,
       "appl_NAC_ForceDot1X": false,
@@ -159,6 +159,13 @@
     "pk": 1,
     "fields": {
       "name": "DeviceRoleInst"
+    }
+  },
+  {
+    "model": "nac.DNSDomain",
+    "pk": 1,
+    "fields": {
+      "name": "testdomain"
     }
   }
 ]
