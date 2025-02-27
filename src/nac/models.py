@@ -40,7 +40,7 @@ class CustomUser(AbstractUser):
 
 class Device(models.Model):
     asset_id = models.CharField(null=True,blank=True, max_length=150, verbose_name="Asset ID")
-    authorization_group = models.ForeignKey(AuthorizationGroup, on_delete=models.SET_NULL, null=True)
+    authorization_group = models.ForeignKey(AuthorizationGroup, on_delete=models.SET_NULL, null=True, verbose_name="Authorization Group")
     appl_NAC_DeviceRoleProd = models.ForeignKey(
         DeviceRoleProd, on_delete=models.SET_NULL, null=True, verbose_name="Device Role Prod")
     appl_NAC_DeviceRoleInst = models.ForeignKey(
