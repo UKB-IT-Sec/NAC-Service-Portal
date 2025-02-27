@@ -33,23 +33,38 @@
 				<td>
 					{{ device.appl_NAC_DeviceRoleProd }}
 				</td>
+				<div id="detailModal" class="modal">
+						<div class="modal-content">
+						<span class="close">&times;</span>
+						<h2 id="modalTitle"></h2>
+						<ul id="modalList"></ul>
+					</div>
+				  </div>
 				<td>
-					{% for mac in device.get_appl_NAC_macAddressAIR %}
-						<b>
-							{% if mac != None %}
-								<span class="icon-desc" desc="macAddressAIR"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_macAddressAIR" height="14" width="14" class="icon-zoom"/></span>
-								<b> {{mac}}</b> <br />
+				{% if device.get_appl_NAC_macAddressAIR%}
+					<b>
+						<span class="icon-desc" desc="macAddressAIR"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_macAddressAIR" height="14" width="14" class="icon-zoom"/></span>
+						<b> {{device.get_appl_NAC_macAddressAIR.0}}</b> 
+							{% if device.get_appl_NAC_macAddressAIR|length > 1 %}
+								<a href="#" onclick="showDetails('MACAddressAIR', '{{ device.get_appl_NAC_macAddressAIR|join:", " }}'); return false;" class="icon-desc" desc="{{ device.get_appl_NAC_macAddressAIR|join:', ' }}">
+									({{device.get_appl_NAC_macAddressAIR|length}})
+								</a>
 							{% endif %}
-						</b>
-					{% endfor %}
-					{% for mac in device.get_appl_NAC_macAddressCAB %}
-						<b>
-							{% if mac != None %}
-							<span class="icon-desc" desc="macAddressCAB"><img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_macAddressCAB" height="14" width="14" class="icon-zoom"/></span>
-								<b> {{mac}}</b> <br />
+						<br />
+					</b>
+				{% endif %}
+				{% if device.get_appl_NAC_macAddressCAB%}
+					<b>
+						<span class="icon-desc" desc="macAddressCAB"><img src="{% static 'icons/favicon.svg' %}" alt="appl_NAC_macAddressCAB" height="14" width="14" class="icon-zoom"/></span>
+						<b> {{device.get_appl_NAC_macAddressCAB.0}}</b> 
+							{% if device.get_appl_NAC_macAddressCAB|length > 1 %}
+								<a href="#" onclick="showDetails('MACAddressCAB', '{{ device.get_appl_NAC_macAddressCAB|join:", " }}'); return false;" class="icon-desc" desc="{{ device.get_appl_NAC_macAddressCAB|join:', ' }}">
+									({{device.get_appl_NAC_macAddressCAB|length}})
+								</a>
 							{% endif %}
-						</b>
-					{% endfor %}
+						<br />
+					</b>
+				{% endif %}
 				</td>
 				<td>
 					<a href="{% url 'device_edit' device.pk %}">
@@ -64,3 +79,70 @@
 		{% endfor %}
 		</table>
 	</div>
+<style>
+	.modal {
+		display: none;
+		position: fixed;
+		z-index: 1;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		overflow: auto;
+		background-color: rgba(0,0,0,0.4);
+	}
+	.modal-content {
+		background-color: #fefefe;
+		margin: 15% auto;
+		padding: 20px;
+		border: 1px solid #888;
+		width: 80%;
+	}
+	.close {
+		color: #aaa;
+		float: right;
+		font-size: 22px;
+		font-weight: bold;
+		cursor: pointer;
+	  }
+	  .close:hover,
+	  .close:focus {
+		color: black;
+		text-decoration: none;
+		cursor: pointer;
+	  }
+</style>
+<script>
+	function showDetails(title, addresses) {
+		const modal = document.getElementById("detailModal");
+		const modalTitle = document.getElementById("modalTitle");
+		const modalList = document.getElementById("modalList");
+  
+		modalTitle.textContent = title;
+		modalList.innerHTML = "";
+  
+		addresses.split(",").forEach(address => {
+			const li = document.createElement("li");
+			li.textContent = address.trim();
+			modalList.appendChild(li);
+		});
+  
+		modal.style.display = "block";
+	}
+  
+	function setupModal() {
+		const modal = document.getElementById("detailModal");
+		const span = document.getElementsByClassName("close")[0];
+  
+		span.onclick = function() {
+			modal.style.display = "none";
+		}
+  
+		window.onclick = function(event) {
+			if (event.target == modal) {
+				modal.style.display = "none";
+			}
+		}
+	}
+	setupModal();
+</script>

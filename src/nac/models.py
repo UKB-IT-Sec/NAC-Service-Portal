@@ -59,7 +59,7 @@ class Device(models.Model):
     appl_NAC_AllowAccessCEL = models.BooleanField(null=True)
     appl_NAC_macAddressCAB = models.TextField(null=True,
                                               blank=True, unique=True)
-    appl_NAC_macAddressAIR = models.CharField(null=True, max_length=100,
+    appl_NAC_macAddressAIR = models.TextField(null=True,
                                               blank=True, unique=True)
     appl_NAC_Certificate = models.TextField(null=True, blank=True)
 
@@ -85,7 +85,8 @@ class Device(models.Model):
     def get_appl_NAC_macAddressAIR(self):
         if not self.appl_NAC_macAddressAIR:
             return None
-        return [self.format_mac(self.appl_NAC_macAddressAIR)]
+        return [self.format_mac(mac) for mac in
+                self.appl_NAC_macAddressAIR.split(",")]
 
     def get_appl_NAC_macAddressCAB(self):
         if not self.appl_NAC_macAddressCAB:
