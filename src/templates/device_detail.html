@@ -122,10 +122,10 @@
         </tr>
         <tr>
             <td>
-                <strong>MAC Address CAB</strong>
+                <strong>MAC Address AIR</strong>
             </td>
             <td>
-                {% for mac in device.get_appl_NAC_macAddressCAB %}
+                {% for mac in device.get_appl_NAC_macAddressAIR %}
                             {% if  mac != None%}
                                 {{mac}} <br />
                             {% endif %}
@@ -134,10 +134,10 @@
         </tr>
         <tr>
             <td>
-                <strong>MAC Address AIR</strong>
+                <strong>MAC Address CAB</strong>
             </td>
             <td>
-                {% for mac in device.get_appl_NAC_macAddressAIR %}
+                {% for mac in device.get_appl_NAC_macAddressCAB %}
                             {% if  mac != None%}
                                 {{mac}} <br />
                             {% endif %}
