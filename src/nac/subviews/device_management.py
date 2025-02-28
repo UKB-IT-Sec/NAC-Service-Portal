@@ -82,6 +82,9 @@ class DeviceCreateView(LoginRequiredMixin, CreateView):
     form_class = DeviceForm
     template_name = "device_new.html"
 
+    def _replace_Hostname_Char(self, hostname):
+        return str(hostname).replace('.', '_')
+
     def get_initial(self):  # sets up the data for DeviceForm if a device gets imported via armis
         initial = super().get_initial()
         device_data = self.request.POST.get('device_data')
@@ -89,9 +92,8 @@ class DeviceCreateView(LoginRequiredMixin, CreateView):
             device = json.loads(device_data)
             initial.update({  # specify which attributes can/should be pre-filled
                 'asset_id': device.get('asset_id'),
-                'appl_NAC_Hostname': device.get('appl_NAC_Hostname'),
+                'appl_NAC_Hostname': self._replace_Hostname_Char(device.get('name')),
                 'appl_NAC_macAddressCAB': device.get('macAddress'),
-                'appl_NAC_FQDN': device.get('name'),
                 'appl_NAC_Active': True,
                 'appl_NAC_ForceDot1X': False,
             })
