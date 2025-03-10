@@ -39,6 +39,7 @@ class DeviceForm(ModelForm):
         fields = ["asset_id",
                   "appl_NAC_Hostname",
                   "dns_domain",
+                  "vlan",
                   "authorization_group",
                   "appl_NAC_DeviceRoleProd",
                   "appl_NAC_DeviceRoleInst",

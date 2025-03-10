@@ -94,6 +94,7 @@ class DeviceCreateView(LoginRequiredMixin, CreateView):
                 'asset_id': device.get('asset_id'),
                 'appl_NAC_Hostname': self._replace_Hostname_Char(device.get('name')),
                 'appl_NAC_macAddressCAB': device.get('macAddress'),
+                'vlan': device.get('vlan'),
                 'appl_NAC_Active': True,
                 'appl_NAC_ForceDot1X': False,
             })

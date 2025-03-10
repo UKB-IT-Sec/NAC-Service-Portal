@@ -48,7 +48,7 @@ class Device(models.Model):
     synchronized = models.BooleanField(null=True, default=False)
 
     dns_domain = models.ForeignKey(DNSDomain, on_delete=models.SET_NULL, null=True)
-
+    vlan = models.CharField(null=True, blank=True,  max_length=100)
     appl_NAC_Hostname = models.CharField(null=True, max_length=100)
     appl_NAC_Active = models.BooleanField(null=True, default=True)
     appl_NAC_ForceDot1X = models.BooleanField(null=True, default=True)
