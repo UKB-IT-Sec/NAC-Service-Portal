@@ -28,7 +28,7 @@ class DeviceSearchForm(forms.Form):
             id__in=user.authorization_group.all()), required=False, label="Authorization Group")
 
     search_string = forms.CharField(
-        label="Search for name, FQDN, hostname or MAC address:", max_length=100, required=False)
+        label="Search for Asset ID, Hostname or MAC Address:", max_length=100, required=False)
     device_role_prod = forms.ModelChoiceField(DeviceRoleProd.objects.all(),
                                               required=False, label="Device Role Prod:")
 

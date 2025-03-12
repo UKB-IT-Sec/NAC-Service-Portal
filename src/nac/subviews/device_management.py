@@ -28,7 +28,7 @@ class DeviceListView(LoginRequiredMixin, ListView):
                 Q(appl_NAC_Hostname__icontains=query) |
                 Q(appl_NAC_macAddressAIR__icontains=normalize_mac(query)) |
                 Q(appl_NAC_macAddressCAB__icontains=normalize_mac(query)) |
-                Q(appl_NAC_FQDN__icontains=query))
+                Q(asset_id__icontains=query))
 
         # filter by authorization group
         selected_authorization_groups = self.request.GET.get("authorization_group")
