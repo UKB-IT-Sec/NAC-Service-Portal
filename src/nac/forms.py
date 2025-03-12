@@ -53,6 +53,7 @@ class DeviceForm(ModelForm):
                   "appl_NAC_macAddressAIR",
                   "appl_NAC_macAddressCAB",
                   "synchronized",
+                  "additional_info",
                   ]
 
         widgets = {"dns_domain": autocomplete.ModelSelect2(url="dns_domain-autocomplete"),

@@ -152,6 +152,14 @@
                 {% endfor %}
             </td>
         </tr>
+        <tr>
+            <td>
+                <strong>Additional Information</strong>
+            </td>
+            <td>
+                {{ device.additional_info }}
+            </td>
+        </tr>
     </table>
     <p><a href="{% url 'device_edit' device.pk %}">Edit</a> | <a href="{% url 'device_delete' device.pk %}">Delete</a></p>
     <p>Back to <a href="{% url 'devices' %}">All Devices</a></p>
