@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from simple_history.admin import SimpleHistoryAdmin
 
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 from .models import CustomUser, Device, AuthorizationGroup, DeviceRoleProd, DeviceRoleInst, DNSDomain
@@ -15,7 +16,7 @@ class CustomUserAdmin(UserAdmin):
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
-admin.site.register(Device)
+admin.site.register(Device, SimpleHistoryAdmin)
 admin.site.register(AuthorizationGroup)
 admin.site.register(DeviceRoleProd)
 admin.site.register(DeviceRoleInst)
