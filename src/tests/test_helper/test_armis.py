@@ -98,7 +98,7 @@ def test_get_devices(mock_remove_existing_devices, mock_config):
     assert result == mock_devices
     mock_armis_cloud.get_devices.assert_called_once_with(
         asq='in:devices site:"TestSite" timeFrame:"7 Days" !networkInterface:(vlans:100,200)',
-        fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries', 'site']
+        fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries', 'site', 'vlan']
     )
     mock_remove_existing_devices.assert_called_once_with(mock_devices)
 
@@ -120,7 +120,7 @@ def test_get_single_device_by_name(mock_config):
     assert result == mock_devices
     mock_armis_cloud.get_devices.assert_called_once_with(
         asq='in:devices name:Device1 timeFrame:"7 Days"',
-        fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries', 'site']
+        fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries', 'site', 'vlan']
     )
 
 
@@ -136,7 +136,7 @@ def test_get_single_device_by_mac(mock_config):
     assert result == mock_devices
     mock_armis_cloud.get_devices.assert_called_once_with(
         asq='in:devices macAddress:"AA:BB:CC:DD:EE:FF" timeFrame:"7 Days"',
-        fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries', 'site']
+        fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries', 'site', 'vlan']
     )
 
 

@@ -125,6 +125,7 @@
       <th scope="col">IP Address <span class="sort-icon" data-column="ipAddress">▲</span></th>
       <th scope="col">Site <span class="sort-icon" data-column="site">▲</span></th>
       <th scope="col">Boundaries</th>
+      <th scope="col">VLAN <span class="sort-icon" data-column="vlan">▲</span></th>
       <th scope="col"></th>
     </tr>
 </thead>
@@ -153,10 +154,11 @@
       {% for device in devices %}
           {
 			        name: "{{ device.name }}",
-              macAddress: "{{ device.macAddress}}",
+              macAddress: "{{ device.macAddress }}",
               ipAddress: "{{ device.ipAddress }}",
               boundaries: "{{ device.boundaries }}",
-              site: "{{ device.site.name}}",
+              vlan: "{{ device.vlan.0.value }}",
+              site: "{{ device.site.name }}",
 			        url: "{{tenant_url}}/inventory/devices/{{ device.id }}"
           },
       {% endfor %}
@@ -226,7 +228,9 @@
         if (column === 'macAddress' || column === 'ipAddress') {
             return compareAddresses(valueA, valueB);
         }
-
+        if (column === 'vlan') {
+          return sortOrder === 'asc' ? valueA - valueB : valueB - valueA;
+        }
         return sortOrder === 'asc' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA); // returns 0,1,-1 for string comparison
     });
 
@@ -313,6 +317,7 @@
         }
         row.insertCell().textContent = device.site
         row.insertCell().textContent = device.boundaries;
+        row.insertCell().textContent = device.vlan;
 
         const importCell = row.insertCell();
         importCell.innerHTML = `

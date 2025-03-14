@@ -4,7 +4,7 @@ from csv import DictReader, DictWriter
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from nac.models import Device, AuthorizationGroup, DeviceRoleProd, DeviceRoleInst
+from nac.models import Device, AuthorizationGroup, DeviceRoleProd, DeviceRoleInst, DNSDomain
 from nac.forms import DeviceForm
 from helper.logging import setup_console_logger
 from helper.filesystem import get_resources_directory, get_existing_path, get_config_directory
@@ -115,6 +115,10 @@ class Command(BaseCommand):
             logging.error(f"Error: Handling device Object failed -> {e}")
             traceback.print_exc()
 
+    def get_default_DNS_domain(self):
+        domain, created = DNSDomain.objects.get_or_create(name="klinik.bn")
+        return domain
+
     def get_deviceRole(self, deviceObject):
         DeviceRoleCriteria = self.csv_mapping['DeviceRoleCriteria']
         if DeviceRoleCriteria['MAPPING']:
@@ -183,10 +187,10 @@ class Command(BaseCommand):
 
                 device_data = {
                     "name": deviceObject.get(self.get_set_or_default(self.csv_mapping['appl-NAC-Hostname'])),
+                    "dns_domain": self.get_default_DNS_domain(),
                     "authorization_group": auth_group,
                     "appl_NAC_DeviceRoleProd": deviceRoleProd,
                     "appl_NAC_DeviceRoleInst": deviceRoleInst,
-                    "appl_NAC_FQDN": deviceObject.get(self.get_set_or_default(self.csv_mapping['appl-NAC-FQDN'])),
                     "appl_NAC_Hostname": deviceObject.get(self.get_set_or_default(self.csv_mapping['appl-NAC-Hostname'])),
                     "appl_NAC_Active": self.str_to_bool(
                         deviceObject.get(self.get_set_or_default(self.csv_mapping['appl-NAC-Active']))
