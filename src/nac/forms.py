@@ -116,3 +116,9 @@ class DeviceForm(ModelForm):
 
     def clean_synchronized(self):
         return False
+
+
+class DeviceHistoryForm(forms.Form):
+    def __init__(self, device, *args, **kwargs):
+        super(DeviceHistoryForm, self).__init__(*args, **kwargs)
+        self.fields["device_history"] = forms.ModelChoiceField(device.history.all(), required=False)

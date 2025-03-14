@@ -9,7 +9,7 @@ from django.http import JsonResponse
 from django.template.loader import render_to_string
 
 from ..models import Device, AuthorizationGroup, DeviceRoleProd
-from ..forms import DeviceForm, DeviceSearchForm
+from ..forms import DeviceForm, DeviceSearchForm, DeviceHistoryForm
 from ..validation import normalize_mac
 
 
@@ -70,6 +70,10 @@ class DeviceUpdateView(LoginRequiredMixin, UpdateView):
     form_class = DeviceForm
     template_name = "device_edit.html"
 
+    def get_context_data(self, **kwargs):
+        context = super(DeviceUpdateView, self).get_context_data(**kwargs)
+        context["device_history_form"] = DeviceHistoryForm(device=self.object)
+        return context
 
 class DeviceDeleteView(LoginRequiredMixin, DeleteView):
     model = Device

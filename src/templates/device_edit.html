@@ -1,8 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
+{%load crispy_forms_tags %}
+
 <div class="container">
     <h1>Edit device</h1>
+    {{ device_history_form | crispy }}
     {% include "device_form.html" %}
 </div>
 {% endblock content %}
