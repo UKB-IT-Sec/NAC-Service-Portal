@@ -4,12 +4,21 @@
 {%load crispy_forms_tags %}
 
 <div class="container">
-    <h1>Edit device</h1>
+    <h1>Reset device</h1>
     <form method="post">
-        {% csrf_token %}
-        {{ device_history_form | crispy }}
-        <button type="submit" class="btn btn-secondary btn-sm">Reset</button>
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-md-11">
+            {{ device_history_form | crispy }}
+        </div>
+        <div class="col-md-1 d-flex align-items-center">
+            <button type="submit" class="btn btn-secondary btn-sm">Reset</button>
+        </div>
+    </div>
     </form>
+
+    <br>
+    <h1>Edit device</h1>
     {% include "device_form.html" %}
 </div>
 {% endblock content %}
