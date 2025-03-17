@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 import json
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.template.loader import render_to_string
 
 from ..models import Device, AuthorizationGroup, DeviceRoleProd
@@ -74,6 +74,15 @@ class DeviceUpdateView(LoginRequiredMixin, UpdateView):
         context = super(DeviceUpdateView, self).get_context_data(**kwargs)
         context["device_history_form"] = DeviceHistoryForm(device=self.object)
         return context
+
+    def post(self, request, *args, **kwargs):
+        if 'device_version' in request.POST:
+            device_version_id = request.POST["device_version"]
+            print(self.get_object().history.filter(id=device_version_id))
+            device_version = self.get_object().history.get(history_id=device_version_id)
+            device_version.instance.save()
+        return HttpResponseRedirect(self.get_object().get_absolute_url())
+
 
 class DeviceDeleteView(LoginRequiredMixin, DeleteView):
     model = Device
