@@ -6,7 +6,8 @@ from dal import autocomplete
 from .validation import normalize_mac, validate_mac
 from django.core.exceptions import ValidationError
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Row, Column, Submit
+from crispy_forms.layout import Layout, Row, Column, Submit, ButtonHolder, Field
+from crispy_forms.bootstrap import FieldWithButtons
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -123,5 +124,12 @@ class DeviceForm(ModelForm):
 class DeviceHistoryForm(forms.Form):
     def __init__(self, device, *args, **kwargs):
         super(DeviceHistoryForm, self).__init__(*args, **kwargs)
-        self.fields["device_version"] = forms.ModelChoiceField(device.history.all(), required=False, label="Select previous version")
+        self.fields["device_version"] = forms.ModelChoiceField(device.history.all(), required=False,
+                                                               label="Select previous version")
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.layout = Layout(
+            FieldWithButtons("device_version", Submit("reset", "Reset")),
+
+        )
 
