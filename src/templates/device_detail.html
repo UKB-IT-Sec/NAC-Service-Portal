@@ -50,6 +50,14 @@
         </tr>
         <tr>
             <td>
+                <strong>VLAN</strong>
+            </td>
+            <td>
+                {{ device.vlan }}
+            </td>
+        </tr>
+        <tr>
+            <td>
                 <strong>Active</strong>
             </td>
             <td>
@@ -142,6 +150,14 @@
                                 {{mac}} <br />
                             {% endif %}
                 {% endfor %}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>Additional Information</strong>
+            </td>
+            <td>
+                {{ device.additional_info }}
             </td>
         </tr>
     </table>

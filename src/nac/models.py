@@ -39,7 +39,7 @@ class CustomUser(AbstractUser):
 
 
 class Device(models.Model):
-    asset_id = models.CharField(null=True,blank=True, max_length=150)
+    asset_id = models.CharField(null=True, blank=True, max_length=150)
     authorization_group = models.ForeignKey(AuthorizationGroup, on_delete=models.SET_NULL, null=True)
     appl_NAC_DeviceRoleProd = models.ForeignKey(
         DeviceRoleProd, on_delete=models.SET_NULL, null=True)
@@ -48,7 +48,8 @@ class Device(models.Model):
     synchronized = models.BooleanField(null=True, default=False)
 
     dns_domain = models.ForeignKey(DNSDomain, on_delete=models.SET_NULL, null=True)
-
+    vlan = models.CharField(null=True, blank=True,  max_length=100)
+    additional_info = models.TextField(null=True, blank=True)
     appl_NAC_Hostname = models.CharField(null=True, max_length=100)
     appl_NAC_Active = models.BooleanField(null=True, default=True)
     appl_NAC_ForceDot1X = models.BooleanField(null=True, default=True)

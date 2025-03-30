@@ -29,7 +29,7 @@ class DeviceSearchForm(forms.Form):
             id__in=user.authorization_group.all()), required=False, label="Authorization Group")
 
     search_string = forms.CharField(
-        label="Search for name, FQDN, hostname or MAC address:", max_length=100, required=False)
+        label="Search for Asset ID, Hostname or MAC Address:", max_length=100, required=False)
     device_role_prod = forms.ModelChoiceField(DeviceRoleProd.objects.all(),
                                               required=False, label="Device Role Prod:")
 
@@ -48,6 +48,7 @@ class DeviceForm(ModelForm):
         fields = ["asset_id",
                   "appl_NAC_Hostname",
                   "dns_domain",
+                  "vlan",
                   "authorization_group",
                   "appl_NAC_DeviceRoleProd",
                   "appl_NAC_DeviceRoleInst",
@@ -61,6 +62,7 @@ class DeviceForm(ModelForm):
                   "appl_NAC_macAddressAIR",
                   "appl_NAC_macAddressCAB",
                   "synchronized",
+                  "additional_info",
                   ]
 
         widgets = {"dns_domain": autocomplete.ModelSelect2(url="dns_domain-autocomplete"),
