@@ -1,5 +1,5 @@
 from django.views.generic import ListView, DetailView
-from django.views.generic.edit import UpdateView, DeleteView, CreateView
+from django.views.generic.edit import UpdateView, DeleteView, CreateView, FormMixin
 from django.db.models import Q
 from django.urls import reverse_lazy
 from django.shortcuts import render
@@ -7,6 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 import json
 from django.http import JsonResponse, HttpResponseRedirect
 from django.template.loader import render_to_string
+from django.forms.models import model_to_dict
 
 from ..models import Device, AuthorizationGroup, DeviceRoleProd
 from ..forms import DeviceForm, DeviceSearchForm, DeviceHistoryForm
@@ -75,13 +76,14 @@ class DeviceUpdateView(LoginRequiredMixin, UpdateView):
         context["device_history_form"] = DeviceHistoryForm(device=self.object)
         return context
 
-    def post(self, request, *args, **kwargs):
-        if 'device_version' in request.POST:
-            device_version_id = request.POST["device_version"]
-            print(self.get_object().history.filter(id=device_version_id))
+    # fill DeviceForm with data from selected version
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if 'device_version' in self.request.GET:
+            device_version_id = self.request.GET["device_version"]
             device_version = self.get_object().history.get(history_id=device_version_id)
-            device_version.instance.save()
-        return HttpResponseRedirect(self.get_object().get_absolute_url())
+            kwargs["instance"] = device_version
+        return kwargs
 
 
 class DeviceDeleteView(LoginRequiredMixin, DeleteView):
