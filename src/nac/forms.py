@@ -6,7 +6,7 @@ from dal import autocomplete
 from .validation import normalize_mac, validate_mac
 from django.core.exceptions import ValidationError
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Button
+from crispy_forms.layout import Layout, Submit
 from crispy_forms.bootstrap import FieldWithButtons
 
 
@@ -129,7 +129,7 @@ class DeviceHistoryForm(forms.Form):
         self.helper = FormHelper()
         self.helper.form_method = "get"
         self.helper.layout = Layout(
-            FieldWithButtons("device_version", Button("reset", "Reset", css_class="btn btn-secondary")),
+            FieldWithButtons("device_version", Submit("reset", "Reset")),
 
         )
 
