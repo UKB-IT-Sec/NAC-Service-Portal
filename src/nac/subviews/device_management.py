@@ -79,7 +79,7 @@ class DeviceUpdateView(LoginRequiredMixin, UpdateView):
     # fill DeviceForm with data from selected version
     def get_initial(self):
         initial = super().get_initial()
-        if 'device_version' in self.request.GET:
+        if self.request.GET["device_version"]:
             device_version_id = self.request.GET["device_version"]
             device_version = self.get_object().history.get(history_id=device_version_id)
             initial.update(model_to_dict(device_version))
