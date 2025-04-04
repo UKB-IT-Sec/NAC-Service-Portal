@@ -10,7 +10,7 @@ from crispy_forms.layout import Layout, Submit
 from crispy_forms.bootstrap import FieldWithButtons
 
 
-class CustomUserCreationForm(UserCreationForm):
+class AdminUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm):
         model = CustomUser
         fields = ("username", "email", "authorization_group",)
