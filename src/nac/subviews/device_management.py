@@ -73,8 +73,9 @@ class DeviceUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(DeviceUpdateView, self).get_context_data(**kwargs)
-        if "device_version" in self.request.GET and self.request.GET["device_version"]:
-            device_version_id = self.request.GET["device_version"]
+        # keep selected version selected in the drop down field after reloading the page
+        if "device_version" in self.request.POST and self.request.POST["device_version"]:
+            device_version_id = self.request.POST["device_version"]
             device_version = self.get_object().history.get(history_id=device_version_id)
         else:
             device_version = None
@@ -84,8 +85,8 @@ class DeviceUpdateView(LoginRequiredMixin, UpdateView):
     # fill DeviceForm with data from selected version
     def get_initial(self):
         initial = super().get_initial()
-        if "device_version" in self.request.GET and self.request.GET["device_version"]:
-            device_version_id = self.request.GET["device_version"]
+        if "device_version" in self.request.POST and self.request.POST["device_version"]:
+            device_version_id = self.request.POST["device_version"]
             device_version = self.get_object().history.get(history_id=device_version_id)
             initial.update(model_to_dict(device_version))
         return initial

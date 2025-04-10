@@ -138,9 +138,10 @@ class DeviceHistoryForm(forms.Form):
                                                                label="Select previous version",
                                                                initial=selected_version)
         self.helper = FormHelper()
-        self.helper.form_method = "get"
+        self.helper.form_method = "post"
         self.helper.layout = Layout(
-            FieldWithButtons("device_version", Submit("select", "Select")),
+            FieldWithButtons("device_version", Submit("select", "Select", css_class="ms-2"),
+                             Submit("delete", "Delete from history", css_class="btn-secondary ms-2")),
 
         )
 
