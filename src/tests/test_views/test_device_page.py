@@ -10,7 +10,6 @@ from pytest_django.asserts import assertQuerySetEqual
 @pytest.mark.parametrize("query, result",
                          [("", [1, 2, 3, 4, 5]),
                           ("dev1", [1]),
-                          ("fqdn", [1, 2]),
                           ("host", [4]),
                           ("000000000000", [2]),
                           ("123456789000", [3]),
@@ -18,7 +17,6 @@ from pytest_django.asserts import assertQuerySetEqual
                           ])
 def test_device_search(query, result):
     desired_qs = Device.objects.all().filter(id__in=result)
-    print(desired_qs)
 
     test_user = CustomUser.objects.create(name="test")
     test_user.authorization_group.set([AuthorizationGroup.objects.get(pk=1), AuthorizationGroup.objects.get(pk=2)])
@@ -28,7 +26,6 @@ def test_device_search(query, result):
     view = DeviceListView()
     view.request = request
     result_qs = view.get_queryset()
-    print(result_qs)
 
     assertQuerySetEqual(desired_qs, result_qs, ordered=False)
 

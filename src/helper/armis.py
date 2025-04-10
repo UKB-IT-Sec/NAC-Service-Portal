@@ -63,7 +63,7 @@ def get_devices(acloud, sites):
     sites = ','.join(f'"{site}"' for site in sites)
     deviceList = acloud.get_devices(
         asq=f'in:devices site:{sites} timeFrame:"7 Days" {vlan_bl}',
-        fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries', 'site']
+        fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries', 'site', 'vlan']
     )
     return _remove_existing_devices(deviceList)
 # flake8: qa
@@ -74,12 +74,12 @@ def get_single_device(acloud, device):
     if device_mac:
         device = acloud.get_devices(
         asq=f'in:devices macAddress:"{device_mac}" timeFrame:"7 Days"',
-        fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries', 'site']
+        fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries', 'site', 'vlan']
     )
     else:
         device = acloud.get_devices(
             asq=f'in:devices name:{device.strip()} timeFrame:"7 Days"',
-            fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries', 'site']
+            fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries', 'site', 'vlan']
         )
     return device
 

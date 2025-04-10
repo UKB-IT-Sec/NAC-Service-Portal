@@ -1,6 +1,6 @@
 {
-    "name": {
-        "DEFAULT": "name",
+    "asset_id": {
+        "DEFAULT": "asset_id",
         "SET": null
     },
     "DeviceRoleCriteria": {
@@ -20,8 +20,8 @@
         "DEFAULT": "appl-NAC-DeviceRoleInst",
         "SET": null
     },
-    "appl-NAC-FQDN": {
-        "DEFAULT": "appl-NAC-FQDN",
+    "synchronized": {
+        "DEFAULT": "synchronized",
         "SET": null
     },
     "appl-NAC-Hostname": {
@@ -66,10 +66,6 @@
     },
     "appl-NAC-Certificate": {
         "DEFAULT": "appl-NAC-Certificate",
-        "SET": null
-    },
-    "synchronized": {
-        "DEFAULT": "synchronized",
         "SET": null
     }
 }
