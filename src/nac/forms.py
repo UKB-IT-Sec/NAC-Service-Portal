@@ -124,10 +124,14 @@ class DeviceForm(ModelForm):
 class DeviceHistoryForm(forms.Form):
     def __init__(self, device, *args, **kwargs):
         super(DeviceHistoryForm, self).__init__(*args, **kwargs)
-        print(device.history.first())
-        self.fields["device_version"] = forms.ModelChoiceField(QuerySet(device.history.first(),
-                                                                device.history.first().prev_record,
-                                                                device.history.first().prev_record.prev_record),
+        device_version1 = device.history.first()
+        device_version2 = device_version1.prev_record
+        device_version3 = device_version2.prev_record
+
+        device_version_ids = [device_version1.history_id, device_version2.history_id, device_version3.history_id]
+        device_version_queryset = device.history.all().filter(history_id__in = device_version_ids)
+
+        self.fields["device_version"] = forms.ModelChoiceField(device_version_queryset,
                                                                required=False,
                                                                label="Select previous version")
         self.helper = FormHelper()
