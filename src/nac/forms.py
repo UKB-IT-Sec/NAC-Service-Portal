@@ -137,7 +137,7 @@ class DeviceHistoryForm(forms.Form):
         self.helper = FormHelper()
         self.helper.form_method = "get"
         self.helper.layout = Layout(
-            FieldWithButtons("device_version", Submit("reset", "Reset")),
+            FieldWithButtons("device_version", Submit("select", "Select")),
 
         )
 
