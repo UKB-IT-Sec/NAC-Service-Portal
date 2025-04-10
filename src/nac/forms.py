@@ -125,10 +125,13 @@ class DeviceHistoryForm(forms.Form):
     def __init__(self, device, selected_version, *args, **kwargs):
         super(DeviceHistoryForm, self).__init__(*args, **kwargs)
         n = 3  # number of device versions to be shown in update view
-        last_n_device_versions = [device.history.first()]
-        for i in range(n-1):
-            if last_n_device_versions[i].prev_record is not None:
-                last_n_device_versions.append(last_n_device_versions[i].prev_record)
+        last_n_device_versions = []
+        
+        if device.history.first() is not None:
+            last_n_device_versions.append(device.history.first())
+            for i in range(n-1):
+                if last_n_device_versions[i].prev_record is not None:
+                    last_n_device_versions.append(last_n_device_versions[i].prev_record)
 
         device_version_ids = [version.history_id for version in last_n_device_versions]
         device_version_queryset = device.history.all().filter(history_id__in=device_version_ids)
