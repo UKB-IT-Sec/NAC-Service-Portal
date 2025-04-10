@@ -39,16 +39,16 @@ class CustomUser(AbstractUser):
 
 
 class Device(models.Model):
-    asset_id = models.CharField(null=True,blank=True, max_length=150, verbose_name="Asset ID")
+    asset_id = models.CharField(null=True, blank=True, max_length=150, verbose_name="Asset ID")
     authorization_group = models.ForeignKey(AuthorizationGroup, on_delete=models.SET_NULL, null=True, verbose_name="Authorization Group")
     appl_NAC_DeviceRoleProd = models.ForeignKey(
         DeviceRoleProd, on_delete=models.SET_NULL, null=True, verbose_name="Device Role Prod")
     appl_NAC_DeviceRoleInst = models.ForeignKey(
-        DeviceRoleInst, on_delete=models.SET_NULL, null=True, verbose_name="Device Role Prod")
+        DeviceRoleInst, on_delete=models.SET_NULL, null=True, verbose_name="Device Role Inst")
     synchronized = models.BooleanField(null=True, default=False)
 
     dns_domain = models.ForeignKey(DNSDomain, on_delete=models.SET_NULL, null=True, verbose_name="DNS Domain")
-    vlan = models.CharField(null=True, blank=True, max_length=100)
+    vlan = models.CharField(null=True, blank=True, max_length=100, verbose_name="VLAN")
     additional_info = models.TextField(null=True, blank=True)
     appl_NAC_Hostname = models.CharField(null=True, max_length=100, verbose_name="Hostname")
     appl_NAC_Active = models.BooleanField(null=True, default=True, verbose_name="Active")
