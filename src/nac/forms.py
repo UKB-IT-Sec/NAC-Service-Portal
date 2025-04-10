@@ -122,18 +122,21 @@ class DeviceForm(ModelForm):
 
 
 class DeviceHistoryForm(forms.Form):
-    def __init__(self, device, *args, **kwargs):
+    def __init__(self, device, selected_version, *args, **kwargs):
         super(DeviceHistoryForm, self).__init__(*args, **kwargs)
-        device_version1 = device.history.first()
-        device_version2 = device_version1.prev_record
-        device_version3 = device_version2.prev_record
+        n = 3  # number of device versions to be shown in update view
+        last_n_device_versions = [device.history.first()]
+        for i in range(n-1):
+            if last_n_device_versions[i].prev_record is not None:
+                last_n_device_versions.append(last_n_device_versions[i].prev_record)
 
-        device_version_ids = [device_version1.history_id, device_version2.history_id, device_version3.history_id]
-        device_version_queryset = device.history.all().filter(history_id__in = device_version_ids)
+        device_version_ids = [version.history_id for version in last_n_device_versions]
+        device_version_queryset = device.history.all().filter(history_id__in=device_version_ids)
 
         self.fields["device_version"] = forms.ModelChoiceField(device_version_queryset,
                                                                required=False,
-                                                               label="Select previous version")
+                                                               label="Select previous version",
+                                                               initial=selected_version)
         self.helper = FormHelper()
         self.helper.form_method = "get"
         self.helper.layout = Layout(

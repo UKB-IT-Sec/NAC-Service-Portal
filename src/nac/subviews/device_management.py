@@ -73,7 +73,12 @@ class DeviceUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(DeviceUpdateView, self).get_context_data(**kwargs)
-        context["device_history_form"] = DeviceHistoryForm(device=self.object)
+        if "device_version" in self.request.GET and self.request.GET["device_version"]:
+            device_version_id = self.request.GET["device_version"]
+            device_version = self.get_object().history.get(history_id=device_version_id)
+        else:
+            device_version = None
+        context["device_history_form"] = DeviceHistoryForm(device=self.object, selected_version=device_version)
         return context
 
     # fill DeviceForm with data from selected version
