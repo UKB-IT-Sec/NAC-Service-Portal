@@ -71,7 +71,6 @@ class DeviceUpdateView(LoginRequiredMixin, UpdateView):
     form_class = DeviceForm
     template_name = "device_edit.html"
 
-    """
     def get_context_data(self, **kwargs):
         context = super(DeviceUpdateView, self).get_context_data(**kwargs)
         # keep selected version selected in the drop down field after reloading the page
@@ -82,6 +81,16 @@ class DeviceUpdateView(LoginRequiredMixin, UpdateView):
             device_version = None
         context["device_history_form"] = DeviceHistoryForm(device=self.object, selected_version=device_version)
         return context
+
+    # fill DeviceForm with data from selected version
+    """
+    def get_initial(self):
+        initial = super().get_initial()
+        if "device_version" in self.request.POST and self.request.POST["device_version"]:
+            device_version_id = self.request.POST["device_version"]
+            device_version = self.get_object().history.get(history_id=device_version_id)
+            initial.update(model_to_dict(device_version))
+        return initial
     """
 
     def post(self, request, *args, **kwargs):
@@ -89,30 +98,18 @@ class DeviceUpdateView(LoginRequiredMixin, UpdateView):
 
         # preview selected version from history in form
         if "select" in request.POST:
-            if self.request.POST["device_version"]:
-                device_version_id = request.POST.get("device_version")
-                device_version = self.object.history.get(history_id=device_version_id)
-                form = self.form_class(initial=model_to_dict(device_version), instance=self.object)
-
-                # show data from selected version in DeviceForm, and keep selected version selected after reloading page
-                return self.render_to_response(self.get_context_data(
-                    form=form,
-                    device_history_form=DeviceHistoryForm(device=self.object, selected_version=device_version)))
-            # if no version is selected, update drop down menu
-            return self.render_to_response(self.get_context_data(
-                device_history_form=DeviceHistoryForm(device=self.object, selected_version=None)))
+            device_version_id = request.POST.get("device_version")
+            device_version = self.object.history.get(history_id=device_version_id)
+            form = self.form_class(initial=model_to_dict(device_version), instance=self.object)
+            return self.render_to_response(self.get_context_data(form=form))
 
         # delete the selected version from the history
         elif "delete" in request.POST:
-            if self.request.POST["device_version"]:
-                device_version_id = request.POST.get("device_version")
-                self.get_object().history.get(history_id=device_version_id).delete()
-                return redirect(request.path)
-            # if no version is selected, update drop down menu
-            return self.render_to_response(self.get_context_data(
-                device_history_form=DeviceHistoryForm(device=self.object, selected_version=None)))
+            device_version_id = request.POST.get("device_version")
+            self.get_object().history.get(history_id=device_version_id).delete()
+            return redirect(request.path)
 
-        # save edited device instance
+        # save edits to device
         return super().post(request, *args, **kwargs)
 
 
