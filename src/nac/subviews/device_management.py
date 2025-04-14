@@ -96,8 +96,11 @@ class DeviceUpdateView(LoginRequiredMixin, UpdateView):
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
 
+        if "device_version" in request.POST and not self.request.POST["device_version"]:
+            return self.render_to_response(self.get_context_data(form=self.form_class(instance=self.object), device_history_form=DeviceHistoryForm(device=self.object, selected_version=None)))
+
         # preview selected version from history in form
-        if "select" in request.POST:
+        elif "select" in request.POST:
             device_version_id = request.POST.get("device_version")
             device_version = self.object.history.get(history_id=device_version_id)
             form = self.form_class(initial=model_to_dict(device_version), instance=self.object)
