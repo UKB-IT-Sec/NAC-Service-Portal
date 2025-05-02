@@ -99,6 +99,12 @@ class DeviceForm(ModelForm):
     def clean_appl_NAC_macAddressAIR(self):
         return self._clean_mac_address('appl_NAC_macAddressAIR')
 
+    def clean_appl_NAC_Hostname(self):
+        hostname = self.cleaned_data.get("appl_NAC_Hostname")
+        if "." in hostname:
+            raise ValidationError("Hostname contains invalid character")
+        return hostname
+
     def clean_appl_NAC_macAddressCAB(self):
         return self._clean_mac_address('appl_NAC_macAddressCAB')
 
