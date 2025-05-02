@@ -73,15 +73,6 @@ class Device(models.Model):
             self.asset_id = f"FQDN_{self.appl_NAC_FQDN}"
         super().save(*args, **kwargs)
 
-    @property
-    def appl_NAC_FQDN(self):
-        return f'{self.appl_NAC_Hostname}.{self.dns_domain}'
-
-    def save(self, *args, **kwargs):
-        if not self.asset_id:
-            self.asset_id = f"FQDN_{self.appl_NAC_FQDN}"
-        super().save(*args, **kwargs)
-
     def __str__(self):
         return self.appl_NAC_Hostname[:100]
 

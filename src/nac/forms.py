@@ -5,7 +5,6 @@ from django.forms import ModelForm, CheckboxInput
 from dal import autocomplete
 from .validation import normalize_mac, validate_mac
 from django.core.exceptions import ValidationError
-from django.contrib import messages
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -122,12 +121,6 @@ class DeviceForm(ModelForm):
                     macs.append(mac)
             return ",".join(macs)
         return None
-
-    def clean_appl_NAC_Hostname(self):
-        hostname = self.cleaned_data.get("appl_NAC_Hostname")
-        if "." in hostname:
-            raise ValidationError("Hostname contains invalid character")
-        return hostname
 
     def clean_synchronized(self):
         return False
