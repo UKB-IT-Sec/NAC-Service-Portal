@@ -249,7 +249,7 @@ class Command(BaseCommand):
                 else:
                     device_form = DeviceForm(device_data)
                 if device_form.is_valid():
-                    """logging.debug(f"Device {device_data.get('appl_NAC_Hostname')} is valid")   
+                    logging.debug(f"Device {device_data.get('appl_NAC_Hostname')} is valid")   
                     if exists:
                         if self.update:
                             logging.debug(f"Updating Device {device_data.get('appl_NAC_Hostname')}")
@@ -258,7 +258,7 @@ class Command(BaseCommand):
                         else:
                             raise ValidationError(f"Device {device_data.get('appl_NAC_Hostname')} exists and will not get updated")
                     else:
-                        return device_form.cleaned_data"""
+                        return device_form.cleaned_data
                 else:
                     logging.error(
                         f"Device {device_data.get('appl_NAC_Hostname')} is not valid"
