@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from simple_history.admin import SimpleHistoryAdmin
 from django.contrib.auth.forms import AdminUserCreationForm
 
-from .forms import CustomUserChangeForm
+from .forms import CustomUserCreationForm, CustomUserChangeForm
 from .models import CustomUser, Device, AuthorizationGroup, DeviceRoleProd, DeviceRoleInst, DNSDomain
 
 

@@ -1,13 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% load verbose_name %}
 </br>
 <div class="container">
     <table class="table table-striped">
         <thead>
             <tr>
                 <th>
-                    <h4>Asset ID</h4>
+                    <h4>{{ device | verbose_name:"asset_id" }}</h4>
                 </th>
                 <th>
                     <h4>{{ device.asset_id }}</h4>
@@ -17,7 +18,7 @@
         <p>
             <tr>
                 <td>
-                    <strong>Hostname</strong>
+                    <strong>{{ device | verbose_name:"appl_NAC_Hostname" }}</strong>
                 </td>
                 <td>
                     {{ device.appl_NAC_Hostname }}
@@ -25,7 +26,7 @@
             </tr>
             <tr>
                 <td>
-                    <strong>DNS Domain</strong>
+                    <strong>{{ device | verbose_name:"dns_domain" }}</strong>
                 </td>
                 <td>
                     {{ device.dns_domain }}
@@ -42,7 +43,7 @@
         </tr>
         <tr>
             <td>
-                <strong>Authorization Group</strong>
+                <strong>{{ device | verbose_name:"authorization_group" }}</strong>
             </td>
             <td>
                 {{ device.authorization_group }}
@@ -58,7 +59,7 @@
         </tr>
         <tr>
             <td>
-                <strong>Active</strong>
+                <strong>{{ device | verbose_name:"appl_NAC_Active" }}</strong>
             </td>
             <td>
                 {{ device.appl_NAC_Active }}
@@ -66,7 +67,7 @@
         </tr>
         <tr>
             <td>
-                <strong>ForceDot1X</strong>
+                <strong>{{ device | verbose_name:"appl_NAC_ForceDot1X" }}</strong>
             </td>
             <td>
                 {{ device.appl_NAC_ForceDot1X }}
@@ -74,7 +75,7 @@
         </tr>
         <tr>
             <td>
-                <strong>Install</strong>
+                <strong>{{ device | verbose_name:"appl_NAC_Install" }}</strong>
             </td>
             <td>
                 {{ device.appl_NAC_Install }}
@@ -82,7 +83,7 @@
         </tr>
         <tr>
             <td>
-                <strong>Allow Access CAB</strong>
+                <strong>{{ device | verbose_name:"appl_NAC_AllowAccessCAB" }}</strong>
             </td>
             <td>
                 {{ device.appl_NAC_AllowAccessCAB }}
@@ -90,7 +91,7 @@
         </tr>
         <tr>
             <td>
-                <strong>Allow Access AIR</strong>
+                <strong>{{ device | verbose_name:"appl_NAC_AllowAccessAIR" }}</strong>
             </td>
             <td>
                 {{ device.appl_NAC_AllowAccessAIR }}
@@ -98,7 +99,7 @@
         </tr>
         <tr>
             <td>
-                <strong>Allow Access VPN</strong>
+                <strong>{{ device | verbose_name:"appl_NAC_AllowAccessVPN" }}</strong>
             </td>
             <td>
                 {{ device.appl_NAC_AllowAccessVPN }}
@@ -106,7 +107,7 @@
         </tr>
         <tr>
             <td>
-                <strong>Allow Access CEL</strong>
+                <strong>{{ device | verbose_name:"appl_NAC_AllowAccessCEL" }}</strong>
             </td>
             <td>
                 {{ device.appl_NAC_AllowAccessCEL }}
@@ -114,7 +115,7 @@
         </tr>
         <tr>
             <td>
-                <strong>Device Role Prod</strong>
+                <strong>{{ device | verbose_name:"appl_NAC_DeviceRoleProd" }}</strong>
             </td>
             <td>
                 {{ device.appl_NAC_DeviceRoleProd }}
@@ -122,7 +123,7 @@
         </tr>
         <tr>
             <td>
-                <strong>Device Role Inst</strong>
+                <strong>{{ device | verbose_name:"appl_NAC_DeviceRoleInst" }}</strong>
             </td>
             <td>
                 {{ device.appl_NAC_DeviceRoleInst }}
@@ -130,7 +131,7 @@
         </tr>
         <tr>
             <td>
-                <strong>MAC Address CAB</strong>
+                <strong>{{ device | verbose_name:"appl_NAC_macAddressCAB" }}</strong>
             </td>
             <td>
                 {% for mac in device.get_appl_NAC_macAddressCAB %}
@@ -142,7 +143,7 @@
         </tr>
         <tr>
             <td>
-                <strong>MAC Address AIR</strong>
+                <strong>{{ device | verbose_name:"appl_NAC_macAddressAIR" }}</strong>
             </td>
             <td>
                 {% for mac in device.get_appl_NAC_macAddressAIR %}
