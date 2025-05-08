@@ -117,7 +117,7 @@ class DeviceCreateView(LoginRequiredMixin, CreateView):
     form_class = DeviceForm
     template_name = "device_new.html"
 
-    def _replace_Hostname_Char(self, hostname):
+    def _replace_Hostname_Char(self, hostname):  # replaces forbidden character in a hostname (occurs with armis imports)
         return str(hostname).replace('.', '_')
 
     def get_initial(self):  # sets up the data for DeviceForm if a device gets imported via armis
