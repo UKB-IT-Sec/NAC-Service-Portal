@@ -42,6 +42,8 @@ class DeviceForm(ModelForm):
         fields = ["asset_id",
                   "appl_NAC_Hostname",
                   "dns_domain",
+                  "authorization_group",
+                  "dns_domain",
                   "vlan",
                   "authorization_group",
                   "appl_NAC_DeviceRoleProd",
@@ -126,7 +128,7 @@ class DeviceHistoryForm(forms.Form):
         super(DeviceHistoryForm, self).__init__(*args, **kwargs)
         n = 3  # number of device versions to be shown in update view
         last_n_device_versions = []
-        
+
         if device.history.first() is not None:
             last_n_device_versions.append(device.history.first())
             for i in range(n-1):

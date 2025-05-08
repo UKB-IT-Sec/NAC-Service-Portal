@@ -27,6 +27,18 @@
 					{% if device.appl_NAC_Install %}
 						<span class="icon-desc" desc="Install"><img src="{% static 'icons/wrench.svg' %}" alt="appl_NAC_Install" height="25" width="25" class="icon-zoom"/></span>
 					{% endif %}
+					{% if device.appl_NAC_AllowAccessCAB %}
+						<span class="icon-desc" desc="Access over Ethernet allowed"><img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_AllowAccessCAB" height="25" width="25" class="icon-zoom"/></span>
+					{% endif %}
+					{% if device.appl_NAC_AllowAccessAIR %}
+						<span class="icon-desc" desc="Access over WiFi allowed"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_AllowAccessAIR" height="25" width="25" class="icon-zoom"/></span>
+					{% endif %}
+					{% if device.appl_NAC_AllowAccessVPN %}
+						<span class="icon-desc" desc="Access over VPN allowed"><img src="{% static 'icons/shield.svg' %}" alt="appl_NAC_AllowAccessVPN" height="25" width="25" class="icon-zoom"/></span>
+					{% endif %}
+					{% if device.appl_NAC_AllowAccessCEL %}
+						<span class="icon-desc" desc="Access over cellphone allowed"><img src="{% static 'icons/phone.svg' %}" alt="appl_NAC_AllowAccessCEL" height="25" width="25" class="icon-zoom"/></span>
+					{% endif %}
 				</td>
 				<td>
 					{{ device.appl_NAC_FQDN }}

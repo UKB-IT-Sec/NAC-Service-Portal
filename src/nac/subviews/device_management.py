@@ -1,11 +1,11 @@
 from django.views.generic import ListView, DetailView
-from django.views.generic.edit import UpdateView, DeleteView, CreateView, FormMixin
+from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.db.models import Q
 from django.urls import reverse_lazy
 from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 import json
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.forms.models import model_to_dict
 
@@ -117,7 +117,7 @@ class DeviceCreateView(LoginRequiredMixin, CreateView):
     form_class = DeviceForm
     template_name = "device_new.html"
 
-    def _replace_Hostname_Char(self, hostname):
+    def _replace_Hostname_Char(self, hostname):  # replaces forbidden character in a hostname (occurs with armis imports)
         return str(hostname).replace('.', '_')
 
     def get_initial(self):  # sets up the data for DeviceForm if a device gets imported via armis
