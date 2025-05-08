@@ -53,12 +53,12 @@ def test_clean(appl_NAC_ForceDot1X, appl_NAC_AllowAccessVPN, appl_NAC_Certificat
     [
         ("", "", ""),
         (None, None, None),
-        ("aa:bb:cc:dd:ee:ff", "aabbccddeeff", "AA:BB:CC:DD:EE:FF"),
-        ("AA-BB-CC-DD-EE-FF", "aabbccddeeff", "AA:BB:CC:DD:EE:FF"),
-        ("aabbccddeeff", "aabbccddeeff", "AA:BB:CC:DD:EE:FF"),
+        ("aa:bb:cc:dd:ee:ff", "AABBCCDDEEFF", "AA:BB:CC:DD:EE:FF"),
+        ("AA-BB-CC-DD-EE-FF", "AABBCCDDEEFF", "AA:BB:CC:DD:EE:FF"),
+        ("aabbccddeeff", "AABBCCDDEEFF", "AA:BB:CC:DD:EE:FF"),
         (
             "aa:bb:cc:dd:ee:ff, 11:22:33:44:55:66",
-            ["aabbccddeeff", "112233445566"],
+            ["AABBCCDDEEFF", "112233445566"],
             "AA:BB:CC:DD:EE:FF\t,\t11:22:33:44:55:66",
         ),
     ]
