@@ -8,8 +8,6 @@ from django.core.exceptions import ValidationError
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit
 from crispy_forms.bootstrap import FieldWithButtons
-from datetime import datetime
-from zoneinfo import ZoneInfo
 
 
 class AdminUserCreationForm(UserCreationForm):
@@ -143,7 +141,7 @@ class DeviceHistoryForm(forms.Form):
                                                                 label="Select previous version",
                                                                 initial=selected_version,
                                                                 localize=True
-                                                       )
+                                                                )
         self.helper = FormHelper()
         self.helper.form_method = "post"
         self.helper.layout = Layout(
