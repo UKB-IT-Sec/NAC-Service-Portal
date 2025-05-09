@@ -5,9 +5,12 @@ from django.forms import ModelForm, CheckboxInput
 from dal import autocomplete
 from .validation import normalize_mac, validate_mac
 from django.core.exceptions import ValidationError
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Submit
+from crispy_forms.bootstrap import FieldWithButtons
 
 
-class CustomUserCreationForm(UserCreationForm):
+class AdminUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm):
         model = CustomUser
         fields = ("username", "email", "authorization_group",)
@@ -124,3 +127,43 @@ class DeviceForm(ModelForm):
 
     def clean_synchronized(self):
         return False
+
+
+class DeviceHistoryForm(forms.Form):
+    def __init__(self, device, selected_version, *args, **kwargs):
+        super(DeviceHistoryForm, self).__init__(*args, **kwargs)
+        n = 3  # number of device versions to be shown in update view
+        last_n_device_versions = []
+
+        if device.history.first() is not None:
+            last_n_device_versions.append(device.history.first())
+            for i in range(n-1):
+                if last_n_device_versions[i].prev_record is not None:
+                    last_n_device_versions.append(last_n_device_versions[i].prev_record)
+                else:
+                    break
+        else:
+            device.save()
+
+        device_version_ids = [version.history_id for version in last_n_device_versions]
+        device_version_queryset = device.history.all().filter(history_id__in=device_version_ids)
+
+        self.fields["device_version"] = HistoryModelChoiceField(device_version_queryset,
+                                                                required=False,
+                                                                label="Select previous version",
+                                                                initial=selected_version,
+                                                                localize=True
+                                                                )
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.layout = Layout(
+            FieldWithButtons("device_version", Submit("select", "Select", css_class="ms-2"),
+                             Submit("delete", "Delete from history", css_class="btn-secondary ms-2")),
+
+        )
+
+
+class HistoryModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):           # this makes the options in the dropdown more readable
+        version_datetime = obj.history_date
+        return version_datetime

@@ -12,4 +12,5 @@ ldap3
 armis
 django-sortable-listview
 macaddress
+django-simple-history
 
