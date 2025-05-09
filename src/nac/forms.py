@@ -134,6 +134,8 @@ class DeviceHistoryForm(forms.Form):
                     last_n_device_versions.append(last_n_device_versions[i].prev_record)
                 else:
                     break
+        else:
+            device.save()
 
         device_version_ids = [version.history_id for version in last_n_device_versions]
         device_version_queryset = device.history.all().filter(history_id__in=device_version_ids)
