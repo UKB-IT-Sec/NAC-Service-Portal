@@ -86,7 +86,8 @@ class Device(models.Model):
     def get_appl_NAC_macAddressAIR(self):
         if not self.appl_NAC_macAddressAIR:
             return None
-        return [self.format_mac(self.appl_NAC_macAddressAIR)]
+        return [self.format_mac(mac) for mac in
+                self.appl_NAC_macAddressAIR.split(",")]
 
     def get_appl_NAC_macAddressCAB(self):
         if not self.appl_NAC_macAddressCAB:

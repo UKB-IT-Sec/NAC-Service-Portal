@@ -33,13 +33,19 @@ class DeviceSearchForm(forms.Form):
                                               required=False, label="Device Role Prod:")
 
 
+class MacAddressFormat(forms.Textarea):
+    def format_value(self, value):
+        if not value:
+            return value
+        macs = [normalize_mac(mac.strip()) for mac in value.split(",")]
+        return '\t,\t'.join(':'.join(mac[i:i+2] for i in range(0, 12, 2)) for mac in macs)
+
+
 class DeviceForm(ModelForm):
     class Meta:
         model = Device
         fields = ["asset_id",
                   "appl_NAC_Hostname",
-                  "dns_domain",
-                  "authorization_group",
                   "dns_domain",
                   "vlan",
                   "authorization_group",
@@ -69,6 +75,8 @@ class DeviceForm(ModelForm):
                    "appl_NAC_AllowAccessAIR": CheckboxInput,
                    "appl_NAC_AllowAccessVPN": CheckboxInput,
                    "appl_NAC_AllowAccessCEL": CheckboxInput,
+                   "appl_NAC_macAddressAIR": MacAddressFormat(),
+                   "appl_NAC_macAddressCAB": MacAddressFormat(),
                    "synchronized": forms.HiddenInput(),
                    }
 
@@ -88,13 +96,7 @@ class DeviceForm(ModelForm):
             cleaned_data['asset_id'] = f"FQDN_{cleaned_data.get('appl_NAC_Hostname')}.{cleaned_data.get('dns_domain')}"
 
     def clean_appl_NAC_macAddressAIR(self):
-        data = self.cleaned_data["appl_NAC_macAddressAIR"]
-        if data:
-            mac = normalize_mac(data)
-            validate_mac(mac)
-        else:
-            mac = None
-        return mac
+        return self._clean_mac_address('appl_NAC_macAddressAIR')
 
     def clean_appl_NAC_Hostname(self):
         hostname = self.cleaned_data.get("appl_NAC_Hostname")
@@ -103,18 +105,22 @@ class DeviceForm(ModelForm):
         return hostname
 
     def clean_appl_NAC_macAddressCAB(self):
-        data = self.cleaned_data["appl_NAC_macAddressCAB"]
+        return self._clean_mac_address('appl_NAC_macAddressCAB')
+
+    def _clean_mac_address(self, field_name):
+        data = self.cleaned_data[field_name]
         if data:
-            data = data.split(",")
-            macs = list()
-            for item in data:
-                mac = normalize_mac(item)
-                validate_mac(mac)
-                macs.append(mac)
-            macs = ",".join(macs)
-        else:
-            macs = None
-        return macs
+            macs = []
+            for item in data.split(","):
+                mac = normalize_mac(item.strip())
+                try:
+                    validate_mac(mac)
+                except ValidationError:
+                    raise
+                if mac not in macs:
+                    macs.append(mac)
+            return ",".join(macs)
+        return None
 
     def clean_synchronized(self):
         return False
