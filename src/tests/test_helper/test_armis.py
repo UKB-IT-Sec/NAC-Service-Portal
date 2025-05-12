@@ -86,7 +86,7 @@ def test_remove_existing_devices(mock_mac_list):
 
 @patch('helper.armis._remove_existing_devices')
 def test_get_devices(mock_remove_existing_devices, mock_config):
-    mock_devices = [{'id': '1', 'name': 'Device1'}]
+    mock_devices = [{'id': '1', 'name': 'Device1', 'macAddress': 'AABBCCDDEEFF'}]
     mock_armis_cloud = MagicMock()
     mock_armis_cloud.get_devices.return_value = mock_devices
     mock_remove_existing_devices.return_value = mock_devices

@@ -46,6 +46,12 @@ def _filter_sort_sites(sites):
 def get_armis_sites(acloud):
     return _filter_sort_sites(acloud.get_sites())
 
+def _filter_devices(deviceList):
+    filtered_deviceList = _remove_existing_devices(_filterDevicesWithExcessiveMacAddresses(deviceList,max_addresses=10))
+    return filtered_deviceList
+
+def _filterDevicesWithExcessiveMacAddresses(deviceList, max_addresses):
+    return [device for device in deviceList if len(device['macAddress'].split(',')) <= max_addresses]
 
 def _remove_existing_devices(deviceList):
     _mac_list = MacList()
@@ -65,7 +71,7 @@ def get_devices(acloud, sites):
         asq=f'in:devices site:{sites} timeFrame:"7 Days" {vlan_bl}',
         fields_wanted=['id', 'ipAddress', 'macAddress', 'name', 'boundaries', 'site', 'vlan']
     )
-    return _remove_existing_devices(deviceList)
+    return _filter_devices(deviceList)
 # flake8: qa
 
 @armiscloud
