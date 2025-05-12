@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import HomePageView
+from .subviews.home import HomePageView
 
 from .subviews.device_management import (
     DeviceListView,

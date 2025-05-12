@@ -39,29 +39,30 @@ class CustomUser(AbstractUser):
 
 
 class Device(models.Model):
-    asset_id = models.CharField(null=True,blank=True, max_length=150)
-    authorization_group = models.ForeignKey(AuthorizationGroup, on_delete=models.SET_NULL, null=True)
+    asset_id = models.CharField(null=True, blank=True, max_length=150, verbose_name="Asset ID")
+    authorization_group = models.ForeignKey(AuthorizationGroup, on_delete=models.SET_NULL, null=True, verbose_name="Authorization Group")
     appl_NAC_DeviceRoleProd = models.ForeignKey(
-        DeviceRoleProd, on_delete=models.SET_NULL, null=True)
+        DeviceRoleProd, on_delete=models.SET_NULL, null=True, verbose_name="Device role in production")
     appl_NAC_DeviceRoleInst = models.ForeignKey(
-        DeviceRoleInst, on_delete=models.SET_NULL, null=True)
+        DeviceRoleInst, on_delete=models.SET_NULL, null=True, verbose_name="Device role during installation")
     synchronized = models.BooleanField(null=True, default=False)
 
-    dns_domain = models.ForeignKey(DNSDomain, on_delete=models.SET_NULL, null=True)
-
-    appl_NAC_Hostname = models.CharField(null=True, max_length=100)
-    appl_NAC_Active = models.BooleanField(null=True, default=True)
-    appl_NAC_ForceDot1X = models.BooleanField(null=True, default=True)
-    appl_NAC_Install = models.BooleanField(null=True)
-    appl_NAC_AllowAccessCAB = models.BooleanField(null=True, default=True)
-    appl_NAC_AllowAccessAIR = models.BooleanField(null=True)
-    appl_NAC_AllowAccessVPN = models.BooleanField(null=True)
-    appl_NAC_AllowAccessCEL = models.BooleanField(null=True)
+    dns_domain = models.ForeignKey(DNSDomain, on_delete=models.SET_NULL, null=True, verbose_name="DNS domain")
+    vlan = models.CharField(null=True, blank=True, max_length=100, verbose_name="VLAN")
+    additional_info = models.TextField(null=True, blank=True)
+    appl_NAC_Hostname = models.CharField(null=True, max_length=100, verbose_name="Hostname")
+    appl_NAC_Active = models.BooleanField(null=True, default=True, verbose_name="Device is active")
+    appl_NAC_ForceDot1X = models.BooleanField(null=True, default=True, verbose_name="ForceDot1X")
+    appl_NAC_Install = models.BooleanField(null=True, verbose_name="Installation mode")
+    appl_NAC_AllowAccessCAB = models.BooleanField(null=True, default=True, verbose_name="Access over Ethernet allowed")
+    appl_NAC_AllowAccessAIR = models.BooleanField(null=True, verbose_name="Access over WiFi allowed")
+    appl_NAC_AllowAccessVPN = models.BooleanField(null=True, verbose_name="Access over VPN allowed")
+    appl_NAC_AllowAccessCEL = models.BooleanField(null=True, verbose_name="Access over cellphone allowed")
     appl_NAC_macAddressCAB = models.TextField(null=True,
-                                              blank=True, unique=True)
+                                              blank=True, unique=True, verbose_name="MAC Address Ethernet")
     appl_NAC_macAddressAIR = models.CharField(null=True, max_length=100,
-                                              blank=True, unique=True)
-    appl_NAC_Certificate = models.TextField(null=True, blank=True)
+                                              blank=True, unique=True, verbose_name="MAC Address WiFi")
+    appl_NAC_Certificate = models.TextField(null=True, blank=True, verbose_name="Certificate")
 
     @property
     def appl_NAC_FQDN(self):
@@ -85,7 +86,8 @@ class Device(models.Model):
     def get_appl_NAC_macAddressAIR(self):
         if not self.appl_NAC_macAddressAIR:
             return None
-        return [self.format_mac(self.appl_NAC_macAddressAIR)]
+        return [self.format_mac(mac) for mac in
+                self.appl_NAC_macAddressAIR.split(",")]
 
     def get_appl_NAC_macAddressCAB(self):
         if not self.appl_NAC_macAddressCAB:

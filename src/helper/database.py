@@ -28,11 +28,11 @@ class MacList:
 
     def update_mac_list(self, device):
         device_id = device['id']
-        air_mac = device.get("appl_NAC_macAddressAIR") or ""
+        air_macs = device.get("appl_NAC_macAddressAIR") or ""
         cab_macs = device.get("appl_NAC_macAddressCAB") or ""
 
-        if air_mac.strip():
-            self._mac_list[air_mac.strip()] = device_id
+        if air_macs:
+            self._mac_list.update({mac.strip(): device_id for mac in air_macs.split(',') if mac.strip()})
 
         if cab_macs:
             self._mac_list.update({mac.strip(): device_id for mac in cab_macs.split(',') if mac.strip()})
