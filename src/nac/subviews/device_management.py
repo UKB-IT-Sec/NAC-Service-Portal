@@ -132,7 +132,11 @@ class DeviceCreateView(LoginRequiredMixin, CreateView):
                 'vlan': device.get('vlan'),
                 'appl_NAC_Active': True,
                 'appl_NAC_ForceDot1X': False,
+                'appl_NAC_AllowAccessCAB': False,
+                'source': 'Armis'
             })
+        else:
+            initial['source'] = 'Database'
         return initial
 
     def post(self, request, *args, **kwargs):  # handles POST-Methods for new Devices
