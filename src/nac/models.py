@@ -49,7 +49,8 @@ class Device(models.Model):
 
     dns_domain = models.ForeignKey(DNSDomain, on_delete=models.SET_NULL, null=True, verbose_name="DNS domain")
     vlan = models.CharField(null=True, blank=True, max_length=100, verbose_name="VLAN")
-    additional_info = models.TextField(null=True, blank=True)
+    source = models.CharField(null=True, blank=True, max_length=100, verbose_name="Data origin")
+    additional_info = models.TextField(null=True, blank=True, verbose_name="Additional information")
     appl_NAC_Hostname = models.CharField(null=True, max_length=100, verbose_name="Hostname")
     appl_NAC_Active = models.BooleanField(null=True, default=True, verbose_name="Device is active")
     appl_NAC_ForceDot1X = models.BooleanField(null=True, default=True, verbose_name="ForceDot1X")

@@ -51,7 +51,7 @@
         </tr>
         <tr>
             <td>
-                <strong>VLAN</strong>
+                <strong> {{ device | verbose_name:"vlan"}}</strong>
             </td>
             <td>
                 {{ device.vlan }}
@@ -155,22 +155,18 @@
         </tr>
         <tr>
             <td>
-                <strong>MAC Address CAB</strong>
-            </td>
-            <td>
-                {% for mac in device.get_appl_NAC_macAddressCAB %}
-                            {% if  mac != None%}
-                                {{mac}} <br />
-                            {% endif %}
-                {% endfor %}
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <strong>Additional Information</strong>
+                <strong>{{ device | verbose_name:"additional_info" }}</strong>
             </td>
             <td>
                 {{ device.additional_info }}
+            </td>
+        </tr>
+         <tr>
+            <td>
+                <strong>{{ device | verbose_name:"source"}}</strong>
+            </td>
+            <td>
+                {{ device.source }}
             </td>
         </tr>
     </table>
