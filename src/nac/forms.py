@@ -62,6 +62,7 @@ class DeviceForm(ModelForm):
                   "appl_NAC_macAddressCAB",
                   "synchronized",
                   "additional_info",
+                  "source"
                   ]
 
         widgets = {"dns_domain": autocomplete.ModelSelect2(url="dns_domain-autocomplete"),
@@ -79,6 +80,10 @@ class DeviceForm(ModelForm):
                    "appl_NAC_macAddressCAB": MacAddressFormat(),
                    "synchronized": forms.HiddenInput(),
                    }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['source'].widget.attrs['readonly'] = True
 
     def clean(self):
         cleaned_data = super().clean()
