@@ -71,6 +71,10 @@ class DeviceUpdateView(LoginRequiredMixin, UpdateView):
     form_class = DeviceForm
     template_name = "device_edit.html"
 
+    def form_valid(self, form):
+        form.instance.modified_by = self.request.user
+        return super().form_valid(form)
+
     def get_context_data(self, **kwargs):
         context = super(DeviceUpdateView, self).get_context_data(**kwargs)
         # keep selected version selected in the drop down field after reloading the page
@@ -146,3 +150,7 @@ class DeviceCreateView(LoginRequiredMixin, CreateView):
             return render(request, self.template_name, {'form': form})
         else:
             return super().post(request, *args, **kwargs)  # else no pre-fill
+
+    def form_valid(self, form):
+        form.instance.modified_by = self.request.user
+        return super().form_valid(form)

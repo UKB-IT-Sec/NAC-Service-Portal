@@ -25,7 +25,7 @@ def test_select_version(hostname):
     history_entry = device_with_history.history.get(appl_NAC_Hostname=hostname)
     expected_data = model_to_dict(history_entry)
 
-    test_user = CustomUser.objects.create(name="test")
+    test_user = CustomUser.objects.create()
     test_user.authorization_group.set([AuthorizationGroup.objects.get(pk=1), AuthorizationGroup.objects.get(pk=2)])
 
     rf = RequestFactory()
@@ -66,7 +66,7 @@ def test_delete_version(hostname):
 
     history_entry = device_with_history.history.all().get(appl_NAC_Hostname=hostname)
 
-    test_user = CustomUser.objects.create(name="test")
+    test_user = CustomUser.objects.create()
     test_user.authorization_group.set([AuthorizationGroup.objects.get(pk=1), AuthorizationGroup.objects.get(pk=2)])
 
     rf = RequestFactory()
@@ -98,7 +98,7 @@ def test_select_none():
 
     expected_data = model_to_dict(device_with_history)
 
-    test_user = CustomUser.objects.create(name="test")
+    test_user = CustomUser.objects.create()
     test_user.authorization_group.set([AuthorizationGroup.objects.get(pk=1), AuthorizationGroup.objects.get(pk=2)])
 
     rf = RequestFactory()
@@ -129,7 +129,7 @@ def test_delete_none():
 
     expected_data = model_to_dict(device_with_history)
 
-    test_user = CustomUser.objects.create(name="test")
+    test_user = CustomUser.objects.create()
     test_user.authorization_group.set([AuthorizationGroup.objects.get(pk=1), AuthorizationGroup.objects.get(pk=2)])
 
     rf = RequestFactory()
@@ -177,7 +177,7 @@ def test_number_of_items_in_dropdown():
 def test_with_less_than_3_historical_records():
     device_with_history = Device.objects.get(id=1)
 
-    test_user = CustomUser.objects.create(name="test")
+    test_user = CustomUser.objects.create()
     test_user.authorization_group.set([AuthorizationGroup.objects.get(pk=1), AuthorizationGroup.objects.get(pk=2)])
 
     for hostname in ["dev1-v1", "dev1-v2", "dev1-v3"]:
