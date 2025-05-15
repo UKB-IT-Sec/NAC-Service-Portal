@@ -41,11 +41,11 @@ class CustomUser(AbstractUser):
 
 class Device(models.Model):
     asset_id = models.CharField(null=True, blank=True, max_length=150, verbose_name="Asset ID")
-    authorization_group = models.ForeignKey(AuthorizationGroup, on_delete=models.SET_NULL, null=True, verbose_name="Authorization Group")
+    authorization_group = models.ForeignKey(AuthorizationGroup, on_delete=models.SET_NULL, null=True, verbose_name="Administration Group")
     appl_NAC_DeviceRoleProd = models.ForeignKey(
-        DeviceRoleProd, on_delete=models.SET_NULL, null=True, verbose_name="Device role in production")
+        DeviceRoleProd, on_delete=models.SET_NULL, null=True, verbose_name="Device role productive")
     appl_NAC_DeviceRoleInst = models.ForeignKey(
-        DeviceRoleInst, on_delete=models.SET_NULL, null=True, verbose_name="Device role during installation")
+        DeviceRoleInst, on_delete=models.SET_NULL, null=True, verbose_name="Device role installation")
     synchronized = models.BooleanField(null=True, default=False)
 
     dns_domain = models.ForeignKey(DNSDomain, on_delete=models.SET_NULL, null=True, verbose_name="DNS domain")
@@ -53,17 +53,17 @@ class Device(models.Model):
     source = models.CharField(null=True, blank=True, max_length=100, verbose_name="Data origin")
     additional_info = models.TextField(null=True, blank=True, verbose_name="Additional information")
     appl_NAC_Hostname = models.CharField(null=True, max_length=100, verbose_name="Hostname")
-    appl_NAC_Active = models.BooleanField(null=True, default=True, verbose_name="Device is active")
-    appl_NAC_ForceDot1X = models.BooleanField(null=True, default=True, verbose_name="ForceDot1X")
-    appl_NAC_Install = models.BooleanField(null=True, verbose_name="Installation mode")
-    appl_NAC_AllowAccessCAB = models.BooleanField(null=True, default=True, verbose_name="Access over Ethernet allowed")
-    appl_NAC_AllowAccessAIR = models.BooleanField(null=True, verbose_name="Access over WiFi allowed")
+    appl_NAC_Active = models.BooleanField(null=True, default=True, verbose_name="Active (access allowed)")
+    appl_NAC_ForceDot1X = models.BooleanField(null=True, default=True, verbose_name="Force 802.1X")
+    appl_NAC_Install = models.BooleanField(null=True, verbose_name="Installation")
+    appl_NAC_AllowAccessCAB = models.BooleanField(null=True, default=True, verbose_name="Wired access allowed")
+    appl_NAC_AllowAccessAIR = models.BooleanField(null=True, verbose_name="Wireless access allowed")
     appl_NAC_AllowAccessVPN = models.BooleanField(null=True, verbose_name="Access over VPN allowed")
-    appl_NAC_AllowAccessCEL = models.BooleanField(null=True, verbose_name="Access over cellphone allowed")
+    appl_NAC_AllowAccessCEL = models.BooleanField(null=True, verbose_name="Access over cellular network allowed")
     appl_NAC_macAddressCAB = models.TextField(null=True,
-                                              blank=True, unique=True, verbose_name="MAC Address Ethernet")
+                                              blank=True, unique=True, verbose_name="Wired MAC address")
     appl_NAC_macAddressAIR = models.CharField(null=True, max_length=100,
-                                              blank=True, unique=True, verbose_name="MAC Address WiFi")
+                                              blank=True, unique=True, verbose_name="Wireless MAC address")
     appl_NAC_Certificate = models.TextField(null=True, blank=True, verbose_name="Certificate")
     history = HistoricalRecords()
 
