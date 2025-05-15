@@ -34,7 +34,6 @@ class AuthorizationGroup(models.Model):
 
 
 class CustomUser(AbstractUser):
-    name = models.TextField()
     authorization_group = models.ManyToManyField(AuthorizationGroup)
 
     def __str__(self):
