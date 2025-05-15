@@ -1,12 +1,13 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from simple_history.admin import SimpleHistoryAdmin
+from django.contrib.auth.forms import AdminUserCreationForm
 
-from .forms import CustomUserCreationForm, CustomUserChangeForm
+from .forms import CustomUserChangeForm
 from .models import CustomUser, Device, AuthorizationGroup, DeviceRoleProd, DeviceRoleInst, DNSDomain
 
 
-class DeviceAdmin(admin.ModelAdmin):
-
+class DeviceAdmin(SimpleHistoryAdmin):
     def get_readonly_fields(self, request, obj=None):  # overrides default get_readonly_fields-function
         # modified_by only visible for staff and admins
         if request.user.is_superuser or request.user.is_staff:
@@ -15,7 +16,7 @@ class DeviceAdmin(admin.ModelAdmin):
 
 
 class CustomUserAdmin(UserAdmin):
-    add_form = CustomUserCreationForm
+    add_form = AdminUserCreationForm
     form = CustomUserChangeForm
     model = CustomUser
     list_display = ["email", "username"]

@@ -2,14 +2,15 @@ from django.views.generic import ListView, DetailView
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.db.models import Q
 from django.urls import reverse_lazy
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 import json
 from django.http import JsonResponse
 from django.template.loader import render_to_string
+from django.forms.models import model_to_dict
 
 from ..models import Device, AuthorizationGroup, DeviceRoleProd
-from ..forms import DeviceForm, DeviceSearchForm
+from ..forms import DeviceForm, DeviceSearchForm, DeviceHistoryForm
 from ..validation import normalize_mac
 
 
@@ -73,6 +74,40 @@ class DeviceUpdateView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         form.instance.modified_by = self.request.user
         return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super(DeviceUpdateView, self).get_context_data(**kwargs)
+        # keep selected version selected in the drop down field after reloading the page
+        if "device_version" in self.request.POST and self.request.POST["device_version"]:
+            device_version_id = self.request.POST["device_version"]
+            device_version = self.get_object().history.get(history_id=device_version_id)
+        else:
+            device_version = None
+        context["device_history_form"] = DeviceHistoryForm(device=self.object, selected_version=device_version)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        # if no device version is selected, just show current version in device form
+        if "device_version" in request.POST and not self.request.POST["device_version"]:
+            return self.render_to_response(self.get_context_data(form=self.form_class(instance=self.object)))
+
+        # preview selected version from history in form
+        elif "select" in request.POST and self.request.POST["device_version"]:
+            device_version_id = request.POST.get("device_version")
+            device_version = self.object.history.get(history_id=device_version_id)
+            form = self.form_class(initial=model_to_dict(device_version), instance=self.object)
+            return self.render_to_response(self.get_context_data(form=form))
+
+        # delete the selected version from the history
+        elif "delete" in request.POST:
+            device_version_id = request.POST.get("device_version")
+            self.get_object().history.get(history_id=device_version_id).delete()
+            return redirect(request.path)
+
+        # save edits to device
+        return super().post(request, *args, **kwargs)
 
 
 class DeviceDeleteView(LoginRequiredMixin, DeleteView):
