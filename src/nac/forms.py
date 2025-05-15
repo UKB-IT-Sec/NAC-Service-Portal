@@ -1,4 +1,4 @@
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.contrib.auth.forms import AdminUserCreationForm, UserChangeForm
 from .models import CustomUser, Device, AuthorizationGroup, DeviceRoleProd
 from django import forms
 from django.forms import ModelForm, CheckboxInput
@@ -7,8 +7,8 @@ from .validation import normalize_mac, validate_mac
 from django.core.exceptions import ValidationError
 
 
-class CustomUserCreationForm(UserCreationForm):
-    class Meta(UserCreationForm):
+class CustomUserCreationForm(AdminUserCreationForm):
+    class Meta:
         model = CustomUser
         fields = ("username", "email", "authorization_group",)
 
