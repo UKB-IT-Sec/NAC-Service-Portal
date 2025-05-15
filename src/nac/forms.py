@@ -1,4 +1,4 @@
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.contrib.auth.forms import AdminUserCreationForm, UserChangeForm
 from .models import CustomUser, Device, AuthorizationGroup, DeviceRoleProd
 from django import forms
 from django.forms import ModelForm, CheckboxInput
@@ -10,8 +10,8 @@ from crispy_forms.layout import Layout, Submit
 from crispy_forms.bootstrap import FieldWithButtons
 
 
-class AdminUserCreationForm(UserCreationForm):
-    class Meta(UserCreationForm):
+class CustomUserCreationForm(AdminUserCreationForm):
+    class Meta:
         model = CustomUser
         fields = ("username", "email", "authorization_group",)
 
