@@ -18,7 +18,7 @@ from pytest_django.asserts import assertQuerySetEqual
 def test_device_search(query, result):
     desired_qs = Device.objects.all().filter(id__in=result)
 
-    test_user = CustomUser.objects.create(name="test")
+    test_user = CustomUser.objects.create()
     test_user.authorization_group.set([AuthorizationGroup.objects.get(pk=1), AuthorizationGroup.objects.get(pk=2)])
 
     request = RequestFactory().get(reverse_lazy("devices") + "?search_string=" + query)
@@ -32,7 +32,7 @@ def test_device_search(query, result):
 
 @pytest.mark.django_db
 def test_result_rendering(client):
-    test_user = CustomUser.objects.create(name="test")
+    test_user = CustomUser.objects.create()
     test_user.set_password("test")
     test_user.authorization_group.set([AuthorizationGroup.objects.get(pk=1)])
     test_user.save()
@@ -67,7 +67,7 @@ def test_device_filtering(auth_group, device_role_prod, result):
     desired_qs = Device.objects.all().filter(id__in=result)
     print(desired_qs)
 
-    test_user = CustomUser.objects.create(name="test")
+    test_user = CustomUser.objects.create()
     test_user.authorization_group.set([AuthorizationGroup.objects.get(pk=1), AuthorizationGroup.objects.get(pk=2)])
 
     query = "?search_string="
