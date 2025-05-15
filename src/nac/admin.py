@@ -5,6 +5,15 @@ from .forms import CustomUserCreationForm, CustomUserChangeForm
 from .models import CustomUser, Device, AuthorizationGroup, DeviceRoleProd, DeviceRoleInst, DNSDomain
 
 
+class DeviceAdmin(admin.ModelAdmin):
+
+    def get_readonly_fields(self, request, obj=None):  # overrides default get_readonly_fields-function
+        # modified_by only visible for staff and admins
+        if request.user.is_superuser or request.user.is_staff:
+            return ('modified_by',)
+        return ()
+
+
 class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
@@ -15,7 +24,7 @@ class CustomUserAdmin(UserAdmin):
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
-admin.site.register(Device)
+admin.site.register(Device, DeviceAdmin)
 admin.site.register(AuthorizationGroup)
 admin.site.register(DeviceRoleProd)
 admin.site.register(DeviceRoleInst)

@@ -37,6 +37,9 @@ class CustomUser(AbstractUser):
     name = models.TextField()
     authorization_group = models.ManyToManyField(AuthorizationGroup)
 
+    def __str__(self):
+        return self.username
+
 
 class Device(models.Model):
     asset_id = models.CharField(null=True, blank=True, max_length=150, verbose_name="Asset ID")
@@ -50,6 +53,8 @@ class Device(models.Model):
     dns_domain = models.ForeignKey(DNSDomain, on_delete=models.SET_NULL, null=True, verbose_name="DNS domain")
     vlan = models.CharField(null=True, blank=True, max_length=100, verbose_name="VLAN")
     source = models.CharField(null=True, blank=True, max_length=100, verbose_name="Data origin")
+    modified_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, editable=False)
+
     additional_info = models.TextField(null=True, blank=True, verbose_name="Additional information")
     appl_NAC_Hostname = models.CharField(null=True, max_length=100, verbose_name="Hostname")
     appl_NAC_Active = models.BooleanField(null=True, default=True, verbose_name="Device is active")
