@@ -8,6 +8,8 @@ from django.core.exceptions import ValidationError
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit
 from crispy_forms.bootstrap import FieldWithButtons
+import datetime
+from django.utils.timezone import localtime
 
 
 class CustomUserCreationForm(AdminUserCreationForm):
@@ -157,7 +159,6 @@ class DeviceHistoryForm(forms.Form):
                                                                 required=False,
                                                                 label="Select previous version",
                                                                 initial=selected_version,
-                                                                localize=True
                                                                 )
         self.helper = FormHelper()
         self.helper.form_method = "post"
@@ -171,4 +172,12 @@ class DeviceHistoryForm(forms.Form):
 class HistoryModelChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):           # this makes the options in the dropdown more readable
         version_datetime = obj.history_date
-        return version_datetime
+        version_datetime_no_microseconds = datetime.datetime(year=version_datetime.year,
+                                                             month=version_datetime.month,
+                                                             day=version_datetime.day,
+                                                             hour=version_datetime.hour,
+                                                             minute=version_datetime.minute,
+                                                             second=version_datetime.second,
+                                                             microsecond=0,
+                                                             tzinfo=version_datetime.tzinfo,)
+        return localtime(version_datetime_no_microseconds).isoformat(" ")
