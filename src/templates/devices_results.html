@@ -25,19 +25,29 @@
 						<span class="icon-desc" desc="Inactive Device"><img src="{% static 'icons/x-lg.svg' %}" alt="appl_NAC_Active_False" height="25" width="25" class="icon-zoom" /></span>
 					{% endif %}
 					{% if device.appl_NAC_Install %}
-						<span class="icon-desc" desc="Install"><img src="{% static 'icons/wrench.svg' %}" alt="appl_NAC_Install" height="25" width="25" class="icon-zoom"/></span>
+						<span class="icon-desc" desc="Installation"><img src="{% static 'icons/wrench.svg' %}" alt="appl_NAC_Install" height="25" width="25" class="icon-zoom" /></span>
+					{% else %}
+						<span class="icon-desc" desc="Not in installation"><img src="{% static 'icons/wrench.svg' %}" alt="appl_NAC_Install" height="25" width="25" class="icon-zoom gray-icon" /></span>
 					{% endif %}
 					{% if device.appl_NAC_AllowAccessCAB %}
-						<span class="icon-desc" desc="Access over Ethernet allowed"><img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_AllowAccessCAB" height="25" width="25" class="icon-zoom"/></span>
+						<span class="icon-desc" desc="Wired Access allowed"><img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_AllowAccessCAB" height="25" width="25" class="icon-zoom"/></span>
+					{% else %}
+						<span class="icon-desc" desc="Wired Access not allowed"><img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_AllowAccessCAB" height="25" width="25" class="icon-zoom gray-icon"/></span>
 					{% endif %}
 					{% if device.appl_NAC_AllowAccessAIR %}
-						<span class="icon-desc" desc="Access over WiFi allowed"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_AllowAccessAIR" height="25" width="25" class="icon-zoom"/></span>
+						<span class="icon-desc" desc="Wireless Access allowed"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_AllowAccessAIR" height="25" width="25" class="icon-zoom"/></span>
+					{% else %}
+						<span class="icon-desc" desc="Wireless Access not allowed"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_AllowAccessAIR" height="25" width="25" class="icon-zoom gray-icon"/></span>
 					{% endif %}
 					{% if device.appl_NAC_AllowAccessVPN %}
 						<span class="icon-desc" desc="Access over VPN allowed"><img src="{% static 'icons/shield.svg' %}" alt="appl_NAC_AllowAccessVPN" height="25" width="25" class="icon-zoom"/></span>
+					{% else %}
+						<span class="icon-desc" desc="Access over VPN not allowed"><img src="{% static 'icons/shield.svg' %}" alt="appl_NAC_AllowAccessVPN" height="25" width="25" class="icon-zoom gray-icon"/></span>
 					{% endif %}
 					{% if device.appl_NAC_AllowAccessCEL %}
-						<span class="icon-desc" desc="Access over cellphone allowed"><img src="{% static 'icons/phone.svg' %}" alt="appl_NAC_AllowAccessCEL" height="25" width="25" class="icon-zoom"/></span>
+						<span class="icon-desc" desc="Access over cellular network allowed"><img src="{% static 'icons/broadcast-pin.svg' %}" alt="appl_NAC_AllowAccessCEL" height="25" width="25" class="icon-zoom"/></span>
+					{% else %}
+						<span class="icon-desc" desc="Access over cellular network not allowed"><img src="{% static 'icons/broadcast-pin.svg' %}" alt="appl_NAC_AllowAccessCEL" height="25" width="25" class="icon-zoom gray-icon"/></span>
 					{% endif %}
 				</td>
 				<td>
@@ -114,13 +124,17 @@
 		border: 1px solid #888;
 		width: 80%;
 	}
+	.gray-icon {
+    	 opacity: 0.2;
+    	 filter: grayscale(100%);
+	}
 	.close {
 		color: #aaa;
 		float: right;
 		font-size: 22px;
 		font-weight: bold;
 		cursor: pointer;
-	  }
+	}
 	  .close:hover,
 	  .close:focus {
 		color: black;
