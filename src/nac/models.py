@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.urls import reverse
+from simple_history.models import HistoricalRecords
 
 
 class DeviceRoleProd(models.Model):
@@ -64,6 +65,7 @@ class Device(models.Model):
     appl_NAC_macAddressAIR = models.CharField(null=True, max_length=100,
                                               blank=True, unique=True, verbose_name="MAC Address WiFi")
     appl_NAC_Certificate = models.TextField(null=True, blank=True, verbose_name="Certificate")
+    history = HistoricalRecords()
 
     @property
     def appl_NAC_FQDN(self):
