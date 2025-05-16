@@ -54,6 +54,7 @@ class Device(models.Model):
     vlan = models.CharField(null=True, blank=True, max_length=100, verbose_name="VLAN")
     source = models.CharField(null=True, blank=True, max_length=100, verbose_name="Data origin")
     modified_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, editable=False)
+    last_modified = models.TextField(null=True, blank=True, editable=False, verbose_name="Time of last modification")
 
     additional_info = models.TextField(null=True, blank=True, verbose_name="Additional information")
     appl_NAC_Hostname = models.CharField(null=True, max_length=100, verbose_name="Hostname")
