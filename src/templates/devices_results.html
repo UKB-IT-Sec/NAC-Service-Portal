@@ -8,7 +8,7 @@
 					<th scope="col">FQDN</th>
 					<th scope="col">Device Role Prod</th>
 					<th scope="col">MAC</th>
-					<th scope="col">VLAN</th>
+					<th scope="col">Last Modification</th>
 					<th scope="col" width="60"></th>
 				</tr>
 			</thead>
@@ -90,7 +90,7 @@
 				{% endif %}
 				</td>
 				<td>
-					{{ device.vlan }}
+					{{ device.last_modified }}
 				</td>
 				<td>
 					<a href="{% url 'device_edit' device.pk %}">

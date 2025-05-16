@@ -8,6 +8,7 @@ import json
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.forms.models import model_to_dict
+from django.utils import timezone
 
 from ..models import Device, AuthorizationGroup, DeviceRoleProd
 from ..forms import DeviceForm, DeviceSearchForm, DeviceHistoryForm
@@ -73,6 +74,7 @@ class DeviceUpdateView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         form.instance.modified_by = self.request.user
+        form.instance.last_modified = timezone.localtime().isoformat(timespec='seconds')
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
@@ -153,4 +155,5 @@ class DeviceCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.modified_by = self.request.user
+        form.instance.last_modified = timezone.localtime().isoformat(timespec='seconds')
         return super().form_valid(form)
