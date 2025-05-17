@@ -61,6 +61,7 @@ class Device(models.Model):
     appl_NAC_Active = models.BooleanField(null=True, default=True, verbose_name="Device is active")
     appl_NAC_ForceDot1X = models.BooleanField(null=True, default=True, verbose_name="ForceDot1X")
     appl_NAC_Install = models.BooleanField(null=True, verbose_name="Installation mode")
+    allowLdapSync = models.BooleanField(null=True, default=False, verbose_name="Sync with LDAP allowed")
     appl_NAC_AllowAccessCAB = models.BooleanField(null=True, default=True, verbose_name="Access over Ethernet allowed")
     appl_NAC_AllowAccessAIR = models.BooleanField(null=True, verbose_name="Access over WiFi allowed")
     appl_NAC_AllowAccessVPN = models.BooleanField(null=True, verbose_name="Access over VPN allowed")
