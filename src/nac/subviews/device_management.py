@@ -156,4 +156,5 @@ class DeviceCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.modified_by = self.request.user
         form.instance.last_modified = timezone.localtime().isoformat(timespec='seconds')
+        form.instance.creationDate = timezone.localtime().isoformat(timespec='seconds')
         return super().form_valid(form)

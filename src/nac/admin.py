@@ -9,9 +9,9 @@ from .models import CustomUser, Device, AuthorizationGroup, DeviceRoleProd, Devi
 
 class DeviceAdmin(SimpleHistoryAdmin):
     def get_readonly_fields(self, request, obj=None):  # overrides default get_readonly_fields-function
-        # modified_by only visible for staff and admins
+        # field only visible for staff and admins
         if request.user.is_superuser or request.user.is_staff:
-            return ('modified_by', 'last_modified',)
+            return ('modified_by', 'last_modified', 'creationDate',)
         return ()
 
 
