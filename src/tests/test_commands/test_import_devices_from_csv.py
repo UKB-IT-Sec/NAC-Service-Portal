@@ -4,7 +4,7 @@ from nac.management.commands.import_devices_from_csv import Command, \
 from unittest.mock import patch, mock_open, MagicMock
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.core.management.base import CommandError
-from nac.models import AuthorizationGroup, DeviceRoleProd, DeviceRoleInst, Device, DNSDomain
+from nac.models import AuthorizationGroup, DeviceRoleProd, Device, DNSDomain
 from helper.database import MacList
 from helper.config import get_config_from_json
 
@@ -35,11 +35,9 @@ def test_check_device(mock_check_existing_mac, mock_logging, mock_atomic, appl_N
                       appl_NAC_macAddressCAB, test_hostname, expected_result, command):
 
     test_DeviceRoleProd = DeviceRoleProd.objects.create(name="test")
-    test_DeviceRoleInst = DeviceRoleInst.objects.create(name="test2")
     test_domain = DNSDomain.objects.create(name="test.com")
     test_authorization_group = AuthorizationGroup.objects.create(name="test")
     test_authorization_group.DeviceRoleProd.set([test_DeviceRoleProd])
-    test_authorization_group.DeviceRoleInst.set([test_DeviceRoleInst])
     command.auth_group = 'test'
     command.update = False
     command.csv_mapping = get_config_from_json(DEFAULT_CSV_MAPPING)
@@ -61,7 +59,6 @@ def test_check_device(mock_check_existing_mac, mock_logging, mock_atomic, appl_N
         "appl-NAC-AllowAccessAIR": appl_NAC_AllowAccessAIR,
         "appl-NAC-AllowAccessVPN": appl_NAC_AllowAccessVPN,
         "appl-NAC-AllowAccessCEL": True,
-        "appl-NAC-DeviceRoleInst": test_DeviceRoleInst,
         "appl-NAC-macAddressAIR": appl_NAC_macAddressAIR,
         "appl-NAC-macAddressCAB": appl_NAC_macAddressCAB,
         "appl-NAC-Certificate": appl_NAC_Certificate,
@@ -93,7 +90,6 @@ def test_check_device_exceptions(
         mock_device_form, mock_logging,
         mock_str_to_bool, mock_atomic, mock_device_filter, command):
     test_deviceRoleProd = DeviceRoleProd.objects.create(name="test")
-    test_deviceRoleInst = DeviceRoleInst.objects.create(name="test")
     test_authorization_group = AuthorizationGroup.objects.create(name="test")
     command.auth_group = 'test'
     command.csv_mapping = get_config_from_json(DEFAULT_CSV_MAPPING)
@@ -101,12 +97,10 @@ def test_check_device_exceptions(
     command.ou_mapping = {}
     command.mac_list = MacList()
     test_authorization_group.DeviceRoleProd.set([test_deviceRoleProd])
-    test_authorization_group.DeviceRoleInst.set([test_deviceRoleInst])
     invalid_device = {
         "objectClass": "appl-NAC-Device",
         "authorization_group": test_authorization_group,
         "appl-NAC-DeviceRoleProd": test_deviceRoleProd,
-        "appl-NAC-DeviceRoleInst": test_deviceRoleInst,
         "appl-NAC-Hostname": "test"
         }
     mock_form = MagicMock()
@@ -144,34 +138,19 @@ def test_check_device_exceptions(
     invalid_device = {
         "objectClass": "appl-NAC-Device",
         "authorization_group": test_authorization_group,
-        "appl-NAC-DeviceRoleProd": "dummy",
-        "appl-NAC-DeviceRoleInst": test_deviceRoleInst}
+        "appl-NAC-DeviceRoleProd": "dummy"}
     with pytest.raises(
             ValidationError,
             match="('DeviceRoleProd: dummy not in Database')"):
         command.check_device(invalid_device)
     mock_atomic.assert_called()
 
-    mock_atomic.reset_mock()
-    invalid_device = {
-        "objectClass": "appl-NAC-Device",
-        "authorization_group": test_authorization_group,
-        "appl-NAC-DeviceRoleProd": test_deviceRoleProd,
-        "appl-NAC-DeviceRoleInst": "dummy"}
-    with pytest.raises(
-            ValidationError,
-            match="('DeviceRoleInst: dummy not in Database')"):
-        command.check_device(invalid_device)
-    mock_atomic.assert_called()
-
     test_deviceRoleProd = DeviceRoleProd.objects.create(name="dummy")
-    test_deviceRoleInst = DeviceRoleInst.objects.create(name="dummy")
     mock_atomic.reset_mock()
     invalid_device = {
         "objectClass": "appl-NAC-Device",
         "authorization_group": test_authorization_group,
-        "appl-NAC-DeviceRoleProd": "dummy",
-        "appl-NAC-DeviceRoleInst": test_deviceRoleInst}
+        "appl-NAC-DeviceRoleProd": "dummy"}
     with pytest.raises(
             ValidationError, match="DeviceRoleProd: dummy "
             "not in authorization group: test"):
@@ -180,19 +159,8 @@ def test_check_device_exceptions(
 
     test_authorization_group.DeviceRoleProd.set([test_deviceRoleProd])
     mock_atomic.reset_mock()
-    invalid_device = {
-        "objectClass": "appl-NAC-Device",
-        "authorization_group": test_authorization_group,
-        "appl-NAC-DeviceRoleProd": test_deviceRoleProd,
-        "appl-NAC-DeviceRoleInst": "dummy"}
-    with pytest.raises(
-            ValidationError, match="DeviceRoleInst: dummy "
-            "not in authorization group: test"):
-        command.check_device(invalid_device)
-    mock_atomic.assert_called()
 
     test_authorization_group.DeviceRoleProd.set([test_deviceRoleProd])
-    test_authorization_group.DeviceRoleInst.set([test_deviceRoleInst])
     Device.objects.create(appl_NAC_Hostname="host")
     command.update = False
     mock_form = MagicMock()
@@ -203,8 +171,7 @@ def test_check_device_exceptions(
         "objectClass": "appl-NAC-Device",
         "appl-NAC-Hostname": "host",
         "authorization_group": test_authorization_group,
-        "appl-NAC-DeviceRoleProd": test_deviceRoleProd,
-        "appl-NAC-DeviceRoleInst": test_deviceRoleInst}
+        "appl-NAC-DeviceRoleProd": test_deviceRoleProd}
     mock_check_existing_mac.return_value = True, 0
     with pytest.raises(ValidationError,
                        match="Device host exists and will not get updated"):
@@ -525,39 +492,31 @@ def test_get_deviceRole_ou_mapping(command):
     }
     command.ou_mapping = {
         "DEFAULT": {
-            "DeviceRoleProd": "DeviceRoleProdDefault",
-            "DeviceRoleInst": "DeviceRoleInstDefault"
+            "DeviceRoleProd": "DeviceRoleProdDefault"
         },
         "OU": {
-            "DeviceRoleProd": "DeviceRoleProd",
-            "DeviceRoleInst": "DeviceRoleInst"
+            "DeviceRoleProd": "DeviceRoleProd"
         }
     }
     device_object = {'OU': 'OU'}
     mock_deviceroleprod = MagicMock()
-    mock_deviceroleinst = MagicMock()
 
-    with patch('nac.models.DeviceRoleProd.objects.get', return_value=mock_deviceroleprod) as mock_prod_get, \
-            patch('nac.models.DeviceRoleInst.objects.get', return_value=mock_deviceroleinst) as mock_inst_get:
+    with patch('nac.models.DeviceRoleProd.objects.get', return_value=mock_deviceroleprod) as mock_prod_get:
 
         result = command.get_deviceRole(device_object)
 
         mock_prod_get.assert_called_once_with(name='DeviceRoleProd')
-        mock_inst_get.assert_called_once_with(name='DeviceRoleInst')
-        assert result == (mock_deviceroleprod, mock_deviceroleinst)
+        assert result == (mock_deviceroleprod)
 
     device_object = {'OU': '404'}
     mock_deviceroleprod = MagicMock()
-    mock_deviceroleinst = MagicMock()
 
-    with patch('nac.models.DeviceRoleProd.objects.get', return_value=mock_deviceroleprod) as mock_prod_get, \
-            patch('nac.models.DeviceRoleInst.objects.get', return_value=mock_deviceroleinst) as mock_inst_get:
+    with patch('nac.models.DeviceRoleProd.objects.get', return_value=mock_deviceroleprod) as mock_prod_get:
 
         result = command.get_deviceRole(device_object)
 
         mock_prod_get.assert_called_once_with(name='DeviceRoleProdDefault')
-        mock_inst_get.assert_called_once_with(name='DeviceRoleInstDefault')
-        assert result == (mock_deviceroleprod, mock_deviceroleinst)
+        assert result == (mock_deviceroleprod)
 
 
 def test_get_deviceRole_csv_mapping(command):
@@ -568,24 +527,17 @@ def test_get_deviceRole_csv_mapping(command):
         "appl-NAC-DeviceRoleProd": {
             "DEFAULT": "appl-NAC-DeviceRoleProd",
             "SET": None
-        },
-        "appl-NAC-DeviceRoleInst": {
-            "DEFAULT": "appl-NAC-DeviceRoleInst",
-            "SET": None
         }
     }
-    device_object = {'appl-NAC-DeviceRoleProd': 'DeviceRoleProd1', 'appl-NAC-DeviceRoleInst': 'DeviceRoleInst1'}
+    device_object = {'appl-NAC-DeviceRoleProd': 'DeviceRoleProd1'}
     mock_deviceroleprod = MagicMock()
-    mock_deviceroleinst = MagicMock()
 
-    with patch('nac.models.DeviceRoleProd.objects.get', return_value=mock_deviceroleprod) as mock_prod_get, \
-            patch('nac.models.DeviceRoleInst.objects.get', return_value=mock_deviceroleinst) as mock_inst_get:
+    with patch('nac.models.DeviceRoleProd.objects.get', return_value=mock_deviceroleprod) as mock_prod_get:
 
         result = command.get_deviceRole(device_object)
 
         mock_prod_get.assert_called_once_with(name='DeviceRoleProd1')
-        mock_inst_get.assert_called_once_with(name='DeviceRoleInst1')
-        assert result == (mock_deviceroleprod, mock_deviceroleinst)
+        assert result == (mock_deviceroleprod)
 
 
 def test_get_deviceRole_ou_mapping_validation_errors(command):
@@ -598,8 +550,7 @@ def test_get_deviceRole_ou_mapping_validation_errors(command):
     }
     command.ou_mapping = {
         "OU": {
-            "DeviceRoleProd": "DeviceRoleProd1",
-            "DeviceRoleInst": "DeviceRoleInst1"
+            "DeviceRoleProd": "DeviceRoleProd1"
         }
     }
     device_object = {'OU': 'OU'}
@@ -609,10 +560,3 @@ def test_get_deviceRole_ou_mapping_validation_errors(command):
         command.get_deviceRole(device_object)
 
     assert "DeviceRoleProd: DeviceRoleProd1 not in Database" in str(excinfo.value)
-
-    with patch('nac.models.DeviceRoleProd.objects.get', return_value=MagicMock()), \
-            patch('nac.models.DeviceRoleInst.objects.get', side_effect=ObjectDoesNotExist()), \
-            pytest.raises(ValidationError) as excinfo:
-        command.get_deviceRole(device_object)
-
-    assert "DeviceRoleInst: DeviceRoleInst1 not in Database" in str(excinfo.value)

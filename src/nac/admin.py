@@ -4,7 +4,7 @@ from simple_history.admin import SimpleHistoryAdmin
 from django.contrib.auth.forms import AdminUserCreationForm
 
 from .forms import CustomUserChangeForm
-from .models import CustomUser, Device, AuthorizationGroup, DeviceRoleProd, DeviceRoleInst, DNSDomain
+from .models import CustomUser, Device, AuthorizationGroup, DeviceRoleProd, DNSDomain
 
 
 class DeviceAdmin(SimpleHistoryAdmin):
@@ -28,5 +28,4 @@ admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Device, DeviceAdmin)
 admin.site.register(AuthorizationGroup)
 admin.site.register(DeviceRoleProd)
-admin.site.register(DeviceRoleInst)
 admin.site.register(DNSDomain)
