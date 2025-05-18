@@ -1,5 +1,5 @@
 from django.views.generic import ListView, DetailView
-from django.views.generic.edit import UpdateView, DeleteView, CreateView
+from django.views.generic.edit import UpdateView, CreateView
 from django.db.models import Q
 from django.urls import reverse_lazy
 from django.shortcuts import render, redirect
@@ -112,10 +112,15 @@ class DeviceUpdateView(LoginRequiredMixin, UpdateView):
         return super().post(request, *args, **kwargs)
 
 
-class DeviceDeleteView(LoginRequiredMixin, DeleteView):
+class DeviceDeleteView(LoginRequiredMixin, DetailView):
     model = Device
     template_name = "device_delete.html"
-    success_url = reverse_lazy("devices")
+
+    def post(self, request, *args, **kwargs):
+        device = self.get_object()
+        device.deleted = True
+        device.save()
+        return redirect(reverse_lazy("devices"))
 
 
 class DeviceCreateView(LoginRequiredMixin, CreateView):

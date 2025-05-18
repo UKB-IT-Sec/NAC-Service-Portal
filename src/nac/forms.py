@@ -68,7 +68,8 @@ class DeviceForm(ModelForm):
                   "appl_NAC_macAddressCAB",
                   "synchronized",
                   "additional_info",
-                  "source"
+                  "source",
+                  "deleted"
                   ]
 
         widgets = {"dns_domain": autocomplete.ModelSelect2(url="dns_domain-autocomplete"),
@@ -86,6 +87,7 @@ class DeviceForm(ModelForm):
                    "appl_NAC_macAddressAIR": MacAddressFormat(),
                    "appl_NAC_macAddressCAB": MacAddressFormat(),
                    "synchronized": forms.HiddenInput(),
+                   "deleted": CheckboxInput(attrs={'class': 'form-check-input', 'role': 'switch'}),
                    }
 
     def __init__(self, *args, **kwargs):
