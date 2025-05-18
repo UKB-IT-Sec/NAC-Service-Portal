@@ -11,13 +11,6 @@ class DeviceRoleProd(models.Model):
         return self.name[:50]
 
 
-class DeviceRoleInst(models.Model):
-    name = models.TextField()
-
-    def __str__(self):
-        return self.name[:50]
-
-
 class DNSDomain(models.Model):
     name = models.TextField()
 
@@ -28,7 +21,6 @@ class DNSDomain(models.Model):
 class AuthorizationGroup(models.Model):
     name = models.TextField()
     DeviceRoleProd = models.ManyToManyField(DeviceRoleProd)
-    DeviceRoleInst = models.ManyToManyField(DeviceRoleInst)
 
     def __str__(self):
         return self.name[:50]
@@ -46,8 +38,6 @@ class Device(models.Model):
     authorization_group = models.ForeignKey(AuthorizationGroup, on_delete=models.SET_NULL, null=True, verbose_name="Authorization Group")
     appl_NAC_DeviceRoleProd = models.ForeignKey(
         DeviceRoleProd, on_delete=models.SET_NULL, null=True, verbose_name="Device role in production")
-    appl_NAC_DeviceRoleInst = models.ForeignKey(
-        DeviceRoleInst, on_delete=models.SET_NULL, null=True, verbose_name="Device role during installation")
     synchronized = models.BooleanField(null=True, default=False)
 
     dns_domain = models.ForeignKey(DNSDomain, on_delete=models.SET_NULL, null=True, verbose_name="DNS domain")

@@ -6,7 +6,6 @@
       "asset_id": "1",
       "authorization_group": 1,
       "appl_NAC_DeviceRoleProd": 1,
-      "appl_NAC_DeviceRoleInst": 1,
       "synchronized": false,
       "dns_domain": 1,
       "vlan": 1,
@@ -31,7 +30,6 @@
       "asset_id": "2",
       "authorization_group": 1,
       "appl_NAC_DeviceRoleProd": 2,
-      "appl_NAC_DeviceRoleInst": 1,
       "synchronized": false,
       "dns_domain": 1,
       "vlan": 1,
@@ -56,7 +54,6 @@
       "asset_id": "1",
       "authorization_group": 2,
       "appl_NAC_DeviceRoleProd": 1,
-      "appl_NAC_DeviceRoleInst": 1,
       "synchronized": false,
       "dns_domain": 1,
       "vlan": 1,
@@ -81,7 +78,6 @@
       "asset_id": "1",
       "authorization_group": 2,
       "appl_NAC_DeviceRoleProd": 2,
-      "appl_NAC_DeviceRoleInst": 1,
       "synchronized": false,
       "dns_domain": 1,
       "vlan": 1,
@@ -106,7 +102,6 @@
       "asset_id": "1",
       "authorization_group": 1,
       "appl_NAC_DeviceRoleProd": 1,
-      "appl_NAC_DeviceRoleInst": 1,
       "synchronized": false,
       "dns_domain": 1,
       "vlan": 1,
@@ -131,9 +126,6 @@
       "name": "Authorisation Group 1",
       "DeviceRoleProd": [
         1,2
-      ],
-      "DeviceRoleInst": [
-        1
       ]
     }
   },
@@ -144,9 +136,6 @@
       "name": "Authorisation Group 2",
       "DeviceRoleProd": [
         1,2
-      ],
-      "DeviceRoleInst": [
-        1
       ]
     }
   },
@@ -162,13 +151,6 @@
     "pk": 2,
     "fields": {
       "name": "DeviceRoleProd2"
-    }
-  },
-  {
-    "model": "nac.deviceRoleInst",
-    "pk": 1,
-    "fields": {
-      "name": "DeviceRoleInst"
     }
   },
   {

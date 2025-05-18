@@ -16,17 +16,16 @@
             {{ form.dns_domain|as_crispy_field }}
         </div>
     </div>
-    {{ form.authorization_group|as_crispy_field }}
     <div class="row">
+        <div class="col-md-6">
+            {{ form.authorization_group|as_crispy_field }}
+        </div>
         <div class="col-md-6">
             {{ form.appl_NAC_DeviceRoleProd|as_crispy_field }}
         </div>
-        <div class="col-md-6">
-            {{ form.appl_NAC_DeviceRoleInst|as_crispy_field }}
-        </div>
     </div>
     {% for field in form.visible_fields %}
-        {% if field.name not in 'asset_id,appl_NAC_Hostname,dns_domain,authorization_group,appl_NAC_DeviceRoleProd,appl_NAC_DeviceRoleInst, deleted' %}
+        {% if field.name not in 'asset_id,appl_NAC_Hostname,dns_domain,authorization_group,appl_NAC_DeviceRoleProd, deleted' %}
             <div class="form-group">
                 {{ field|as_crispy_field }}
             </div>
@@ -45,7 +44,6 @@
 
         // Clear the autocomplete with the same prefix
         $(':input[name=' + prefix + 'appl_NAC_DeviceRoleProd]').val(null).trigger('change');
-        $(':input[name=' + prefix + 'appl_NAC_DeviceRoleInst]').val(null).trigger('change');
     });
 });
 </script>

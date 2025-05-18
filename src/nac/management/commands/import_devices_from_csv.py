@@ -4,7 +4,7 @@ from csv import DictReader, DictWriter
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from nac.models import Device, AuthorizationGroup, DeviceRoleProd, DeviceRoleInst, DNSDomain
+from nac.models import Device, AuthorizationGroup, DeviceRoleProd, DNSDomain
 from nac.forms import DeviceForm
 from helper.logging import setup_console_logger
 from helper.filesystem import get_resources_directory, get_existing_path, get_config_directory
@@ -140,28 +140,16 @@ class Command(BaseCommand):
         except ObjectDoesNotExist:
             raise ValidationError(f"DeviceRoleProd: {ou['DeviceRoleProd']} not in Database")
 
-        try:
-            deviceRoleInst = DeviceRoleInst.objects.get(name=ou['DeviceRoleInst'])
-        except ObjectDoesNotExist:
-            raise ValidationError(f"DeviceRoleInst: {ou['DeviceRoleInst']} not in Database")
-
-        return deviceRoleProd, deviceRoleInst
+        return deviceRoleProd
 
     def get_deviceRole_from_csv_mapping(self, deviceObject):
         deviceRoleProd = self.get_set_or_default(self.csv_mapping['appl-NAC-DeviceRoleProd'])
-        deviceRoleInst = self.get_set_or_default(self.csv_mapping['appl-NAC-DeviceRoleInst'])
-
         try:
             deviceRoleProd = DeviceRoleProd.objects.get(name=deviceObject.get(deviceRoleProd))
         except ObjectDoesNotExist:
             raise ValidationError(f"DeviceRoleProd: {deviceObject.get(deviceRoleProd)} not in Database")
 
-        try:
-            deviceRoleInst = DeviceRoleInst.objects.get(name=deviceObject.get(deviceRoleInst))
-        except ObjectDoesNotExist:
-            raise ValidationError(f"DeviceRoleInst: {deviceObject.get(deviceRoleInst)} not in Database")
-
-        return deviceRoleProd, deviceRoleInst
+        return deviceRoleProd
 
     def check_device(self, deviceObject):
         logging.info(f"Checking validity of device "
@@ -175,14 +163,10 @@ class Command(BaseCommand):
                 auth_group = AuthorizationGroup.objects.get(
                     name=self.auth_group
                 )
-                deviceRoleProd, deviceRoleInst = self.get_deviceRole(deviceObject)
+                deviceRoleProd = self.get_deviceRole(deviceObject)
                 if deviceRoleProd not in auth_group.DeviceRoleProd.all():
                     raise ValidationError(
                         f"DeviceRoleProd: {deviceRoleProd} "
-                        f"not in authorization group: {auth_group}")
-                elif deviceRoleInst not in auth_group.DeviceRoleInst.all():
-                    raise ValidationError(
-                        f"DeviceRoleInst: {deviceRoleInst} "
                         f"not in authorization group: {auth_group}")
 
                 device_data = {
@@ -190,7 +174,6 @@ class Command(BaseCommand):
                     "dns_domain": self.get_default_DNS_domain(),
                     "authorization_group": auth_group,
                     "appl_NAC_DeviceRoleProd": deviceRoleProd,
-                    "appl_NAC_DeviceRoleInst": deviceRoleInst,
                     "appl_NAC_Hostname": deviceObject.get(self.get_set_or_default(self.csv_mapping['appl-NAC-Hostname'])),
                     "appl_NAC_Active": self.str_to_bool(
                         deviceObject.get(self.get_set_or_default(self.csv_mapping['appl-NAC-Active']))
