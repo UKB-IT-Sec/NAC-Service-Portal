@@ -17,11 +17,7 @@
             {{ form.dns_domain|as_crispy_field }}
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-6">
-            {{ form.appl_NAC_DeviceRoleProd|as_crispy_field }}
-        </div>
-    </div>
+    {{ form.appl_NAC_DeviceRoleProd|as_crispy_field }}
     {% for field in form.visible_fields %}
         {% if field.name not in 'asset_id,appl_NAC_Hostname,dns_domain,administration_group,appl_NAC_DeviceRoleProd,appl_NAC_DeviceRoleInst' %}
             <div class="form-group">
