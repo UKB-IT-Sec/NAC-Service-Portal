@@ -4,6 +4,7 @@
 <form method="post">
     {% csrf_token %}
     {{ form.asset_id|as_crispy_field }}
+    {{ form.administration_group|as_crispy_field }}
     <div class="row">
         <div class="col-md-6">
             {{ form.appl_NAC_Hostname|as_crispy_field }}
@@ -12,7 +13,6 @@
             {{ form.dns_domain|as_crispy_field }}
         </div>
     </div>
-    {{ form.administration_group|as_crispy_field }}
     <div class="row">
         <div class="col-md-6">
             {{ form.appl_NAC_DeviceRoleProd|as_crispy_field }}

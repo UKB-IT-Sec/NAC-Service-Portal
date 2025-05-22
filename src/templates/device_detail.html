@@ -6,16 +6,24 @@
 <div class="container">
     <table class="table table-striped">
         <thead>
-            <tr>
-                <th>
-                    <h4>{{ device | verbose_name:"asset_id" }}</h4>
-                </th>
-                <th>
-                    <h4>{{ device.asset_id }}</h4>
-                </th>
-            </tr>
+        <tr>
+            <th>
+                <h4>{{ device | verbose_name:"asset_id" }}</h4>
+            </th>
+            <th>
+                <h4>{{ device.asset_id }}</h4>
+            </th>
+        </tr>
         </thead>
         <p>
+            <tr>
+                <td>
+                    <strong>{{ device | verbose_name:"administration_group" }}</strong>
+                </td>
+                <td>
+                    {{ device.administration_group }}
+                </td>
+            </tr>
             <tr>
                 <td>
                     <strong>{{ device | verbose_name:"appl_NAC_Hostname" }}</strong>
@@ -39,14 +47,6 @@
             </td>
             <td>
                 {{ device.appl_NAC_FQDN }}
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <strong>{{ device | verbose_name:"administration_group" }}</strong>
-            </td>
-            <td>
-                {{ device.administration_group }}
             </td>
         </tr>
         <tr>
@@ -135,9 +135,9 @@
             </td>
             <td>
                 {% for mac in device.get_appl_NAC_macAddressCAB %}
-                            {% if  mac != None%}
-                                {{mac}} <br />
-                            {% endif %}
+                {% if mac != None%}
+                {{mac}} <br/>
+                {% endif %}
                 {% endfor %}
             </td>
         </tr>
@@ -147,9 +147,9 @@
             </td>
             <td>
                 {% for mac in device.get_appl_NAC_macAddressAIR %}
-                            {% if  mac != None%}
-                                {{mac}} <br />
-                            {% endif %}
+                {% if mac != None%}
+                {{mac}} <br/>
+                {% endif %}
                 {% endfor %}
             </td>
         </tr>
@@ -161,7 +161,7 @@
                 {{ device.additional_info }}
             </td>
         </tr>
-         <tr>
+        <tr>
             <td>
                 <strong>{{ device | verbose_name:"source"}}</strong>
             </td>
@@ -170,7 +170,8 @@
             </td>
         </tr>
     </table>
-    <p><a href="{% url 'device_edit' device.pk %}">Edit</a> | <a href="{% url 'device_delete' device.pk %}">Delete</a></p>
+    <p><a href="{% url 'device_edit' device.pk %}">Edit</a> | <a href="{% url 'device_delete' device.pk %}">Delete</a>
+    </p>
     <p>Back to <a href="{% url 'devices' %}">All Devices</a></p>
 </div>
 

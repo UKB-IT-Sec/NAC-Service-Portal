@@ -50,10 +50,10 @@ class DeviceForm(ModelForm):
     class Meta:
         model = Device
         fields = ["asset_id",
+                  "administration_group",
                   "appl_NAC_Hostname",
                   "dns_domain",
                   "vlan",
-                  "administration_group",
                   "appl_NAC_DeviceRoleProd",
                   "appl_NAC_DeviceRoleInst",
                   "appl_NAC_Active",
