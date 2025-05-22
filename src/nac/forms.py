@@ -63,8 +63,8 @@ class DeviceForm(ModelForm):
                   "appl_NAC_AllowAccessAIR",
                   "appl_NAC_AllowAccessVPN",
                   "appl_NAC_AllowAccessCEL",
-                  "appl_NAC_macAddressAIR",
                   "appl_NAC_macAddressCAB",
+                  "appl_NAC_macAddressAIR",
                   "synchronized",
                   "additional_info",
                   "source"
@@ -81,8 +81,8 @@ class DeviceForm(ModelForm):
                    "appl_NAC_AllowAccessAIR": CheckboxInput,
                    "appl_NAC_AllowAccessVPN": CheckboxInput,
                    "appl_NAC_AllowAccessCEL": CheckboxInput,
-                   "appl_NAC_macAddressAIR": MacAddressFormat(),
                    "appl_NAC_macAddressCAB": MacAddressFormat(),
+                   "appl_NAC_macAddressAIR": MacAddressFormat(),
                    "synchronized": forms.HiddenInput(),
                    }
 
@@ -92,8 +92,8 @@ class DeviceForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        dependencies = {"appl_NAC_AllowAccessAIR": "appl_NAC_macAddressAIR",
-                        "appl_NAC_AllowAccessCAB": "appl_NAC_macAddressCAB",
+        dependencies = {"appl_NAC_AllowAccessCAB": "appl_NAC_macAddressCAB",
+                        "appl_NAC_AllowAccessAIR": "appl_NAC_macAddressAIR",
                         }
 
         for field in dependencies:
@@ -105,9 +105,6 @@ class DeviceForm(ModelForm):
         if not cleaned_data.get('asset_id') and cleaned_data.get('appl_NAC_Hostname') and cleaned_data.get('dns_domain'):
             cleaned_data['asset_id'] = f"FQDN_{cleaned_data.get('appl_NAC_Hostname')}.{cleaned_data.get('dns_domain')}"
 
-    def clean_appl_NAC_macAddressAIR(self):
-        return self._clean_mac_address('appl_NAC_macAddressAIR')
-
     def clean_appl_NAC_Hostname(self):
         hostname = self.cleaned_data.get("appl_NAC_Hostname")
         if "." in hostname:
@@ -116,6 +113,9 @@ class DeviceForm(ModelForm):
 
     def clean_appl_NAC_macAddressCAB(self):
         return self._clean_mac_address('appl_NAC_macAddressCAB')
+
+    def clean_appl_NAC_macAddressAIR(self):
+        return self._clean_mac_address('appl_NAC_macAddressAIR')
 
     def _clean_mac_address(self, field_name):
         data = self.cleaned_data[field_name]

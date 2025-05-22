@@ -64,18 +64,6 @@
 					</div>
 				  </div>
 				<td>
-				{% if device.get_appl_NAC_macAddressAIR%}
-					<b>
-						<span class="icon-desc" desc="macAddressAIR"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_macAddressAIR" height="14" width="14" class="icon-zoom"/></span>
-						<b> {{device.get_appl_NAC_macAddressAIR.0}}</b> 
-							{% if device.get_appl_NAC_macAddressAIR|length > 1 %}
-								<a href="#" onclick="showDetails('MACAddressAIR', '{{ device.get_appl_NAC_macAddressAIR|join:", " }}'); return false;" class="icon-desc" desc="{{ device.get_appl_NAC_macAddressAIR|join:', ' }}">
-									({{device.get_appl_NAC_macAddressAIR|length}})
-								</a>
-							{% endif %}
-						<br />
-					</b>
-				{% endif %}
 				{% if device.get_appl_NAC_macAddressCAB%}
 					<b>
 						<span class="icon-desc" desc="macAddressCAB"><img src="{% static 'icons/favicon.svg' %}" alt="appl_NAC_macAddressCAB" height="14" width="14" class="icon-zoom"/></span>
@@ -83,6 +71,18 @@
 							{% if device.get_appl_NAC_macAddressCAB|length > 1 %}
 								<a href="#" onclick="showDetails('MACAddressCAB', '{{ device.get_appl_NAC_macAddressCAB|join:", " }}'); return false;" class="icon-desc" desc="{{ device.get_appl_NAC_macAddressCAB|join:', ' }}">
 									({{device.get_appl_NAC_macAddressCAB|length}})
+								</a>
+							{% endif %}
+						<br />
+					</b>
+				{% endif %}
+				{% if device.get_appl_NAC_macAddressAIR%}
+					<b>
+						<span class="icon-desc" desc="macAddressAIR"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_macAddressAIR" height="14" width="14" class="icon-zoom"/></span>
+						<b> {{device.get_appl_NAC_macAddressAIR.0}}</b>
+							{% if device.get_appl_NAC_macAddressAIR|length > 1 %}
+								<a href="#" onclick="showDetails('MACAddressAIR', '{{ device.get_appl_NAC_macAddressAIR|join:", " }}'); return false;" class="icon-desc" desc="{{ device.get_appl_NAC_macAddressAIR|join:', ' }}">
+									({{device.get_appl_NAC_macAddressAIR|length}})
 								</a>
 							{% endif %}
 						<br />
