@@ -4,7 +4,7 @@ from csv import DictReader, DictWriter
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from nac.models import Device, AuthorizationGroup, DeviceRoleProd, DNSDomain
+from nac.models import Device, AdministrationGroup, DeviceRoleProd, DNSDomain
 from nac.forms import DeviceForm
 from helper.logging import setup_console_logger
 from helper.filesystem import get_resources_directory, get_existing_path, get_config_directory
@@ -30,9 +30,9 @@ class Command(BaseCommand):
             help='use a specific csv file [src/ldapObjects.csv]'
         )
         parser.add_argument(
-            '-a', '--auth_group',
-            default='AuthGroupDefault',
-            help='specify the Device Authorization Group'
+            '-a', '--admin_group',
+            default='AdminGroupDefault',
+            help='specify the Device Administration Group'
         )
         parser.add_argument(
             '-u', '--update',
@@ -60,12 +60,12 @@ class Command(BaseCommand):
                 f"The path '{options['csv_file']}'does not exist.")
             raise CommandError(
                 f"The path '{options['csv_file']}' does not exist.")
-        self.auth_group = self.check_valid_auth_group(options['auth_group'])
-        if not self.auth_group:
+        self.admin_group = self.check_valid_admin_group(options['admin_group'])
+        if not self.admin_group:
             logging.error(
-                f"Invalid auth group '{options['auth_group']}'.")
+                f"Invalid admin group '{options['admin_group']}'.")
             raise CommandError(
-                f"Invalid auth group '{options['auth_group']}'.")
+                f"Invalid admin group '{options['admin_group']}'.")
 
         self.clear_invalid_devices_file()
         self.read_csv()
@@ -76,12 +76,12 @@ class Command(BaseCommand):
         else:
             return json_config_key['DEFAULT']
 
-    def check_valid_auth_group(self, auth_group):
-        exists = AuthorizationGroup.objects.filter(name=auth_group).exists()
+    def check_valid_admin_group(self, admin_group):
+        exists = AdministrationGroup.objects.filter(name=admin_group).exists()
         if not exists:
             logging.error(
-                f"Authorization Group-Object: {auth_group} not in Database")
-        return auth_group if exists else None
+                f"Administration Group-Object: {admin_group} not in Database")
+        return admin_group if exists else None
 
     def clear_invalid_devices_file(self):
         try:
@@ -160,19 +160,19 @@ class Command(BaseCommand):
                     f"Invalid Object-type! EXPECTED: appl-NAC-Device <->"
                     f" ACTUAL: {deviceObject.get(self.get_set_or_default(self.csv_mapping['objectClass']))}")
             with transaction.atomic():
-                auth_group = AuthorizationGroup.objects.get(
-                    name=self.auth_group
+                admin_group = AdministrationGroup.objects.get(
+                    name=self.admin_group
                 )
                 deviceRoleProd = self.get_deviceRole(deviceObject)
-                if deviceRoleProd not in auth_group.DeviceRoleProd.all():
+                if deviceRoleProd not in admin_group.DeviceRoleProd.all():
                     raise ValidationError(
                         f"DeviceRoleProd: {deviceRoleProd} "
-                        f"not in authorization group: {auth_group}")
+                        f"not in administration group: {admin_group}")
 
                 device_data = {
                     "name": deviceObject.get(self.get_set_or_default(self.csv_mapping['appl-NAC-Hostname'])),
                     "dns_domain": self.get_default_DNS_domain(),
-                    "authorization_group": auth_group,
+                    "administration_group": admin_group,
                     "appl_NAC_DeviceRoleProd": deviceRoleProd,
                     "appl_NAC_Hostname": deviceObject.get(self.get_set_or_default(self.csv_mapping['appl-NAC-Hostname'])),
                     "appl_NAC_Active": self.str_to_bool(

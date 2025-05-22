@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch
 from nac.forms import DeviceForm, MacAddressFormat
-from nac.models import AuthorizationGroup, DeviceRoleProd, DNSDomain
+from nac.models import AdministrationGroup, DeviceRoleProd, DNSDomain
 
 
 @pytest.mark.django_db
@@ -20,13 +20,13 @@ def test_clean(appl_NAC_ForceDot1X, appl_NAC_AllowAccessVPN, appl_NAC_Certificat
                appl_NAC_macAddressAIR, appl_NAC_AllowAccessCAB, appl_NAC_macAddressCAB, test_hostname, validity):
     test_DeviceRoleProd = DeviceRoleProd.objects.create(name="test")
     test_domain = DNSDomain.objects.create(name="test.com")
-    test_authorization_group = AuthorizationGroup.objects.create(name="test")
-    test_authorization_group.DeviceRoleProd.set([test_DeviceRoleProd])
+    test_administration_group = AdministrationGroup.objects.create(name="test")
+    test_administration_group.DeviceRoleProd.set([test_DeviceRoleProd])
     form = DeviceForm(data={
        "asset_id": "None",
        "vlan": 100,
        "dns_domain": test_domain,
-       "authorization_group": test_authorization_group,
+       "administration_group": test_administration_group,
        "appl_NAC_DeviceRoleProd": test_DeviceRoleProd,
        "appl_NAC_Hostname": test_hostname,
        "appl_NAC_Active": True,

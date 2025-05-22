@@ -10,7 +10,7 @@ from django.template.loader import render_to_string
 from django.forms.models import model_to_dict
 from django.utils import timezone
 
-from ..models import Device, AuthorizationGroup, DeviceRoleProd
+from ..models import Device, AdministrationGroup, DeviceRoleProd
 from ..forms import DeviceForm, DeviceSearchForm, DeviceHistoryForm
 from ..validation import normalize_mac
 
@@ -21,8 +21,8 @@ class DeviceListView(LoginRequiredMixin, ListView):
     context_object_name = "device_list"
 
     def get_queryset(self):
-        # only show devices from authorization_groups the user is authorized to see
-        device_list = Device.objects.filter(authorization_group__in=self.request.user.authorization_group.all())
+        # only show devices from administration_groups the user is authorized to see
+        device_list = Device.objects.filter(administration_group__in=self.request.user.administration_group.all())
         # filter for search results
         query = self.request.GET.get("search_string")
         if query:
@@ -32,10 +32,10 @@ class DeviceListView(LoginRequiredMixin, ListView):
                 Q(appl_NAC_macAddressCAB__icontains=normalize_mac(query)) |
                 Q(asset_id__icontains=query))
 
-        # filter by authorization group
-        selected_authorization_groups = self.request.GET.get("authorization_group")
-        if selected_authorization_groups:
-            device_list = device_list.filter(authorization_group__in=selected_authorization_groups)
+        # filter by administration group
+        selected_administration_groups = self.request.GET.get("administration_group")
+        if selected_administration_groups:
+            device_list = device_list.filter(administration_group__in=selected_administration_groups)
 
         # filter by device role prod
         selected_device_roles_prod = self.request.GET.get("device_role_prod")
@@ -56,7 +56,7 @@ class DeviceListView(LoginRequiredMixin, ListView):
     # we need this for the drop-down menus with filtering options
     def get_context_data(self, **kwargs):
         context = super(DeviceListView, self).get_context_data(**kwargs)
-        context["auth_group_list"] = AuthorizationGroup.objects.filter(id__in=self.request.user.authorization_group.all())
+        context["admin_group_list"] = AdministrationGroup.objects.filter(id__in=self.request.user.administration_group.all())
         context["device_role_prod_list"] = DeviceRoleProd.objects.all()
         context["search_form"] = DeviceSearchForm(user=self.request.user)
         return context

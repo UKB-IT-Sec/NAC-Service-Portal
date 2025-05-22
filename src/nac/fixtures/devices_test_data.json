@@ -4,7 +4,7 @@
     "pk": 1,
     "fields": {
       "asset_id": "1",
-      "authorization_group": 1,
+      "administration_group": 1,
       "appl_NAC_DeviceRoleProd": 1,
       "synchronized": false,
       "dns_domain": 1,
@@ -28,7 +28,7 @@
     "pk": 2,
     "fields": {
       "asset_id": "2",
-      "authorization_group": 1,
+      "administration_group": 1,
       "appl_NAC_DeviceRoleProd": 2,
       "synchronized": false,
       "dns_domain": 1,
@@ -52,7 +52,7 @@
     "pk": 3,
     "fields": {
       "asset_id": "1",
-      "authorization_group": 2,
+      "administration_group": 2,
       "appl_NAC_DeviceRoleProd": 1,
       "synchronized": false,
       "dns_domain": 1,
@@ -76,7 +76,7 @@
     "pk": 4,
     "fields": {
       "asset_id": "1",
-      "authorization_group": 2,
+      "administration_group": 2,
       "appl_NAC_DeviceRoleProd": 2,
       "synchronized": false,
       "dns_domain": 1,
@@ -100,7 +100,7 @@
     "pk": 5,
     "fields": {
       "asset_id": "1",
-      "authorization_group": 1,
+      "administration_group": 1,
       "appl_NAC_DeviceRoleProd": 1,
       "synchronized": false,
       "dns_domain": 1,
@@ -120,20 +120,20 @@
     }
   },
   {
-    "model": "nac.authorizationgroup",
+    "model": "nac.administrationgroup",
     "pk": 1,
     "fields": {
-      "name": "Authorisation Group 1",
+      "name": "Administration Group 1",
       "DeviceRoleProd": [
         1,2
       ]
     }
   },
   {
-    "model": "nac.authorizationgroup",
+    "model": "nac.administrationgroup",
     "pk": 2,
     "fields": {
-      "name": "Authorisation Group 2",
+      "name": "Administration Group 2",
       "DeviceRoleProd": [
         1,2
       ]
