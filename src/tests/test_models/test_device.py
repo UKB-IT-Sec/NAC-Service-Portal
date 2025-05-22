@@ -1,6 +1,6 @@
 import pytest
 from django.urls import reverse
-from nac.models import AuthorizationGroup, DeviceRoleProd, DeviceRoleInst, DNSDomain, Device
+from nac.models import AdministrationGroup, DeviceRoleProd, DeviceRoleInst, DNSDomain, Device
 
 
 @pytest.mark.django_db
@@ -9,14 +9,14 @@ def deviceObject():
     test_DeviceRoleProd = DeviceRoleProd.objects.create(name="test")
     test_DeviceRoleInst = DeviceRoleInst.objects.create(name="test2")
     test_domain = DNSDomain.objects.create(name="test.com")
-    test_authorization_group = AuthorizationGroup.objects.create(name="test")
-    test_authorization_group.DeviceRoleProd.set([test_DeviceRoleProd])
-    test_authorization_group.DeviceRoleInst.set([test_DeviceRoleInst])
+    test_administration_group = AdministrationGroup.objects.create(name="test")
+    test_administration_group.DeviceRoleProd.set([test_DeviceRoleProd])
+    test_administration_group.DeviceRoleInst.set([test_DeviceRoleInst])
     data = {
        "asset_id": "None",
        "vlan": 100,
        "dns_domain": test_domain,
-       "authorization_group": test_authorization_group,
+       "administration_group": test_administration_group,
        "appl_NAC_DeviceRoleProd": test_DeviceRoleProd,
        "appl_NAC_Hostname": "test_hostname",
        "appl_NAC_Active": True,

@@ -25,7 +25,7 @@ class DNSDomain(models.Model):
         return self.name[:50]
 
 
-class AuthorizationGroup(models.Model):
+class AdministrationGroup(models.Model):
     name = models.TextField()
     DeviceRoleProd = models.ManyToManyField(DeviceRoleProd)
     DeviceRoleInst = models.ManyToManyField(DeviceRoleInst)
@@ -36,12 +36,12 @@ class AuthorizationGroup(models.Model):
 
 class CustomUser(AbstractUser):
     name = models.TextField()
-    authorization_group = models.ManyToManyField(AuthorizationGroup)
+    administration_group = models.ManyToManyField(AdministrationGroup)
 
 
 class Device(models.Model):
     asset_id = models.CharField(null=True, blank=True, max_length=150, verbose_name="Asset ID")
-    authorization_group = models.ForeignKey(AuthorizationGroup, on_delete=models.SET_NULL, null=True, verbose_name="Administration Group")
+    administration_group = models.ForeignKey(AdministrationGroup, on_delete=models.SET_NULL, null=True, verbose_name="Administration Group")
     appl_NAC_DeviceRoleProd = models.ForeignKey(
         DeviceRoleProd, on_delete=models.SET_NULL, null=True, verbose_name="Device role productive")
     appl_NAC_DeviceRoleInst = models.ForeignKey(

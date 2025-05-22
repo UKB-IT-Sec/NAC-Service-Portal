@@ -12,7 +12,7 @@
             {{ form.dns_domain|as_crispy_field }}
         </div>
     </div>
-    {{ form.authorization_group|as_crispy_field }}
+    {{ form.administration_group|as_crispy_field }}
     <div class="row">
         <div class="col-md-6">
             {{ form.appl_NAC_DeviceRoleProd|as_crispy_field }}
@@ -22,7 +22,7 @@
         </div>
     </div>
     {% for field in form.visible_fields %}
-        {% if field.name not in 'asset_id,appl_NAC_Hostname,dns_domain,authorization_group,appl_NAC_DeviceRoleProd,appl_NAC_DeviceRoleInst' %}
+        {% if field.name not in 'asset_id,appl_NAC_Hostname,dns_domain,administration_group,appl_NAC_DeviceRoleProd,appl_NAC_DeviceRoleInst' %}
             <div class="form-group">
                 {{ field|as_crispy_field }}
             </div>
@@ -35,7 +35,7 @@
 <script type="text/javascript">
     $(document).ready(function() {
     // Bind on continent field change
-    $(':input[name$=authorization_group]').on('change', function() {
+    $(':input[name$=administration_group]').on('change', function() {
         // Get the field prefix, ie. if this comes from a formset form
         var prefix = $(this).getFormPrefix();
 

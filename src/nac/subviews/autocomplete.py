@@ -1,5 +1,5 @@
 from dal import autocomplete
-from ..models import DeviceRoleProd, AuthorizationGroup, DeviceRoleInst, DNSDomain
+from ..models import DeviceRoleProd, AdministrationGroup, DeviceRoleInst, DNSDomain
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
@@ -28,12 +28,12 @@ class DeviceRoleProdAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySe
         if self.q:
             qs = qs.filter(name__istartswith=self.q)
 
-#        only show DeviceRoleProd compatible with selected authorization_group
-        authorization_group_pk = self.forwarded.get("authorization_group", None)
+#        only show DeviceRoleProd compatible with selected administration_group
+        administration_group_pk = self.forwarded.get("administration_group", None)
 
-        if authorization_group_pk:
-            authorization_group = AuthorizationGroup.objects.get(pk=authorization_group_pk)
-            qs = qs.filter(id__in=authorization_group.DeviceRoleProd.all())
+        if administration_group_pk:
+            administration_group = AdministrationGroup.objects.get(pk=administration_group_pk)
+            qs = qs.filter(id__in=administration_group.DeviceRoleProd.all())
 
         return qs
 
@@ -48,22 +48,22 @@ class DeviceRoleInstAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySe
         if self.q:
             qs = qs.filter(name__istartswith=self.q)
 
-        authorization_group_pk = self.forwarded.get("authorization_group", None)
-        if authorization_group_pk:
-            authorization_group = AuthorizationGroup.objects.get(pk=authorization_group_pk)
-            qs = qs.filter(id__in=authorization_group.DeviceRoleInst.all())
+        administration_group_pk = self.forwarded.get("administration_group", None)
+        if administration_group_pk:
+            administration_group = AdministrationGroup.objects.get(pk=administration_group_pk)
+            qs = qs.filter(id__in=administration_group.DeviceRoleInst.all())
         return qs
 
 
-class AuthorizationGroupAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
+class AdministrationGroupAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
     def get_queryset(self):
         if not self.request.user.is_authenticated:
-            return AuthorizationGroup.objects.none()
+            return AdministrationGroup.objects.none()
 
-        qs = AuthorizationGroup.objects.all().order_by('id')
+        qs = AdministrationGroup.objects.all().order_by('id')
 
-#        only show authorization_groups compatible with user
-        qs = qs.filter(id__in=self.request.user.authorization_group.all())
+#        only show administration_groups compatible with user
+        qs = qs.filter(id__in=self.request.user.administration_group.all())
 
 #        autocomplete search results
         if self.q:

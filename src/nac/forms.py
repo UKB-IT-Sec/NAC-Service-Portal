@@ -1,5 +1,5 @@
 from django.contrib.auth.forms import AdminUserCreationForm, UserChangeForm
-from .models import CustomUser, Device, AuthorizationGroup, DeviceRoleProd
+from .models import CustomUser, Device, AdministrationGroup, DeviceRoleProd
 from django import forms
 from django.forms import ModelForm, CheckboxInput
 from dal import autocomplete
@@ -15,7 +15,7 @@ from django.utils.timezone import localtime
 class CustomUserCreationForm(AdminUserCreationForm):
     class Meta:
         model = CustomUser
-        fields = ("username", "email", "authorization_group",)
+        fields = ("username", "email", "administration_group",)
 
 
 class CustomUserChangeForm(UserChangeForm):
@@ -29,8 +29,8 @@ class DeviceSearchForm(forms.Form):
         self.user = user
         super(DeviceSearchForm, self).__init__(*args, **kwargs)
 
-        self.fields['authorization_group'] = forms.ModelChoiceField(AuthorizationGroup.objects.filter(
-            id__in=user.authorization_group.all()), required=False, label="Authorization Group")
+        self.fields['administration_group'] = forms.ModelChoiceField(AdministrationGroup.objects.filter(
+            id__in=user.administration_group.all()), required=False, label="Administration Group")
 
     search_string = forms.CharField(
         label="Search for Asset ID, Hostname or MAC Address:", max_length=100, required=False)
@@ -53,7 +53,7 @@ class DeviceForm(ModelForm):
                   "appl_NAC_Hostname",
                   "dns_domain",
                   "vlan",
-                  "authorization_group",
+                  "administration_group",
                   "appl_NAC_DeviceRoleProd",
                   "appl_NAC_DeviceRoleInst",
                   "appl_NAC_Active",
@@ -71,9 +71,9 @@ class DeviceForm(ModelForm):
                   ]
 
         widgets = {"dns_domain": autocomplete.ModelSelect2(url="dns_domain-autocomplete"),
-                   "authorization_group": autocomplete.ModelSelect2(url="authorization-group-autocomplete"),
-                   "appl_NAC_DeviceRoleProd": autocomplete.ModelSelect2(url="DeviceRoleProd-autocomplete", forward=["authorization_group"], ),
-                   "appl_NAC_DeviceRoleInst": autocomplete.ModelSelect2(url="DeviceRoleInst-autocomplete", forward=["authorization_group"], ),
+                   "administration_group": autocomplete.ModelSelect2(url="administration-group-autocomplete"),
+                   "appl_NAC_DeviceRoleProd": autocomplete.ModelSelect2(url="DeviceRoleProd-autocomplete", forward=["administration_group"], ),
+                   "appl_NAC_DeviceRoleInst": autocomplete.ModelSelect2(url="DeviceRoleInst-autocomplete", forward=["administration_group"], ),
                    "appl_NAC_Active": CheckboxInput,
                    "appl_NAC_ForceDot1X": CheckboxInput,
                    "appl_NAC_Install": CheckboxInput,

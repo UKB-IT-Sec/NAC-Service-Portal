@@ -4,7 +4,7 @@ from nac.management.commands.import_devices_from_csv import Command, \
 from unittest.mock import patch, mock_open, MagicMock
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.core.management.base import CommandError
-from nac.models import AuthorizationGroup, DeviceRoleProd, DeviceRoleInst, Device, DNSDomain
+from nac.models import AdministrationGroup, DeviceRoleProd, DeviceRoleInst, Device, DNSDomain
 from helper.database import MacList
 from helper.config import get_config_from_json
 
@@ -37,10 +37,10 @@ def test_check_device(mock_check_existing_mac, mock_logging, mock_atomic, appl_N
     test_DeviceRoleProd = DeviceRoleProd.objects.create(name="test")
     test_DeviceRoleInst = DeviceRoleInst.objects.create(name="test2")
     test_domain = DNSDomain.objects.create(name="test.com")
-    test_authorization_group = AuthorizationGroup.objects.create(name="test")
-    test_authorization_group.DeviceRoleProd.set([test_DeviceRoleProd])
-    test_authorization_group.DeviceRoleInst.set([test_DeviceRoleInst])
-    command.auth_group = 'test'
+    test_administration_group = AdministrationGroup.objects.create(name="test")
+    test_administration_group.DeviceRoleProd.set([test_DeviceRoleProd])
+    test_administration_group.DeviceRoleInst.set([test_DeviceRoleInst])
+    command.admin_group = 'test'
     command.update = False
     command.csv_mapping = get_config_from_json(DEFAULT_CSV_MAPPING)
     command.csv_mapping['DeviceRoleCriteria']['MAPPING'] = False
@@ -52,7 +52,7 @@ def test_check_device(mock_check_existing_mac, mock_logging, mock_atomic, appl_N
         "vlan": 100,
         "dns_domain": test_domain,
         "appl-NAC-Hostname": test_hostname,
-        "authorization_group": test_authorization_group,
+        "administration_group": test_administration_group,
         "appl-NAC-DeviceRoleProd": test_DeviceRoleProd,
         "appl-NAC-Active": True,
         "appl-NAC-ForceDot1X": appl_NAC_ForceDot1X,
@@ -94,17 +94,17 @@ def test_check_device_exceptions(
         mock_str_to_bool, mock_atomic, mock_device_filter, command):
     test_deviceRoleProd = DeviceRoleProd.objects.create(name="test")
     test_deviceRoleInst = DeviceRoleInst.objects.create(name="test")
-    test_authorization_group = AuthorizationGroup.objects.create(name="test")
-    command.auth_group = 'test'
+    test_administration_group = AdministrationGroup.objects.create(name="test")
+    command.admin_group = 'test'
     command.csv_mapping = get_config_from_json(DEFAULT_CSV_MAPPING)
     command.csv_mapping['DeviceRoleCriteria']['MAPPING'] = False
     command.ou_mapping = {}
     command.mac_list = MacList()
-    test_authorization_group.DeviceRoleProd.set([test_deviceRoleProd])
-    test_authorization_group.DeviceRoleInst.set([test_deviceRoleInst])
+    test_administration_group.DeviceRoleProd.set([test_deviceRoleProd])
+    test_administration_group.DeviceRoleInst.set([test_deviceRoleInst])
     invalid_device = {
         "objectClass": "appl-NAC-Device",
-        "authorization_group": test_authorization_group,
+        "administration_group": test_administration_group,
         "appl-NAC-DeviceRoleProd": test_deviceRoleProd,
         "appl-NAC-DeviceRoleInst": test_deviceRoleInst,
         "appl-NAC-Hostname": "test"
@@ -133,7 +133,7 @@ def test_check_device_exceptions(
     mock_atomic.reset_mock()
     invalid_device = {
         "objectClass": "test_object",
-        "authorization_group": test_authorization_group,
+        "administration_group": test_administration_group,
         "appl-NAC-DeviceRoleProd": test_deviceRoleProd}
     with pytest.raises(
             Exception, match="Invalid Object-type! EXPECTED: "
@@ -143,7 +143,7 @@ def test_check_device_exceptions(
     mock_atomic.reset_mock()
     invalid_device = {
         "objectClass": "appl-NAC-Device",
-        "authorization_group": test_authorization_group,
+        "administration_group": test_administration_group,
         "appl-NAC-DeviceRoleProd": "dummy",
         "appl-NAC-DeviceRoleInst": test_deviceRoleInst}
     with pytest.raises(
@@ -155,7 +155,7 @@ def test_check_device_exceptions(
     mock_atomic.reset_mock()
     invalid_device = {
         "objectClass": "appl-NAC-Device",
-        "authorization_group": test_authorization_group,
+        "administration_group": test_administration_group,
         "appl-NAC-DeviceRoleProd": test_deviceRoleProd,
         "appl-NAC-DeviceRoleInst": "dummy"}
     with pytest.raises(
@@ -169,30 +169,30 @@ def test_check_device_exceptions(
     mock_atomic.reset_mock()
     invalid_device = {
         "objectClass": "appl-NAC-Device",
-        "authorization_group": test_authorization_group,
+        "administration_group": test_administration_group,
         "appl-NAC-DeviceRoleProd": "dummy",
         "appl-NAC-DeviceRoleInst": test_deviceRoleInst}
     with pytest.raises(
             ValidationError, match="DeviceRoleProd: dummy "
-            "not in authorization group: test"):
+            "not in administration group: test"):
         command.check_device(invalid_device)
     mock_atomic.assert_called()
 
-    test_authorization_group.DeviceRoleProd.set([test_deviceRoleProd])
+    test_administration_group.DeviceRoleProd.set([test_deviceRoleProd])
     mock_atomic.reset_mock()
     invalid_device = {
         "objectClass": "appl-NAC-Device",
-        "authorization_group": test_authorization_group,
+        "administration_group": test_administration_group,
         "appl-NAC-DeviceRoleProd": test_deviceRoleProd,
         "appl-NAC-DeviceRoleInst": "dummy"}
     with pytest.raises(
             ValidationError, match="DeviceRoleInst: dummy "
-            "not in authorization group: test"):
+            "not in administration group: test"):
         command.check_device(invalid_device)
     mock_atomic.assert_called()
 
-    test_authorization_group.DeviceRoleProd.set([test_deviceRoleProd])
-    test_authorization_group.DeviceRoleInst.set([test_deviceRoleInst])
+    test_administration_group.DeviceRoleProd.set([test_deviceRoleProd])
+    test_administration_group.DeviceRoleInst.set([test_deviceRoleInst])
     Device.objects.create(appl_NAC_Hostname="host")
     command.update = False
     mock_form = MagicMock()
@@ -202,7 +202,7 @@ def test_check_device_exceptions(
     valid_device = {
         "objectClass": "appl-NAC-Device",
         "appl-NAC-Hostname": "host",
-        "authorization_group": test_authorization_group,
+        "administration_group": test_administration_group,
         "appl-NAC-DeviceRoleProd": test_deviceRoleProd,
         "appl-NAC-DeviceRoleInst": test_deviceRoleInst}
     mock_check_existing_mac.return_value = True, 0
@@ -437,9 +437,9 @@ def test_add_arguments(command):
         help='use a specific csv file [src/ldapObjects.csv]'
     )
     mock_parser.add_argument.assert_any_call(
-        '-a', '--auth_group',
-        default='AuthGroupDefault',
-        help='specify the Device Authorization Group'
+        '-a', '--admin_group',
+        default='AdminGroupDefault',
+        help='specify the Device Administration Group'
     )
     mock_parser.add_argument.assert_any_call(
         '-u', '--update',
@@ -449,7 +449,7 @@ def test_add_arguments(command):
 
 
 @pytest.mark.django_db
-@patch('nac.management.commands.import_devices_from_csv.Command.check_valid_auth_group')
+@patch('nac.management.commands.import_devices_from_csv.Command.check_valid_admin_group')
 @patch('nac.management.commands.import_devices_from_csv.setup_console_logger')
 @patch('nac.management.commands.import_devices_from_csv.get_existing_path')
 @patch(
@@ -457,11 +457,11 @@ def test_add_arguments(command):
 @patch('nac.management.commands.import_devices_from_csv.Command.read_csv')
 def test_handle(mock_read_csv, mock_clear_invalid_devices_file,
                 mock_get_existing_path, mock_setup_console_logger,
-                mock_check_valid_auth_group, command):
+                mock_check_valid_admin_group, command):
     options = {
         'verbosity': 0,
         'csv_file': 'test.csv',
-        'auth_group': 'testag',
+        'admin_group': 'testag',
         'update': False,
         'csv_config': DEFAULT_CSV_MAPPING,
         'ou_config': DEFAULT_OU_MAPPING
@@ -469,16 +469,16 @@ def test_handle(mock_read_csv, mock_clear_invalid_devices_file,
     mock_get_existing_path.return_value = 'mockpath/to/test.csv'
     command.handle(**options)
     mock_setup_console_logger.assert_called_once_with(0)
-    mock_check_valid_auth_group.assert_called_once_with('testag')
+    mock_check_valid_admin_group.assert_called_once_with('testag')
     mock_get_existing_path.assert_called_once_with('test.csv')
     mock_clear_invalid_devices_file.assert_called_once()
     mock_read_csv.assert_called_once()
     assert command.source_file == 'mockpath/to/test.csv'
 
     mock_clear_invalid_devices_file.reset_mock()
-    mock_check_valid_auth_group.return_value = None
+    mock_check_valid_admin_group.return_value = None
     with pytest.raises(CommandError,
-                       match="Invalid auth group 'testag'."):
+                       match="Invalid admin group 'testag'."):
         command.handle(**options)
     mock_clear_invalid_devices_file.assert_not_called()
 
@@ -491,18 +491,18 @@ def test_handle(mock_read_csv, mock_clear_invalid_devices_file,
 
 
 @pytest.mark.django_db
-def test_check_valid_auth_group_exists(command):
-    test_authorization_group = AuthorizationGroup.objects.create(name='testag')
-    result = command.check_valid_auth_group(test_authorization_group)
-    assert result == test_authorization_group
+def test_check_valid_admin_group_exists(command):
+    test_administration_group = AdministrationGroup.objects.create(name='testag')
+    result = command.check_valid_admin_group(test_administration_group)
+    assert result == test_administration_group
 
 
 @pytest.mark.django_db
 @patch('nac.management.commands.import_devices_from_csv.logging')
-def test_check_valid_auth_group_not_exists(mock_logging, command):
-    result = command.check_valid_auth_group('dummy')
+def test_check_valid_admin_group_not_exists(mock_logging, command):
+    result = command.check_valid_admin_group('dummy')
     mock_logging.error.assert_called_once_with(
-        "Authorization Group-Object: dummy not in Database")
+        "Administration Group-Object: dummy not in Database")
     assert result is None
 
 
