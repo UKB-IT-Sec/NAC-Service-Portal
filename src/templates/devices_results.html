@@ -20,9 +20,9 @@
 				</td>
 				<td>
 					{% if device.appl_NAC_Active %}
-						<span class="icon-desc" desc="Active Device"><img src="{% static 'icons/check-lg.svg' %}" alt="appl_NAC_Active_True" height="25" width="25" class="icon-zoom" /></span>
+						<span class="icon-desc" desc="Active (access allowed)"><img src="{% static 'icons/check-lg.svg' %}" alt="appl_NAC_Active_True" height="25" width="25" class="icon-zoom" /></span>
 					{% else %}
-						<span class="icon-desc" desc="Inactive Device"><img src="{% static 'icons/x-lg.svg' %}" alt="appl_NAC_Active_False" height="25" width="25" class="icon-zoom" /></span>
+						<span class="icon-desc" desc="Inactive (access not allowed)"><img src="{% static 'icons/x-lg.svg' %}" alt="appl_NAC_Active_False" height="25" width="25" class="icon-zoom" /></span>
 					{% endif %}
 					{% if device.appl_NAC_Install %}
 						<span class="icon-desc" desc="Installation"><img src="{% static 'icons/wrench.svg' %}" alt="appl_NAC_Install" height="25" width="25" class="icon-zoom" /></span>
@@ -30,14 +30,14 @@
 						<span class="icon-desc" desc="Not in installation"><img src="{% static 'icons/wrench.svg' %}" alt="appl_NAC_Install" height="25" width="25" class="icon-zoom gray-icon" /></span>
 					{% endif %}
 					{% if device.appl_NAC_AllowAccessCAB %}
-						<span class="icon-desc" desc="Wired Access allowed"><img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_AllowAccessCAB" height="25" width="25" class="icon-zoom"/></span>
+						<span class="icon-desc" desc="Wired access allowed"><img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_AllowAccessCAB" height="25" width="25" class="icon-zoom"/></span>
 					{% else %}
-						<span class="icon-desc" desc="Wired Access not allowed"><img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_AllowAccessCAB" height="25" width="25" class="icon-zoom gray-icon"/></span>
+						<span class="icon-desc" desc="Wired access not allowed"><img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_AllowAccessCAB" height="25" width="25" class="icon-zoom gray-icon"/></span>
 					{% endif %}
 					{% if device.appl_NAC_AllowAccessAIR %}
-						<span class="icon-desc" desc="Wireless Access allowed"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_AllowAccessAIR" height="25" width="25" class="icon-zoom"/></span>
+						<span class="icon-desc" desc="Wireless access allowed"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_AllowAccessAIR" height="25" width="25" class="icon-zoom"/></span>
 					{% else %}
-						<span class="icon-desc" desc="Wireless Access not allowed"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_AllowAccessAIR" height="25" width="25" class="icon-zoom gray-icon"/></span>
+						<span class="icon-desc" desc="Wireless access not allowed"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_AllowAccessAIR" height="25" width="25" class="icon-zoom gray-icon"/></span>
 					{% endif %}
 					{% if device.appl_NAC_AllowAccessVPN %}
 						<span class="icon-desc" desc="Access over VPN allowed"><img src="{% static 'icons/shield.svg' %}" alt="appl_NAC_AllowAccessVPN" height="25" width="25" class="icon-zoom"/></span>
@@ -66,10 +66,10 @@
 				<td>
 				{% if device.get_appl_NAC_macAddressCAB%}
 					<b>
-						<span class="icon-desc" desc="macAddressCAB"><img src="{% static 'icons/favicon.svg' %}" alt="appl_NAC_macAddressCAB" height="14" width="14" class="icon-zoom"/></span>
+						<span class="icon-desc" desc="Wired MAC address"><img src="{% static 'icons/favicon.svg' %}" alt="appl_NAC_macAddressCAB" height="14" width="14" class="icon-zoom"/></span>
 						<b> {{device.get_appl_NAC_macAddressCAB.0}}</b> 
 							{% if device.get_appl_NAC_macAddressCAB|length > 1 %}
-								<a href="#" onclick="showDetails('MACAddressCAB', '{{ device.get_appl_NAC_macAddressCAB|join:", " }}'); return false;" class="icon-desc" desc="{{ device.get_appl_NAC_macAddressCAB|join:', ' }}">
+								<a href="#" onclick="showDetails('Wired MAC addresses', '{{ device.get_appl_NAC_macAddressCAB|join:", " }}'); return false;" class="icon-desc" desc="{{ device.get_appl_NAC_macAddressCAB|join:', ' }}">
 									({{device.get_appl_NAC_macAddressCAB|length}})
 								</a>
 							{% endif %}
@@ -78,10 +78,10 @@
 				{% endif %}
 				{% if device.get_appl_NAC_macAddressAIR%}
 					<b>
-						<span class="icon-desc" desc="macAddressAIR"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_macAddressAIR" height="14" width="14" class="icon-zoom"/></span>
+						<span class="icon-desc" desc="Wireless MAC address"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_macAddressAIR" height="14" width="14" class="icon-zoom"/></span>
 						<b> {{device.get_appl_NAC_macAddressAIR.0}}</b>
 							{% if device.get_appl_NAC_macAddressAIR|length > 1 %}
-								<a href="#" onclick="showDetails('MACAddressAIR', '{{ device.get_appl_NAC_macAddressAIR|join:", " }}'); return false;" class="icon-desc" desc="{{ device.get_appl_NAC_macAddressAIR|join:', ' }}">
+								<a href="#" onclick="showDetails('Wireless MAC addresses', '{{ device.get_appl_NAC_macAddressAIR|join:", " }}'); return false;" class="icon-desc" desc="{{ device.get_appl_NAC_macAddressAIR|join:', ' }}">
 									({{device.get_appl_NAC_macAddressAIR|length}})
 								</a>
 							{% endif %}
