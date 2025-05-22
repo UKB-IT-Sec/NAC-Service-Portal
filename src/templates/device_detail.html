@@ -83,6 +83,14 @@
         </tr>
         <tr>
             <td>
+                <strong>{{ device | verbose_name:"allowLdapSync" }}</strong>
+            </td>
+            <td>
+                {{ device.allowLdapSync }}
+            </td>
+        </tr>
+        <tr>
+            <td>
                 <strong>{{ device | verbose_name:"appl_NAC_AllowAccessCAB" }}</strong>
             </td>
             <td>
@@ -123,14 +131,6 @@
         </tr>
         <tr>
             <td>
-                <strong>{{ device | verbose_name:"appl_NAC_DeviceRoleInst" }}</strong>
-            </td>
-            <td>
-                {{ device.appl_NAC_DeviceRoleInst }}
-            </td>
-        </tr>
-        <tr>
-            <td>
                 <strong>{{ device | verbose_name:"appl_NAC_macAddressCAB" }}</strong>
             </td>
             <td>
@@ -167,6 +167,30 @@
             </td>
             <td>
                 {{ device.source }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>{{ device | verbose_name:"last_modified"}}</strong>
+            </td>
+            <td>
+                {{ device.last_modified }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>{{ device | verbose_name:"creationDate"}}</strong>
+            </td>
+            <td>
+                {{ device.creationDate }}
+            </td>
+        </tr>
+         <tr>
+            <td>
+                <strong>{{ device | verbose_name:"deleted"}}</strong>
+            </td>
+            <td>
+                {{ device.deleted }}
             </td>
         </tr>
     </table>

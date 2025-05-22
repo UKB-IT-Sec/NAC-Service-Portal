@@ -1,5 +1,5 @@
 from django.views.generic import ListView, DetailView
-from django.views.generic.edit import UpdateView, DeleteView, CreateView
+from django.views.generic.edit import UpdateView, CreateView
 from django.db.models import Q
 from django.urls import reverse_lazy
 from django.shortcuts import render, redirect
@@ -8,6 +8,7 @@ import json
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.forms.models import model_to_dict
+from django.utils import timezone
 
 from ..models import Device, AdministrationGroup, DeviceRoleProd
 from ..forms import DeviceForm, DeviceSearchForm, DeviceHistoryForm
@@ -71,6 +72,11 @@ class DeviceUpdateView(LoginRequiredMixin, UpdateView):
     form_class = DeviceForm
     template_name = "device_edit.html"
 
+    def form_valid(self, form):
+        form.instance.modified_by = self.request.user
+        form.instance.last_modified = timezone.localtime().isoformat(timespec='seconds')
+        return super().form_valid(form)
+
     def get_context_data(self, **kwargs):
         context = super(DeviceUpdateView, self).get_context_data(**kwargs)
         # keep selected version selected in the drop down field after reloading the page
@@ -106,10 +112,15 @@ class DeviceUpdateView(LoginRequiredMixin, UpdateView):
         return super().post(request, *args, **kwargs)
 
 
-class DeviceDeleteView(LoginRequiredMixin, DeleteView):
+class DeviceDeleteView(LoginRequiredMixin, DetailView):
     model = Device
     template_name = "device_delete.html"
-    success_url = reverse_lazy("devices")
+
+    def post(self, request, *args, **kwargs):
+        device = self.get_object()
+        device.deleted = True
+        device.save()
+        return redirect(reverse_lazy("devices"))
 
 
 class DeviceCreateView(LoginRequiredMixin, CreateView):
@@ -146,3 +157,10 @@ class DeviceCreateView(LoginRequiredMixin, CreateView):
             return render(request, self.template_name, {'form': form})
         else:
             return super().post(request, *args, **kwargs)  # else no pre-fill
+
+    def form_valid(self, form):
+        form.instance.modified_by = self.request.user
+        current_time = timezone.localtime().isoformat(timespec='seconds')
+        form.instance.last_modified = current_time
+        form.instance.creationDate = current_time
+        return super().form_valid(form)

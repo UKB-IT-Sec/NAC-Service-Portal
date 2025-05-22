@@ -55,10 +55,10 @@ class DeviceForm(ModelForm):
                   "dns_domain",
                   "vlan",
                   "appl_NAC_DeviceRoleProd",
-                  "appl_NAC_DeviceRoleInst",
                   "appl_NAC_Active",
                   "appl_NAC_ForceDot1X",
                   "appl_NAC_Install",
+                  "allowLdapSync",
                   "appl_NAC_AllowAccessCAB",
                   "appl_NAC_AllowAccessAIR",
                   "appl_NAC_AllowAccessVPN",
@@ -67,16 +67,17 @@ class DeviceForm(ModelForm):
                   "appl_NAC_macAddressAIR",
                   "synchronized",
                   "additional_info",
-                  "source"
+                  "source",
+                  "deleted"
                   ]
 
         widgets = {"dns_domain": autocomplete.ModelSelect2(url="dns_domain-autocomplete"),
                    "administration_group": autocomplete.ModelSelect2(url="administration-group-autocomplete"),
                    "appl_NAC_DeviceRoleProd": autocomplete.ModelSelect2(url="DeviceRoleProd-autocomplete", forward=["administration_group"], ),
-                   "appl_NAC_DeviceRoleInst": autocomplete.ModelSelect2(url="DeviceRoleInst-autocomplete", forward=["administration_group"], ),
                    "appl_NAC_Active": CheckboxInput,
                    "appl_NAC_ForceDot1X": CheckboxInput,
                    "appl_NAC_Install": CheckboxInput,
+                   "allowLdapSync": CheckboxInput,
                    "appl_NAC_AllowAccessCAB": CheckboxInput,
                    "appl_NAC_AllowAccessAIR": CheckboxInput,
                    "appl_NAC_AllowAccessVPN": CheckboxInput,
@@ -84,6 +85,7 @@ class DeviceForm(ModelForm):
                    "appl_NAC_macAddressCAB": MacAddressFormat(),
                    "appl_NAC_macAddressAIR": MacAddressFormat(),
                    "synchronized": forms.HiddenInput(),
+                   "deleted": CheckboxInput(attrs={'class': 'form-check-input', 'role': 'switch'}),
                    }
 
     def __init__(self, *args, **kwargs):

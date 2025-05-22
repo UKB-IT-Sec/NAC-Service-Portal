@@ -12,7 +12,6 @@ from .subviews.device_management import (
 from .subviews.autocomplete import (
     DNSDomainAutocomplete,
     DeviceRoleProdAutocomplete,
-    DeviceRoleInstAutocomplete,
     AdministrationGroupAutocomplete,
 )
 
@@ -34,8 +33,7 @@ urlpatterns = [
     path("armis/", ArmisView.as_view(), name="armis_import"),
     path("dns_domain-autocomplete/", DNSDomainAutocomplete.as_view(), name="dns_domain-autocomplete"),
     path("DeviceRoleProd-autocomplete/", DeviceRoleProdAutocomplete.as_view(), name="DeviceRoleProd-autocomplete"),
-    path("DeviceRoleInst-autocomplete/", DeviceRoleInstAutocomplete.as_view(), name="DeviceRoleInst-autocomplete"),
-    path("administration-group-autocomplete/", AdministrationGroupAutocomplete.as_view(), name="administration-group-autocomplete"),
+    path("administration-group-autocomplete/", AuthorizationGroupAutocomplete.as_view(), name="authorization-group-autocomplete"),
     path("account-settings/", AccountSettings.as_view(), name="account-settings"),
     path("change_password/", change_password, name='change_password'),
 ]

@@ -3,6 +3,10 @@
 
 <form method="post">
     {% csrf_token %}
+    <div class="form-check form-switch">
+        {{ form.deleted.label_tag|cut:":" }}
+        {{ form.deleted }}
+    </div>
     {{ form.asset_id|as_crispy_field }}
     {{ form.administration_group|as_crispy_field }}
     <div class="row">
@@ -16,9 +20,6 @@
     <div class="row">
         <div class="col-md-6">
             {{ form.appl_NAC_DeviceRoleProd|as_crispy_field }}
-        </div>
-        <div class="col-md-6">
-            {{ form.appl_NAC_DeviceRoleInst|as_crispy_field }}
         </div>
     </div>
     {% for field in form.visible_fields %}
@@ -41,7 +42,6 @@
 
         // Clear the autocomplete with the same prefix
         $(':input[name=' + prefix + 'appl_NAC_DeviceRoleProd]').val(null).trigger('change');
-        $(':input[name=' + prefix + 'appl_NAC_DeviceRoleInst]').val(null).trigger('change');
     });
 });
 </script>

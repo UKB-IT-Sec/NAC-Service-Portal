@@ -11,13 +11,6 @@ class DeviceRoleProd(models.Model):
         return self.name[:50]
 
 
-class DeviceRoleInst(models.Model):
-    name = models.TextField()
-
-    def __str__(self):
-        return self.name[:50]
-
-
 class DNSDomain(models.Model):
     name = models.TextField()
 
@@ -28,15 +21,16 @@ class DNSDomain(models.Model):
 class AdministrationGroup(models.Model):
     name = models.TextField()
     DeviceRoleProd = models.ManyToManyField(DeviceRoleProd)
-    DeviceRoleInst = models.ManyToManyField(DeviceRoleInst)
 
     def __str__(self):
         return self.name[:50]
 
 
 class CustomUser(AbstractUser):
-    name = models.TextField()
     administration_group = models.ManyToManyField(AdministrationGroup)
+
+    def __str__(self):
+        return self.username
 
 
 class Device(models.Model):
@@ -44,18 +38,21 @@ class Device(models.Model):
     administration_group = models.ForeignKey(AdministrationGroup, on_delete=models.SET_NULL, null=True, verbose_name="Administration Group")
     appl_NAC_DeviceRoleProd = models.ForeignKey(
         DeviceRoleProd, on_delete=models.SET_NULL, null=True, verbose_name="Device role productive")
-    appl_NAC_DeviceRoleInst = models.ForeignKey(
-        DeviceRoleInst, on_delete=models.SET_NULL, null=True, verbose_name="Device role installation")
     synchronized = models.BooleanField(null=True, default=False)
 
     dns_domain = models.ForeignKey(DNSDomain, on_delete=models.SET_NULL, null=True, verbose_name="DNS domain")
     vlan = models.CharField(null=True, blank=True, max_length=100, verbose_name="VLAN")
     source = models.CharField(null=True, blank=True, max_length=100, verbose_name="Data origin")
+    modified_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, editable=False)
+    last_modified = models.TextField(null=True, blank=True, editable=False, verbose_name="Time of last modification")
+    creationDate = models.TextField(null=True, blank=True, editable=False, verbose_name="Time of creation")
+
     additional_info = models.TextField(null=True, blank=True, verbose_name="Additional information")
     appl_NAC_Hostname = models.CharField(null=True, max_length=100, verbose_name="Hostname")
     appl_NAC_Active = models.BooleanField(null=True, default=True, verbose_name="Active (access allowed)")
     appl_NAC_ForceDot1X = models.BooleanField(null=True, default=True, verbose_name="Force 802.1X")
     appl_NAC_Install = models.BooleanField(null=True, verbose_name="Installation")
+    allowLdapSync = models.BooleanField(null=True, default=False, verbose_name="Sync with LDAP allowed")
     appl_NAC_AllowAccessCAB = models.BooleanField(null=True, default=True, verbose_name="Wired access allowed")
     appl_NAC_AllowAccessAIR = models.BooleanField(null=True, verbose_name="Wireless access allowed")
     appl_NAC_AllowAccessVPN = models.BooleanField(null=True, verbose_name="Access over VPN allowed")
@@ -65,6 +62,7 @@ class Device(models.Model):
     appl_NAC_macAddressAIR = models.CharField(null=True, max_length=100,
                                               blank=True, unique=True, verbose_name="Wireless MAC address")
     appl_NAC_Certificate = models.TextField(null=True, blank=True, verbose_name="Certificate")
+    deleted = models.BooleanField(null=True, default=False, verbose_name="Deleted")
     history = HistoricalRecords()
 
     @property
