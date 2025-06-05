@@ -3,7 +3,7 @@ from django.views.generic.edit import UpdateView, CreateView
 from django.db.models import Q
 from django.urls import reverse_lazy
 from django.shortcuts import render, redirect
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, AccessMixin
 import json
 from django.http import JsonResponse
 from django.template.loader import render_to_string
@@ -67,7 +67,9 @@ class DeviceDetailView(LoginRequiredMixin, DetailView):
     template_name = "device_detail.html"
 
 
-class DeviceUpdateView(LoginRequiredMixin, UpdateView):
+class DeviceUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    permission_required = "nac.change_device"
+
     model = Device
     form_class = DeviceForm
     template_name = "device_edit.html"
@@ -112,7 +114,9 @@ class DeviceUpdateView(LoginRequiredMixin, UpdateView):
         return super().post(request, *args, **kwargs)
 
 
-class DeviceDeleteView(LoginRequiredMixin, DetailView):
+class DeviceDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+    permission_required = "nac.delete_device"
+
     model = Device
     template_name = "device_delete.html"
 
@@ -123,7 +127,9 @@ class DeviceDeleteView(LoginRequiredMixin, DetailView):
         return redirect(reverse_lazy("devices"))
 
 
-class DeviceCreateView(LoginRequiredMixin, CreateView):
+class DeviceCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    permission_required = "nac.create_device"
+
     model = Device
     form_class = DeviceForm
     template_name = "device_new.html"
