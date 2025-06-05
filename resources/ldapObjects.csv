@@ -1,4 +1,0 @@
-appl-NAC-AllowAccessAIR;appl-NAC-AllowAccessVPN;objectClass;appl-NAC-Active;appl-NAC-AllowAccessCAB;appl-NAC-DeviceRoleInst;appl-NAC-DeviceRoleProd;appl-NAC-AllowAccessCEL;appl-NAC-Install;appl-NAC-macAddressAIR;appl-NAC-FQDN;appl-NAC-Hostname;appl-NAC-macAddressCAB;appl-NAC-Certificate;appl-NAC-ForceDot1X;OU
-True;True;appl-NAC-Device;True;True;DeviceRoleInst2;DeviceRoleProd2;True;True;001122334455;FQDN2;Hostname1;001122334456,001122334456;Certificate3;True;OU1
-True;True;appl-NAC-Device;True;True;DeviceRoleInstDefault;DeviceRoleProdDefault;True;True;001122334457;FQDN4;Hostname2;001122334458,001122334458;Certificate4;True;OU2
-True;True;appl-NAC-Device;True;True;DeviceRoleInst1;DeviceRoleProd1;True;True;001122334459;FQDN4;Hostname3;001122334451,001122334451;Certificate4;True;OUDEFAULT
