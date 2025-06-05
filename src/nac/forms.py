@@ -91,6 +91,7 @@ class DeviceForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['source'].widget.attrs['readonly'] = True
+        self.fields['vlan'].widget.attrs['readonly'] = True
 
     def clean(self):
         cleaned_data = super().clean()
