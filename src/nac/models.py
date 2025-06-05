@@ -48,7 +48,7 @@ class Device(models.Model):
     creationDate = models.TextField(null=True, blank=True, editable=False, verbose_name="Time of creation")
 
     additional_info = models.TextField(null=True, blank=True, verbose_name="Additional information")
-    appl_NAC_Hostname = models.CharField(null=True, max_length=100, verbose_name="Hostname")
+    appl_NAC_Hostname = models.CharField(null=True, max_length=63, verbose_name="Hostname")
     appl_NAC_Active = models.BooleanField(null=True, default=True, verbose_name="Active (access allowed)")
     appl_NAC_ForceDot1X = models.BooleanField(null=True, default=True, verbose_name="Force 802.1X")
     appl_NAC_Install = models.BooleanField(null=True, verbose_name="Installation")
@@ -64,6 +64,14 @@ class Device(models.Model):
     appl_NAC_Certificate = models.TextField(null=True, blank=True, verbose_name="Certificate")
     deleted = models.BooleanField(null=True, default=False, verbose_name="Deleted")
     history = HistoricalRecords()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=[
+                'appl_NAC_Hostname',
+                'dns_domain'
+            ], name='unique_fqdn')
+        ]
 
     @property
     def appl_NAC_FQDN(self):
