@@ -18,8 +18,11 @@
         </div>
     </div>
     {{ form.appl_NAC_DeviceRoleProd|as_crispy_field }}
+    {% if form.vlan.value %}
+        {{ form.vlan|as_crispy_field }}
+    {% endif %}
     {% for field in form.visible_fields %}
-        {% if field.name not in 'asset_id,appl_NAC_Hostname,dns_domain,administration_group,appl_NAC_DeviceRoleProd,appl_NAC_DeviceRoleInst' %}
+        {% if field.name not in 'vlan,asset_id,appl_NAC_Hostname,dns_domain,administration_group,appl_NAC_DeviceRoleProd,appl_NAC_DeviceRoleInst' %}
             <div class="form-group">
                 {{ field|as_crispy_field }}
             </div>
