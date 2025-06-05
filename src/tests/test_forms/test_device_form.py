@@ -7,15 +7,15 @@ from nac.models import AdministrationGroup, DeviceRoleProd, DNSDomain
 @pytest.mark.django_db
 @pytest.mark.parametrize("appl_NAC_ForceDot1X, appl_NAC_AllowAccessVPN, appl_NAC_Certificate, appl_NAC_AllowAccessAIR, "
                          "appl_NAC_macAddressAIR, appl_NAC_AllowAccessCAB, appl_NAC_macAddressCAB, test_hostname, validity",
-                         [(True, True, "test", True, "001132334455", True, "001132334455", "device_1", True),
-                          (True, True, None, True, "001142334455", True, "001142334455", "device_1", True),
-                          (True, True, "test", True, None, True, "001152334455", "device_1", False),
-                          (True, True, "test", True, "001162334455", True, None, "device_1", False),
-                          (False, False, None, True, "001192334455", True, "001192334455", "device_1", True),
-                          (True, True, "test", False, None, True, "001123334455", "device_1", True),
-                          (True, True, "test", False, None, True, "ZZ1123334455", "device_1", False),
+                         [(True, True, "test", True, "001132334455", True, "001132334455", "device1", True),
+                          (True, True, None, True, "001142334455", True, "001142334455", "device1", True),
+                          (True, True, "test", True, None, True, "001152334455", "device1", False),
+                          (True, True, "test", True, "001162334455", True, None, "device1", False),
+                          (False, False, None, True, "001192334455", True, "001192334455", "device1", True),
+                          (True, True, "test", False, None, True, "001123334455", "device1", True),
+                          (True, True, "test", False, None, True, "ZZ1123334455", "device1", False),
                           (True, True, "test", False, None, True, "001123334455", "device.1", False),
-                          (True, True, "test", True, "001122434455", False, None, "device_1", True)])
+                          (True, True, "test", True, "001122434455", False, None, "device-1", True)])
 def test_clean(appl_NAC_ForceDot1X, appl_NAC_AllowAccessVPN, appl_NAC_Certificate, appl_NAC_AllowAccessAIR,
                appl_NAC_macAddressAIR, appl_NAC_AllowAccessCAB, appl_NAC_macAddressCAB, test_hostname, validity):
     test_DeviceRoleProd = DeviceRoleProd.objects.create(name="test")

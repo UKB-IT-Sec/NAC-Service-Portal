@@ -10,6 +10,7 @@ from crispy_forms.layout import Layout, Submit
 from crispy_forms.bootstrap import FieldWithButtons
 import datetime
 from django.utils.timezone import localtime
+import re
 
 
 class CustomUserCreationForm(AdminUserCreationForm):
@@ -105,12 +106,38 @@ class DeviceForm(ModelForm):
                                ValidationError("This field cannot be empty while %(field)s is selected",
                                                params={"field": field}))
         # prefill asset_id if not set
-        if not cleaned_data.get('asset_id') and cleaned_data.get('appl_NAC_Hostname') and cleaned_data.get('dns_domain'):
+        if not cleaned_data.get('asset_id') or cleaned_data.get('asset_id').startswith('FQDN') and cleaned_data.get('appl_NAC_Hostname') and cleaned_data.get('dns_domain'):
             cleaned_data['asset_id'] = f"FQDN_{cleaned_data.get('appl_NAC_Hostname')}.{cleaned_data.get('dns_domain')}"
+
+        # Check for min. MAC Requirement
+        if not cleaned_data.get('appl_NAC_macAddressCAB') and not cleaned_data.get('appl_NAC_macAddressAIR'):
+            self.add_error(
+                'appl_NAC_macAddressCAB', 'Device requires at least one MAC-Address'
+            )
+            self.add_error(
+                'appl_NAC_macAddressAIR', 'Device requires at least one MAC-Address'
+            )
+
+        # Check for existing FQDN
+        hostname = cleaned_data.get('appl_NAC_Hostname')
+        domain = cleaned_data.get('dns_domain')
+        if hostname and domain:
+            qs = Device.objects.filter(
+                appl_NAC_Hostname=hostname,
+                dns_domain=domain
+                )
+            if self.instance.pk:
+                qs = qs.exclude(pk=self.instance.pk)
+            if qs.exists():
+                self.add_error(
+                    'appl_NAC_Hostname', 'Device with this Hostname and Domain already exists'
+                )
+        return cleaned_data
 
     def clean_appl_NAC_Hostname(self):
         hostname = self.cleaned_data.get("appl_NAC_Hostname")
-        if "." in hostname:
+
+        if re.search(r'[!"#$%&\'()*+,./:;<=>?@[\\\]^_`{|}~]', hostname):
             raise ValidationError("Hostname contains invalid character")
         return hostname
 
