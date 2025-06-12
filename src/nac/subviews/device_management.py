@@ -62,6 +62,9 @@ class DeviceListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
         context["search_form"] = DeviceSearchForm(user=self.request.user)
         return context
 
+class DeviceListCsvView(DeviceListView):
+    template_name = "device_export.csv"
+    content_type = "text/csv"
 
 class DeviceDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     permission_required = "nac.view_device"
