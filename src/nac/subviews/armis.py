@@ -16,11 +16,12 @@
 from django.views.generic import View
 from django.core.cache import cache
 from django.shortcuts import render
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from helper.armis import get_armis_sites, get_devices, get_tenant_url, get_boundaries, map_ids_to_names, get_single_device, get_vlan_blacklist
 
 
-class ArmisView(LoginRequiredMixin, View):
+class ArmisView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = "nac.view_device"
     template_name = "armis_import.html"
 
     def _get_context(self):  # sets the site-context for armis_import.html, uses cache to be less time consuming

@@ -1,5 +1,6 @@
 import pytest
 from nac.models import Device, AdministrationGroup, CustomUser
+from django.contrib.auth.models import Group, Permission
 from nac.subviews.device_management import DeviceListView
 from django.test import RequestFactory
 from django.urls import reverse_lazy
@@ -32,9 +33,14 @@ def test_device_search(query, result):
 
 @pytest.mark.django_db
 def test_result_rendering(client):
+    test_group = Group.objects.create(name='view')
+    perm_view = Permission.objects.get(codename='view_device')
+    test_group.permissions.add(perm_view)
+
     test_user = CustomUser.objects.create()
     test_user.set_password("test")
     test_user.administration_group.set([AdministrationGroup.objects.get(pk=1)])
+    test_user.groups.add(test_group)
     test_user.save()
 
     client.force_login(test_user)

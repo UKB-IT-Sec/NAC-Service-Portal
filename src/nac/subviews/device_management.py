@@ -3,7 +3,7 @@ from django.views.generic.edit import UpdateView, CreateView
 from django.db.models import Q
 from django.urls import reverse_lazy
 from django.shortcuts import render, redirect
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 import json
 from django.http import JsonResponse
 from django.template.loader import render_to_string
@@ -15,7 +15,8 @@ from ..forms import DeviceForm, DeviceSearchForm, DeviceHistoryForm
 from ..validation import normalize_mac
 
 
-class DeviceListView(LoginRequiredMixin, ListView):
+class DeviceListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    permission_required = "nac.view_device"
     model = Device
     template_name = "devices.html"
     context_object_name = "device_list"
@@ -62,12 +63,16 @@ class DeviceListView(LoginRequiredMixin, ListView):
         return context
 
 
-class DeviceDetailView(LoginRequiredMixin, DetailView):
+class DeviceDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+    permission_required = "nac.view_device"
+
     model = Device
     template_name = "device_detail.html"
 
 
-class DeviceUpdateView(LoginRequiredMixin, UpdateView):
+class DeviceUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    permission_required = "nac.change_device"
+
     model = Device
     form_class = DeviceForm
     template_name = "device_edit.html"
@@ -112,7 +117,9 @@ class DeviceUpdateView(LoginRequiredMixin, UpdateView):
         return super().post(request, *args, **kwargs)
 
 
-class DeviceDeleteView(LoginRequiredMixin, DetailView):
+class DeviceDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+    permission_required = "nac.delete_device"
+
     model = Device
     template_name = "device_delete.html"
 
@@ -123,7 +130,9 @@ class DeviceDeleteView(LoginRequiredMixin, DetailView):
         return redirect(reverse_lazy("devices"))
 
 
-class DeviceCreateView(LoginRequiredMixin, CreateView):
+class DeviceCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    permission_required = "nac.add_device"
+
     model = Device
     form_class = DeviceForm
     template_name = "device_new.html"
