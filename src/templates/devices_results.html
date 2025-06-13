@@ -197,7 +197,8 @@
 			appl_NAC_FQDN:           "{{ device.appl_NAC_FQDN }}",
 			appl_NAC_DeviceRoleProd: "{{ device.appl_NAC_DeviceRoleProd }}",
 
-			macAddress:              "{{ device.get_appl_NAC_macAddressCAB|join:',' }}",
+			macAddressAIR: [ {% for m in device.get_appl_NAC_macAddressAIR %}"{{ m }}",{% endfor %} ],
+			macAddressCAB: [ {% for m in device.get_appl_NAC_macAddressCAB %}"{{ m }}",{% endfor %} ],
 			ipAddress:               "{{ device.ipAddress }}",
 			boundaries:              "{{ device.boundaries }}",
 			vlan:                    "{{ device.vlan.0.value }}",
@@ -309,10 +310,10 @@
 	}
 
 	function setupSorting() {
-		const sortIcons = document.querySelectorAll('.sort-icon'); //Get all html-elements that are sort-elements
+		const sortIcons = document.querySelectorAll('.sort-icon'); // gets all html-elements that are sort-elements
 		sortIcons.forEach(icon => {
 			icon.addEventListener('click', () => {
-				const column = icon.getAttribute('data-column'); //determines which column to order
+				const column = icon.getAttribute('data-column'); // determines which column to order
 				sortData(column);
 			});
 		});
@@ -361,14 +362,38 @@
 			row.insertCell().textContent = device.appl_NAC_DeviceRoleProd;
 
 			const macCell = row.insertCell();
-			const macAddresses = device.macAddress.split(",");
-			const macTotal = macAddresses.length;
-			macCell.innerHTML = `${macAddresses[0]} <span class="icon-desc address-link" desc="${device.macAddress}">${macTotal > 1 ? '(' + macTotal + ')' : ''}</span>`;
-			if (macTotal > 1) {
-				macCell.querySelector('span').addEventListener("click", () => showDetails("MAC-Adressen", device.macAddress));
-			} else {
-				macCell.querySelector('span').addEventListener("click", () => showDetails("MAC-Adresse", device.macAddress));
+			let macHtml = '';
+			if (device.macAddressAIR.length) {
+				macHtml += `<b>
+					<span class="icon-desc" desc="macAddressAIR">
+						<img src="${iconWifi}" alt="Wireless MAC" height="14" width="14" class="icon-zoom"/>
+					</span>
+					${device.macAddressAIR[0]}
+				`;
+				if (device.macAddressAIR.length > 1) {
+					macHtml += ` <a href="#" class="icon-desc" desc="${device.macAddressAIR.join(', ')}"
+												onclick="showDetails('Wireless MAC addresses','${device.macAddressAIR.join(', ')}');return false;">
+												(${device.macAddressAIR.length})
+											</a>`;
+				}
+				macHtml += '<br/></b>';
 			}
+			if (device.macAddressCAB.length) {
+				macHtml += `<b>
+					<span class="icon-desc" desc="macAddressCAB">
+						<img src="${iconEthernet}" alt="Wired MAC" height="14" width="14" class="icon-zoom"/>
+					</span>
+					${device.macAddressCAB[0]}
+				`;
+				if (device.macAddressCAB.length > 1) {
+					macHtml += ` <a href="#" class="icon-desc" desc="${device.macAddressCAB.join(', ')}"
+												onclick="showDetails('Wired MAC addresses','${device.macAddressCAB.join(', ')}');return false;">
+												(${device.macAddressCAB.length})
+											</a>`;
+				}
+				macHtml += '<br/></b>';
+			}
+			macCell.innerHTML = macHtml;
 
 			row.insertCell().textContent = device.last_modified;
 
