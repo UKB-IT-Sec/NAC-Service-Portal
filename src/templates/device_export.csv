@@ -1,3 +1,3 @@
 AssetID;Hostname;Active;ForceDot1X;Install;AllowAccessCAB;AllowAccessAIR;AllowAccessVPN;AllowAccessCEL;DeviceRoleProd;MacAddressWireless;MacAddressWired
-{% for d in device_list %} {{ d.asset_id }};{{ d.appl_NAC_Hostname }};{{ d.appl_NAC_Active }};{{ d.appl_NAC_ForceDot1X }};{{ d.appl_NAC_Install }};{{ d.appl_NAC_AllowAccessCAB }};{{ d.appl_NAC_AllowAccessAIR }};{{ d.appl_NAC_AllowAccessVPN }};{{ d.appl_NAC_AllowAccessCEL }};{{ d.appl_NAC_DeviceRoleProd }};{{ d.appl_NAC_macAddressAIR }};{{ d.appl_NAC_macAddressCAB }}
+{% for d in device_list %}{{ d.asset_id }};{{ d.appl_NAC_Hostname }};{{ d.appl_NAC_Active }};{{ d.appl_NAC_ForceDot1X }};{{ d.appl_NAC_Install }};{{ d.appl_NAC_AllowAccessCAB }};{{ d.appl_NAC_AllowAccessAIR }};{{ d.appl_NAC_AllowAccessVPN }};{{ d.appl_NAC_AllowAccessCEL }};{{ d.appl_NAC_DeviceRoleProd }};{{ d.appl_NAC_macAddressAIR }};{{ d.appl_NAC_macAddressCAB }}
 {% endfor %}

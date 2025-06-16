@@ -13,14 +13,8 @@
 			 </div>
 			 {% endfor %}
 		 </div>
-        <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+	 	<button type="submit" class="btn btn-secondary btn-sm" formaction="{% url 'device_export_csv' %}?export=csv">Export as CSV</button>
     </form>
-
-	<br>
-
-	<form id="csv_export" action="{% url 'devices' %}" method="get">
-		<button class="btn btn-secondary btn-sm"><a href="{% url 'device_export_csv' %}">Export as CSV</a></button>
-	</form>
 
 	<div id="results">
 		{% include "devices_results.html" %}
