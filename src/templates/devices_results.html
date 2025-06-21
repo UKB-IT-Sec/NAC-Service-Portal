@@ -116,7 +116,9 @@
 			vlan:                    "{{ device.vlan.0.value }}",
 			site:                    "{{ device.site.name }}",
 
-			last_modified:           "{{ device.last_modified }}"
+			last_modified:           "{{ device.last_modified }}",
+
+			deleted: {{ device.deleted|yesno:"true,false" }}
 		},
 		{% endfor %}
 	];
@@ -133,11 +135,9 @@
 		} else {
 			deletedRows.forEach(row => row.style.display = 'none');
 		}
-	}
 
-	window.addEventListener('DOMContentLoaded', function() {
-		document.querySelectorAll('.deleted-device').forEach(row => row.style.display = 'none');
-	});
+		displayTable(currentPage);
+	}
 
 	function showDetails(title, addresses) {
 		const modal = document.getElementById("detailModal");
@@ -242,6 +242,13 @@
 		pageData.forEach((device, index) => {
 			const row = tableBody.insertRow();
 
+			if (device.deleted) {
+				row.classList.add('deleted-device');
+				if (!document.getElementById('showDeletedCheckbox').checked) {
+					row.style.display = 'none';
+				}
+			}
+
 			const assetIdCell = row.insertCell();
 			assetIdCell.innerHTML = `<a href="${device.detail_url}">${device.asset_id}</a>`;
 			
@@ -320,9 +327,10 @@
 	}
 
 	document.addEventListener('DOMContentLoaded', () => {
+		displayTable(currentPage);
+		toggleDeletedCheckbox();
 		setupModal();
 		setupSorting();
-		displayTable(currentPage);
 	});
 </script>
 {% endblock content %}
