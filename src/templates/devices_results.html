@@ -1,6 +1,4 @@
-{% extends "base.html" %}
 {% load static %}
-{% block content %}
 
 <style>
 	.modal {
@@ -155,7 +153,7 @@
   
 		modal.style.display = "block";
 	}
-  
+
 	function setupModal() {
 		const modal = document.getElementById("detailModal");
 		const span = document.getElementsByClassName("close")[0];
@@ -333,4 +331,3 @@
 		setupSorting();
 	});
 </script>
-{% endblock content %}
