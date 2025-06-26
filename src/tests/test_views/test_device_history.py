@@ -1,6 +1,6 @@
 import pytest
 from nac.subviews.device_management import DeviceUpdateView
-from nac.models import AuthorizationGroup, Device, CustomUser
+from nac.models import AdministrationGroup, Device, CustomUser
 from nac.forms import DeviceHistoryForm
 from django.test import RequestFactory
 from django.forms.models import model_to_dict
@@ -26,7 +26,7 @@ def test_select_version(hostname):
     expected_data = model_to_dict(history_entry)
 
     test_user = CustomUser.objects.create()
-    test_user.authorization_group.set([AuthorizationGroup.objects.get(pk=1), AuthorizationGroup.objects.get(pk=2)])
+    test_user.administration_group.set([AdministrationGroup.objects.get(pk=1), AdministrationGroup.objects.get(pk=2)])
 
     rf = RequestFactory()
     url = f"/devices/{device_with_history.pk}/edit/"
@@ -67,7 +67,7 @@ def test_delete_version(hostname):
     history_entry = device_with_history.history.all().get(appl_NAC_Hostname=hostname)
 
     test_user = CustomUser.objects.create()
-    test_user.authorization_group.set([AuthorizationGroup.objects.get(pk=1), AuthorizationGroup.objects.get(pk=2)])
+    test_user.administration_group.set([AdministrationGroup.objects.get(pk=1), AdministrationGroup.objects.get(pk=2)])
 
     rf = RequestFactory()
     url = f"/devices/{device_with_history.pk}/edit/"
@@ -99,7 +99,7 @@ def test_select_none():
     expected_data = model_to_dict(device_with_history)
 
     test_user = CustomUser.objects.create()
-    test_user.authorization_group.set([AuthorizationGroup.objects.get(pk=1), AuthorizationGroup.objects.get(pk=2)])
+    test_user.administration_group.set([AdministrationGroup.objects.get(pk=1), AdministrationGroup.objects.get(pk=2)])
 
     rf = RequestFactory()
     url = f"/devices/{device_with_history.pk}/edit/"
@@ -130,7 +130,7 @@ def test_delete_none():
     expected_data = model_to_dict(device_with_history)
 
     test_user = CustomUser.objects.create()
-    test_user.authorization_group.set([AuthorizationGroup.objects.get(pk=1), AuthorizationGroup.objects.get(pk=2)])
+    test_user.administration_group.set([AdministrationGroup.objects.get(pk=1), AdministrationGroup.objects.get(pk=2)])
 
     rf = RequestFactory()
     url = f"/devices/{device_with_history.pk}/edit/"
@@ -178,7 +178,7 @@ def test_with_less_than_3_historical_records():
     device_with_history = Device.objects.get(id=1)
 
     test_user = CustomUser.objects.create()
-    test_user.authorization_group.set([AuthorizationGroup.objects.get(pk=1), AuthorizationGroup.objects.get(pk=2)])
+    test_user.administration_group.set([AdministrationGroup.objects.get(pk=1), AdministrationGroup.objects.get(pk=2)])
 
     for hostname in ["dev1-v1", "dev1-v2", "dev1-v3"]:
         rf = RequestFactory()
