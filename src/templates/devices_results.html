@@ -253,17 +253,17 @@
 			const statusCell = row.insertCell();
 			let html = "";
 			html += device.appl_NAC_Active
-				? `<span class="icon-desc" desc="Active Device"><img src="${iconCheck}" alt="appl_NAC_Active_True" height="25" width="25" class="icon-zoom" /></span>`
-				: `<span class="icon-desc" desc="Inactive Device"><img src="${iconX}" alt="appl_NAC_Active_False" height="25" width="25" class="icon-zoom gray-icon" /></span>`;
+				? `<span class="icon-desc" desc="Active (access allowed)"><img src="${iconCheck}" alt="appl_NAC_Active_True" height="25" width="25" class="icon-zoom" /></span>`
+				: `<span class="icon-desc" desc="Inactive (no access allowed)"><img src="${iconX}" alt="appl_NAC_Active_False" height="25" width="25" class="icon-zoom gray-icon" /></span>`;
 			html += device.appl_NAC_Install
 				? `<span class="icon-desc" desc="Installation"><img src="${iconWrench}" alt="appl_NAC_Install" height="25" width="25" class="icon-zoom" /></span>`
 				: `<span class="icon-desc" desc="Not in installation"><img src="${iconWrench}" alt="appl_NAC_Install" height="25" width="25" class="icon-zoom gray-icon" /></span>`;
 			html += device.appl_NAC_AllowAccessCAB
-				? `<span class="icon-desc" desc="Wired Access allowed"><img src="${iconEthernet}" alt="appl_NAC_AllowAccessCAB" height="25" width="25" class="icon-zoom"/></span>`
-				: `<span class="icon-desc" desc="Wired Access not allowed"><img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_AllowAccessCAB" height="25" width="25" class="icon-zoom gray-icon"/></span>`;
+				? `<span class="icon-desc" desc="Wired access allowed"><img src="${iconEthernet}" alt="appl_NAC_AllowAccessCAB" height="25" width="25" class="icon-zoom"/></span>`
+				: `<span class="icon-desc" desc="Wired access not allowed"><img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_AllowAccessCAB" height="25" width="25" class="icon-zoom gray-icon"/></span>`;
 			html += device.appl_NAC_AllowAccessAIR
-				? `<span class="icon-desc" desc="Wireless Access allowed"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_AllowAccessAIR" height="25" width="25" class="icon-zoom"/></span>`
-				: `<span class="icon-desc" desc="Wireless Access not allowed"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_AllowAccessAIR" height="25" width="25" class="icon-zoom gray-icon"/></span>`;
+				? `<span class="icon-desc" desc="Wireless access allowed"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_AllowAccessAIR" height="25" width="25" class="icon-zoom"/></span>`
+				: `<span class="icon-desc" desc="Wireless access not allowed"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_AllowAccessAIR" height="25" width="25" class="icon-zoom gray-icon"/></span>`;
 			html += device.appl_NAC_AllowAccessVPN
 				? `<span class="icon-desc" desc="Access over VPN allowed"><img src="{% static 'icons/shield.svg' %}" alt="appl_NAC_AllowAccessVPN" height="25" width="25" class="icon-zoom"/></span>`
 				: `<span class="icon-desc" desc="Access over VPN not allowed"><img src="{% static 'icons/shield.svg' %}" alt="appl_NAC_AllowAccessVPN" height="25" width="25" class="icon-zoom gray-icon"/></span>`;
@@ -282,8 +282,8 @@
 			let macHtml = '';
 			if (device.macAddressAIR.length) {
 				macHtml += `<b>
-					<span class="icon-desc" desc="macAddressAIR">
-						<img src="${iconWifi}" alt="Wireless MAC" height="14" width="14" class="icon-zoom"/>
+					<span class="icon-desc" desc="Wireless MAC address">
+						<img src="${iconWifi}" alt="appl_NAC_macAddressAIR" height="14" width="14" class="icon-zoom"/>
 					</span>
 					${device.macAddressAIR[0]}
 				`;
@@ -297,8 +297,8 @@
 			}
 			if (device.macAddressCAB.length) {
 				macHtml += `<b>
-					<span class="icon-desc" desc="macAddressCAB">
-						<img src="${iconEthernet}" alt="Wired MAC" height="14" width="14" class="icon-zoom"/>
+					<span class="icon-desc" desc="Wired MAC address">
+						<img src="${iconEthernet}" alt="appl_NAC_macAddressCAB" height="14" width="14" class="icon-zoom"/>
 					</span>
 					${device.macAddressCAB[0]}
 				`;
