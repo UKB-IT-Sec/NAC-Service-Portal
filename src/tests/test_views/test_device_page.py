@@ -97,6 +97,7 @@ def test_csv_export_view(client):
     test_user = CustomUser.objects.create()
     test_user.set_password("test")
     test_user.administration_group.set([AdministrationGroup.objects.get(pk=1)])
+    test_user.user_permissions.add(Permission.objects.get(codename='view_device'))
     test_user.save()
     client.force_login(test_user)
 
