@@ -84,3 +84,16 @@ def test_device_filtering(admin_group, device_role_prod, result):
     print(result_qs)
 
     assertQuerySetEqual(desired_qs, result_qs, ordered=False)
+
+
+@pytest.mark.django_db
+def test_csv_export_view(client):
+    test_user = CustomUser.objects.create()
+    test_user.set_password("test")
+    test_user.administration_group.set([AdministrationGroup.objects.get(pk=1)])
+    test_user.save()
+    client.force_login(test_user)
+
+    url = reverse_lazy('device_export_csv')
+    response = client.get(url)
+    assert response.status_code == 200

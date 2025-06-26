@@ -61,12 +61,11 @@ class DeviceListView(LoginRequiredMixin, ListView):
         context["search_form"] = DeviceSearchForm(user=self.request.user)
         return context
 
+
 class DeviceListCsvView(DeviceListView):
     template_name = "device_export.csv"
     content_type = "text/csv"
-    def get(self, request, *args, **kwargs):
-        print(self.request.GET.get("search_string"))
-        return super().get(request, *args, **kwargs)
+
 
 class DeviceDetailView(LoginRequiredMixin, DetailView):
     model = Device
