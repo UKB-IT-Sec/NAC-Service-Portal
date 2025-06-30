@@ -77,18 +77,18 @@
 </div>
 
 <script>
-	const iconCheck = "{% static 'icons/check-lg.svg' %}";
-	const iconX = "{% static 'icons/x-lg.svg' %}";
-	const iconWrench = "{% static 'icons/wrench.svg' %}";
-	const iconEthernet = "{% static 'icons/ethernet.svg' %}";
-	const iconWifi = "{% static 'icons/wifi.svg' %}";
-	const iconShield = "{% static 'icons/shield.svg' %}";
-	const iconBroadcastPin = "{% static 'icons/broadcast-pin.svg' %}";
-	const iconArrowRepeat = "{% static 'icons/arrow-repeat.svg' %}";
+	var iconCheck = "{% static 'icons/check-lg.svg' %}";
+	var iconX = "{% static 'icons/x-lg.svg' %}";
+	var iconWrench = "{% static 'icons/wrench.svg' %}";
+	var iconEthernet = "{% static 'icons/ethernet.svg' %}";
+	var iconWifi = "{% static 'icons/wifi.svg' %}";
+	var iconShield = "{% static 'icons/shield.svg' %}";
+	var iconBroadcastPin = "{% static 'icons/broadcast-pin.svg' %}";
+	var iconArrowRepeat = "{% static 'icons/arrow-repeat.svg' %}";
 
-	const itemsPerPage = 50;
-	let currentPage = 1;
-	let data = [
+	var itemsPerPage = 50;
+	var currentPage = 1;
+	var data = [
 		{% for device in device_list %}
 		{
 			asset_id:                "{{ device.asset_id }}",
@@ -120,9 +120,9 @@
 		},
 		{% endfor %}
 	];
-	let filteredData = [...data]; // copies array to prevent changes on original data
-	let sortOrder = 'asc';
-	let searchTerm = '';
+	var filteredData = [...data]; // copies array to prevent changes on original data
+	var sortOrder = 'asc';
+	var searchTerm = '';
 
 	function toggleDeletedCheckbox() {
 		const checked = document.getElementById('showDeletedCheckbox').checked;
@@ -324,10 +324,10 @@
 		});
 	}
 
-	document.addEventListener('DOMContentLoaded', () => {
-		displayTable(currentPage);
-		toggleDeletedCheckbox();
-		setupModal();
-		setupSorting();
-	});
+
+	displayTable(currentPage);
+	toggleDeletedCheckbox();
+	setupModal();
+	setupSorting();
+
 </script>
