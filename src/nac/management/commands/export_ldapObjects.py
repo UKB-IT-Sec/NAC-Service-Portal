@@ -8,7 +8,7 @@ from ldap3 import SUBTREE
 from csv import DictWriter
 from os import stat
 
-DEFAULT_CONFIG = get_config_directory() / 'export.cnf'
+DEFAULT_CONFIG = get_config_directory() / 'ldap.cfg'
 DEFAULT_OBJECT = 'appl-NAC-Device'
 CSV_SAVE_FILE = get_resources_directory() / 'ldapObjects.csv'
 
