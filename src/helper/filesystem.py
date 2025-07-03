@@ -26,3 +26,7 @@ def get_config_directory():
 
 def get_resources_directory():
     return get_src_directory().parent / 'resources'
+
+
+def get_existing_path(path):
+    return Path(path) if Path(path).exists() else None

@@ -1,0 +1,3 @@
+# execute export to ldap on minute 42 each hour
+42 * * * * /opt/nssp/src/venv/bin/python3 /opt/nssp/src/manage.py export_to_ldap -v 0
+

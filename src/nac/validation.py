@@ -20,13 +20,13 @@ from django.core.exceptions import ValidationError
 def normalize_mac(input_string):
     if not isinstance(input_string, str):
         raise MacAddressNotValid('invalid input type')
-    return ''.join(c for c in input_string if c.isalnum()).lower()
+    return ''.join(c for c in input_string if c.isalnum()).upper()
 
 
 def validate_mac(input_string):
     if len(input_string) != 12:
         raise ValidationError('invalid size')
-    if re.search(r'[a-f0-9]{12}', input_string) is None:
+    if re.search(r'[a-fA-F0-9]{12}', input_string) is None:
         raise ValidationError('invalid characters')
 
 

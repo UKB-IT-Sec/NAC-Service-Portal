@@ -40,7 +40,6 @@ td {
 .inline {
   display: inline;
 }
-
 .link-button {
   background: none;
   border: none;
@@ -59,3 +58,64 @@ td {
 .link-button:active {
   color: red;
 }
+.icon-zoom:hover{
+	transform: scale(1.2);
+}
+.icon-desc {
+	position: relative;
+	display: inline-block;
+  }
+.icon-desc:hover::after {
+	content: attr(desc);
+	font-size: 12px;
+	position: absolute;
+	background: #333;
+	color: white;
+	padding: 3px;
+	border-radius: 10px;
+	pointer-events: none;
+	left: 50%;
+	transform: translateX(-50%);
+	top: 100%;
+	margin-top: 5px;
+	white-space: nowrap;
+	z-index: 2000;
+  }
+  .checkbox-container {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* displays checkbox in 100pt width columns, as many as possible based on window size*/
+	gap: 10px 20px;
+	padding: 10px;
+	flex: 1;
+    margin-right: 20px;
+  }
+  
+  .checkbox-item {
+	display: flex;
+	align-items: center;
+  }
+  
+  .checkbox-label {
+	margin-left: 8px;
+	cursor: pointer;
+  }
+  
+  .custom-checkbox {
+	width: 20px;
+	height: 20px;
+	cursor: pointer;
+  }
+  .search-container {
+	display: flex;
+	align-items: center;
+  }
+  
+  .search-container input {
+	margin-right: 8px;
+  }
+  
+  .split-content {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+  }

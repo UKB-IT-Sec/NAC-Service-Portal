@@ -1,0 +1,206 @@
+{% load static %}
+
+<table class="table table-striped">
+			<thead>
+				<tr>
+					<th scope="col">Asset ID</th>
+					<th scope="col">Status</th>
+					<th scope="col">FQDN</th>
+					<th scope="col">Device Role Prod</th>
+					<th scope="col">MAC</th>
+					<th scope="col">Last Modification</th>
+					<th scope="col" width="60"></th>
+				</tr>
+			</thead>
+			<label>
+				<input type="checkbox" id="showDeletedCheckbox" onchange="toggleDeletedCheckbox()" />
+					Show deleted Devices
+			</label>
+		{% for device in device_list %}
+			<tr class="{% if device.deleted %}deleted-device{% endif %}">
+				<td>
+					<a href="{% url 'device_detail' device.pk %}">{{ device.asset_id }}</a>
+				</td>
+				<td>
+					{% if device.appl_NAC_Active %}
+						<span class="icon-desc" desc="Active (access allowed)"><img src="{% static 'icons/check-lg.svg' %}" alt="appl_NAC_Active_True" height="25" width="25" class="icon-zoom" /></span>
+					{% else %}
+						<span class="icon-desc" desc="Inactive (access not allowed)"><img src="{% static 'icons/x-lg.svg' %}" alt="appl_NAC_Active_False" height="25" width="25" class="icon-zoom" /></span>
+					{% endif %}
+					{% if device.appl_NAC_Install %}
+						<span class="icon-desc" desc="Installation"><img src="{% static 'icons/wrench.svg' %}" alt="appl_NAC_Install" height="25" width="25" class="icon-zoom" /></span>
+					{% else %}
+						<span class="icon-desc" desc="Not in installation"><img src="{% static 'icons/wrench.svg' %}" alt="appl_NAC_Install" height="25" width="25" class="icon-zoom gray-icon" /></span>
+					{% endif %}
+					{% if device.appl_NAC_AllowAccessCAB %}
+						<span class="icon-desc" desc="Wired access allowed"><img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_AllowAccessCAB" height="25" width="25" class="icon-zoom"/></span>
+					{% else %}
+						<span class="icon-desc" desc="Wired access not allowed"><img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_AllowAccessCAB" height="25" width="25" class="icon-zoom gray-icon"/></span>
+					{% endif %}
+					{% if device.appl_NAC_AllowAccessAIR %}
+						<span class="icon-desc" desc="Wireless access allowed"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_AllowAccessAIR" height="25" width="25" class="icon-zoom"/></span>
+					{% else %}
+						<span class="icon-desc" desc="Wireless access not allowed"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_AllowAccessAIR" height="25" width="25" class="icon-zoom gray-icon"/></span>
+					{% endif %}
+					{% if device.appl_NAC_AllowAccessVPN %}
+						<span class="icon-desc" desc="Access over VPN allowed"><img src="{% static 'icons/shield.svg' %}" alt="appl_NAC_AllowAccessVPN" height="25" width="25" class="icon-zoom"/></span>
+					{% else %}
+						<span class="icon-desc" desc="Access over VPN not allowed"><img src="{% static 'icons/shield.svg' %}" alt="appl_NAC_AllowAccessVPN" height="25" width="25" class="icon-zoom gray-icon"/></span>
+					{% endif %}
+					{% if device.appl_NAC_AllowAccessCEL %}
+						<span class="icon-desc" desc="Access over cellular network allowed"><img src="{% static 'icons/broadcast-pin.svg' %}" alt="appl_NAC_AllowAccessCEL" height="25" width="25" class="icon-zoom"/></span>
+					{% else %}
+						<span class="icon-desc" desc="Access over cellular network not allowed"><img src="{% static 'icons/broadcast-pin.svg' %}" alt="appl_NAC_AllowAccessCEL" height="25" width="25" class="icon-zoom gray-icon"/></span>
+					{% endif %}
+					{% if device.allowLdapSync %}
+						<span class="icon-desc" desc="Sync with LDAP allowed"><img src="{% static 'icons/arrow-repeat.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom"/></span>
+					{% else %}
+						<span class="icon-desc" desc="Sync with LDAP not allowed"><img src="{% static 'icons/arrow-repeat.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom gray-icon"/></span>
+					{% endif %}
+				</td>
+				<td>
+					{{ device.appl_NAC_FQDN }}
+				</td>
+				<td>
+					{{ device.appl_NAC_DeviceRoleProd }}
+				</td>
+				<div id="detailModal" class="modal">
+						<div class="modal-content">
+						<span class="close">&times;</span>
+						<h2 id="modalTitle"></h2>
+						<ul id="modalList"></ul>
+					</div>
+				  </div>
+				<td>
+				{% if device.get_appl_NAC_macAddressCAB%}
+					<b>
+						<span class="icon-desc" desc="Wired MAC address"><img src="{% static 'icons/favicon.svg' %}" alt="appl_NAC_macAddressCAB" height="14" width="14" class="icon-zoom"/></span>
+						<b> {{device.get_appl_NAC_macAddressCAB.0}}</b>
+							{% if device.get_appl_NAC_macAddressCAB|length > 1 %}
+								<a href="#" onclick="showDetails('Wired MAC addresses', '{{ device.get_appl_NAC_macAddressCAB|join:", " }}'); return false;" class="icon-desc" desc="{{ device.get_appl_NAC_macAddressCAB|join:', ' }}">
+									({{device.get_appl_NAC_macAddressCAB|length}})
+								</a>
+							{% endif %}
+						<br />
+					</b>
+				{% endif %}
+				{% if device.get_appl_NAC_macAddressAIR%}
+					<b>
+						<span class="icon-desc" desc="Wireless MAC address"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_macAddressAIR" height="14" width="14" class="icon-zoom"/></span>
+						<b> {{device.get_appl_NAC_macAddressAIR.0}}</b>
+							{% if device.get_appl_NAC_macAddressAIR|length > 1 %}
+								<a href="#" onclick="showDetails('Wireless MAC addresses', '{{ device.get_appl_NAC_macAddressAIR|join:", " }}'); return false;" class="icon-desc" desc="{{ device.get_appl_NAC_macAddressAIR|join:', ' }}">
+									({{device.get_appl_NAC_macAddressAIR|length}})
+								</a>
+							{% endif %}
+						<br />
+					</b>
+				{% endif %}
+				</td>
+				<td>
+					{{ device.last_modified }}
+				</td>
+				<td>
+					<a href="{% url 'device_edit' device.pk %}">
+						<span class="icon-desc" desc="edit"><img src="{% static 'icons/pencil-square.svg' %}" alt="edit" height="16" width="16" class="icon-zoom"/></span>
+
+						</a>
+						<a href="{% url 'device_delete' device.pk %}">
+							<span class="icon-desc" desc="delete"><img src="{% static 'icons/trash.svg' %}" alt="delete" height="16" width="16" class="icon-zoom"/></span>
+						</a>
+					</td>
+			</tr>
+		{% endfor %}
+	</table>
+<style>
+	.modal {
+		display: none;
+		position: fixed;
+		z-index: 1;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		overflow: auto;
+		background-color: rgba(0,0,0,0.4);
+	}
+	.modal-content {
+		background-color: #fefefe;
+		margin: 15% auto;
+		padding: 20px;
+		border: 1px solid #888;
+		width: 80%;
+	}
+	.gray-icon {
+    	 opacity: 0.2;
+    	 filter: grayscale(100%);
+	}
+	.close {
+		color: #aaa;
+		float: right;
+		font-size: 22px;
+		font-weight: bold;
+		cursor: pointer;
+	}
+	  .close:hover,
+	  .close:focus {
+		color: black;
+		text-decoration: none;
+		cursor: pointer;
+	  }
+	  td, th {
+		white-space: nowrap;
+  	}
+	.deleted-device {
+    background-color:rgb(246, 171, 171) !important;
+	}
+</style>
+<script>
+	function toggleDeletedCheckbox() {
+		const checked = document.getElementById('showDeletedCheckbox').checked;
+		const deletedRows = document.querySelectorAll('.deleted-device');
+
+		if (checked) {
+			deletedRows.forEach(row => row.style.display = '');
+		} else {
+			deletedRows.forEach(row => row.style.display = 'none');
+		}
+	}
+
+	window.addEventListener('DOMContentLoaded', function() {
+		document.querySelectorAll('.deleted-device').forEach(row => row.style.display = 'none');
+	});
+
+	function showDetails(title, addresses) {
+		const modal = document.getElementById("detailModal");
+		const modalTitle = document.getElementById("modalTitle");
+		const modalList = document.getElementById("modalList");
+  
+		modalTitle.textContent = title;
+		modalList.innerHTML = "";
+  
+		addresses.split(",").forEach(address => {
+			const li = document.createElement("li");
+			li.textContent = address.trim();
+			modalList.appendChild(li);
+		});
+  
+		modal.style.display = "block";
+	}
+  
+	function setupModal() {
+		const modal = document.getElementById("detailModal");
+		const span = document.getElementsByClassName("close")[0];
+  
+		span.onclick = function() {
+			modal.style.display = "none";
+		}
+  
+		window.onclick = function(event) {
+			if (event.target == modal) {
+				modal.style.display = "none";
+			}
+		}
+	}
+	setupModal();
+</script>

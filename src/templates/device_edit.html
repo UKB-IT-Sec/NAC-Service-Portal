@@ -1,7 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
+{%load crispy_forms_tags %}
+
 <div class="container">
+    <h1>Reset device</h1>
+    {% crispy device_history_form %}
+    <br>
     <h1>Edit device</h1>
     {% include "device_form.html" %}
 </div>
