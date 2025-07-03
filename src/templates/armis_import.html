@@ -266,6 +266,7 @@
           }
       });
   }
+
   function applyFilters() {
     const selectedBoundary = document.getElementById("boundaryFilter").value;
     searchTerm = document.getElementById("searchInput").value.toLowerCase();
@@ -293,7 +294,8 @@
     
     pageData.forEach((device, index) => {
         const row = tableBody.insertRow();
-		const nameCell = row.insertCell();
+        
+		    const nameCell = row.insertCell();
         nameCell.innerHTML = `<a href="${device.url}"><span class="icon-desc" desc="view device in Armis"><img src="{% static 'icons/info-circle.svg' %}" alt="device info" height="16" width="16" class="icon-zoom"/></span></a> ${device.name} `;
         
         const macCell = row.insertCell();
@@ -333,7 +335,7 @@
     
     document.getElementById("currentPage").textContent = page;
     document.getElementById("totalPages").textContent = Math.ceil(filteredData.length / itemsPerPage);
-}
+  }
   
   function showDetails(title, addresses) {
       const modal = document.getElementById("detailModal");
