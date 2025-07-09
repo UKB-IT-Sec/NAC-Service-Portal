@@ -83,7 +83,6 @@
 	var data = [
 		{% for device in device_list %}
 		{
-			synchronized:						 "{{ device.synchronized }}",
 			asset_id:                "{{ device.asset_id }}",
 			detail_url:              "{% url 'device_detail' device.pk %}",
 			edit_url:                "{% url 'device_edit' device.pk %}",
@@ -96,6 +95,7 @@
 			appl_NAC_AllowAccessVPN: {{ device.appl_NAC_AllowAccessVPN|yesno:"true,false" }},
 			appl_NAC_AllowAccessCEL: {{ device.appl_NAC_AllowAccessCEL|yesno:"true,false" }},
 			allowLdapSync:           {{ device.allowLdapSync|yesno:"true,false" }},
+			synchronized:            {{ device.synchronized|yesno:"true,false" }},
 
 			appl_NAC_FQDN:           "{{ device.appl_NAC_FQDN }}",
 			appl_NAC_DeviceRoleProd: "{{ device.appl_NAC_DeviceRoleProd }}",
@@ -109,7 +109,7 @@
 
 			last_modified:           "{{ device.last_modified }}",
 
-			deleted: {{ device.deleted|yesno:"true,false" }}
+			deleted:								 {{ device.deleted|yesno:"true,false" }}
 		},
 		{% endfor %}
 	];
