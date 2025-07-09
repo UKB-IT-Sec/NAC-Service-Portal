@@ -78,15 +78,6 @@
 </div>
 
 <script>
-	var iconCheck = "{% static 'icons/check-lg.svg' %}";
-	var iconX = "{% static 'icons/x-lg.svg' %}";
-	var iconWrench = "{% static 'icons/wrench.svg' %}";
-	var iconEthernet = "{% static 'icons/ethernet.svg' %}";
-	var iconWifi = "{% static 'icons/wifi.svg' %}";
-	var iconShield = "{% static 'icons/shield.svg' %}";
-	var iconBroadcastPin = "{% static 'icons/broadcast-pin.svg' %}";
-	var iconArrowRepeat = "{% static 'icons/arrow-repeat.svg' %}";
-
 	var itemsPerPage = 50;
 	var currentPage = 1;
 	var data = [
@@ -260,13 +251,13 @@
 			const statusCell = row.insertCell();
 			let statusHtml = "";
 			statusHtml += device.appl_NAC_Active
-				? `<span class="icon-desc" desc="Active (access allowed)"><img src="${iconCheck}" alt="appl_NAC_Active_True" height="25" width="25" class="icon-zoom" /></span>`
-				: `<span class="icon-desc" desc="Inactive (no access allowed)"><img src="${iconX}" alt="appl_NAC_Active_False" height="25" width="25" class="icon-zoom gray-icon" /></span>`;
+				? `<span class="icon-desc" desc="Active (access allowed)"><img src="{% static 'icons/check-lg.svg' %}" alt="appl_NAC_Active_True" height="25" width="25" class="icon-zoom" /></span>`
+				: `<span class="icon-desc" desc="Inactive (no access allowed)"><img src="{% static 'icons/x-lg.svg' %}" alt="appl_NAC_Active_False" height="25" width="25" class="icon-zoom gray-icon" /></span>`;
 			statusHtml += device.appl_NAC_Install
-				? `<span class="icon-desc" desc="Installation"><img src="${iconWrench}" alt="appl_NAC_Install" height="25" width="25" class="icon-zoom" /></span>`
-				: `<span class="icon-desc" desc="Not in installation"><img src="${iconWrench}" alt="appl_NAC_Install" height="25" width="25" class="icon-zoom gray-icon" /></span>`;
+				? `<span class="icon-desc" desc="Installation"><img src="{% static 'icons/wrench.svg' %}" alt="appl_NAC_Install" height="25" width="25" class="icon-zoom" /></span>`
+				: `<span class="icon-desc" desc="Not in installation"><img src="{% static 'icons/wrench.svg' %}" alt="appl_NAC_Install" height="25" width="25" class="icon-zoom gray-icon" /></span>`;
 			statusHtml += device.appl_NAC_AllowAccessCAB
-				? `<span class="icon-desc" desc="Wired access allowed"><img src="${iconEthernet}" alt="appl_NAC_AllowAccessCAB" height="25" width="25" class="icon-zoom"/></span>`
+				? `<span class="icon-desc" desc="Wired access allowed"><img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_AllowAccessCAB" height="25" width="25" class="icon-zoom"/></span>`
 				: `<span class="icon-desc" desc="Wired access not allowed"><img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_AllowAccessCAB" height="25" width="25" class="icon-zoom gray-icon"/></span>`;
 			statusHtml += device.appl_NAC_AllowAccessAIR
 				? `<span class="icon-desc" desc="Wireless access allowed"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_AllowAccessAIR" height="25" width="25" class="icon-zoom"/></span>`
@@ -278,8 +269,8 @@
 				? `<span class="icon-desc" desc="Access over cellular network allowed"><img src="{% static 'icons/broadcast-pin.svg' %}" alt="appl_NAC_AllowAccessCEL" height="25" width="25" class="icon-zoom"/></span>`
 				: `<span class="icon-desc" desc="Access over cellular network not allowed"><img src="{% static 'icons/broadcast-pin.svg' %}" alt="appl_NAC_AllowAccessCEL" height="25" width="25" class="icon-zoom gray-icon"/></span>`;
 			statusHtml += device.allowLdapSync
-				? `<span class="icon-desc" desc="Sync with LDAP allowed"><img src="{% static 'icons/arrow-repeat.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom"/></span>`
-				: `<span class="icon-desc" desc="Sync with LDAP not allowed"><img src="{% static 'icons/arrow-repeat.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom gray-icon"/></span>`;
+				? `<span class="icon-desc" desc="Sync with LDAP allowed"><img src="{% static 'icons/database-lock.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom gray-icon"/></span>`
+				: `<span class="icon-desc" desc="Sync with LDAP not allowed"><img src="{% static 'icons/database-lock.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom"/></span>`;
 			statusCell.innerHTML = statusHtml;
 			
 			row.insertCell().textContent = device.appl_NAC_FQDN;
@@ -290,7 +281,7 @@
 			if (device.macAddressAIR.length) {
 				macHtml += `<b>
 					<span class="icon-desc" desc="Wireless MAC address">
-						<img src="${iconWifi}" alt="appl_NAC_macAddressAIR" height="14" width="14" class="icon-zoom"/>
+						<img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_macAddressAIR" height="14" width="14" class="icon-zoom"/>
 					</span>
 					${device.macAddressAIR[0]}
 				`;
@@ -305,7 +296,7 @@
 			if (device.macAddressCAB.length) {
 				macHtml += `<b>
 					<span class="icon-desc" desc="Wired MAC address">
-						<img src="${iconEthernet}" alt="appl_NAC_macAddressCAB" height="14" width="14" class="icon-zoom"/>
+						<img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_macAddressCAB" height="14" width="14" class="icon-zoom"/>
 					</span>
 					${device.macAddressCAB[0]}
 				`;
