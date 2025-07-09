@@ -56,6 +56,7 @@
 <table id="deviceTable" class="table table-striped">
 	<thead>
 		<tr>
+			<th scope="col" width="45"></th>
 			<th scope="col">Asset ID <span class="sort-icon" data-column="asset_id">▲</span></th>
 			<th scope="col">Status</th>
 			<th scope="col">FQDN <span class="sort-icon" data-column="appl_NAC_FQDN">▲</span></th>
@@ -91,6 +92,7 @@
 	var data = [
 		{% for device in device_list %}
 		{
+			synced:									 "{{ device.synchronized }}",
 			asset_id:                "{{ device.asset_id }}",
 			detail_url:              "{% url 'device_detail' device.pk %}",
 			edit_url:                "{% url 'device_edit' device.pk %}",
@@ -246,6 +248,13 @@
 					row.style.display = 'none';
 				}
 			}
+
+			const syncedCell = row.insertCell();
+			let html = "";
+			html += device.synced
+				? `<span class="icon-desc" desc="Synchronized with LDAP"><img src="{% static 'icons/arrow-repeat.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom"/></span>`
+				: `<span class="icon-desc" desc="Not synchronized with LDAP"><img src="{% static 'icons/arrow-repeat.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom gray-icon"/></span>`;
+			syncedCell.innerHTML = html;
 
 			const assetIdCell = row.insertCell();
 			assetIdCell.innerHTML = `<a href="${device.detail_url}">${device.asset_id}</a>`;
