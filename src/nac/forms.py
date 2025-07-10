@@ -34,15 +34,15 @@ class DeviceSearchForm(forms.Form):
         self.fields["search_string"] = forms.CharField(
             label="Search for Asset ID, Hostname or MAC Address:", max_length=100, required=False)
         self.fields["device_role_prod"] = forms.ModelChoiceField(DeviceRoleProd.objects.all(),
-                                              required=False, label="Device Role Prod:")
+                                                                 required=False, label="Device Role Prod:")
         self.fields["administration_group"] = forms.ModelChoiceField(AdministrationGroup.objects.filter(
             id__in=user.administration_group.all()), required=False, label="Administration Group")
 
-        self.fields["show_deleted"] = forms.ChoiceField(choices=[("present", "Without deleted devices"),
-                                                      ("both", "With deleted devices"),
-                                                      ("deleted", "Only deleted devices")],
-                                             label="Show deleted devices?",
-                                             required=False)
+        self.fields["show_deleted"] = forms.ChoiceField(
+            choices=[("present", "Without deleted devices"),
+                     ("both", "With deleted devices"),
+                     ("deleted", "Only deleted devices")],
+            label="Show deleted devices?", required=False)
 
 
 class MacAddressFormat(forms.Textarea):
