@@ -26,8 +26,6 @@ class CustomUserChangeForm(UserChangeForm):
 
 
 class DeviceSearchForm(forms.Form):
-    class Meta:
-        field_order = ["search_string", "device_role_prod", "administration_group", "show_deleted_devices"]
 
     def __init__(self, user, *args, **kwargs):
         self.user = user
@@ -40,7 +38,7 @@ class DeviceSearchForm(forms.Form):
         self.fields["administration_group"] = forms.ModelChoiceField(AdministrationGroup.objects.filter(
             id__in=user.administration_group.all()), required=False, label="Administration Group")
 
-        self.fields["show_deleted_devices"] = forms.ChoiceField(choices=[("present", "Only present devices"),
+        self.fields["show_deleted"] = forms.ChoiceField(choices=[("present", "Only present devices"),
                                                       ("both", "Both present and deleted devices"),
                                                       ("deleted", "Only deleted devices")],
                                              label="Show deleted devices?",
