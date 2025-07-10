@@ -1,117 +1,5 @@
 {% load static %}
 
-<table class="table table-striped">
-			<thead>
-				<tr>
-					<th scope="col">Asset ID</th>
-					<th scope="col">Status</th>
-					<th scope="col">FQDN</th>
-					<th scope="col">Device Role Prod</th>
-					<th scope="col">MAC</th>
-					<th scope="col">Last Modification</th>
-					<th scope="col" width="60"></th>
-				</tr>
-			</thead>
-			<label>
-				<input type="checkbox" id="showDeletedCheckbox" onchange="toggleDeletedCheckbox()" />
-					Show deleted Devices
-			</label>
-		{% for device in device_list %}
-			<tr class="{% if device.deleted %}deleted-device{% endif %}">
-				<td>
-					<a href="{% url 'device_detail' device.pk %}">{{ device.asset_id }}</a>
-				</td>
-				<td>
-					{% if device.appl_NAC_Active %}
-						<span class="icon-desc" desc="Active (access allowed)"><img src="{% static 'icons/check-lg.svg' %}" alt="appl_NAC_Active_True" height="25" width="25" class="icon-zoom" /></span>
-					{% else %}
-						<span class="icon-desc" desc="Inactive (access not allowed)"><img src="{% static 'icons/x-lg.svg' %}" alt="appl_NAC_Active_False" height="25" width="25" class="icon-zoom" /></span>
-					{% endif %}
-					{% if device.appl_NAC_Install %}
-						<span class="icon-desc" desc="Installation"><img src="{% static 'icons/wrench.svg' %}" alt="appl_NAC_Install" height="25" width="25" class="icon-zoom" /></span>
-					{% else %}
-						<span class="icon-desc" desc="Not in installation"><img src="{% static 'icons/wrench.svg' %}" alt="appl_NAC_Install" height="25" width="25" class="icon-zoom gray-icon" /></span>
-					{% endif %}
-					{% if device.appl_NAC_AllowAccessCAB %}
-						<span class="icon-desc" desc="Wired access allowed"><img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_AllowAccessCAB" height="25" width="25" class="icon-zoom"/></span>
-					{% else %}
-						<span class="icon-desc" desc="Wired access not allowed"><img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_AllowAccessCAB" height="25" width="25" class="icon-zoom gray-icon"/></span>
-					{% endif %}
-					{% if device.appl_NAC_AllowAccessAIR %}
-						<span class="icon-desc" desc="Wireless access allowed"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_AllowAccessAIR" height="25" width="25" class="icon-zoom"/></span>
-					{% else %}
-						<span class="icon-desc" desc="Wireless access not allowed"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_AllowAccessAIR" height="25" width="25" class="icon-zoom gray-icon"/></span>
-					{% endif %}
-					{% if device.appl_NAC_AllowAccessVPN %}
-						<span class="icon-desc" desc="Access over VPN allowed"><img src="{% static 'icons/shield.svg' %}" alt="appl_NAC_AllowAccessVPN" height="25" width="25" class="icon-zoom"/></span>
-					{% else %}
-						<span class="icon-desc" desc="Access over VPN not allowed"><img src="{% static 'icons/shield.svg' %}" alt="appl_NAC_AllowAccessVPN" height="25" width="25" class="icon-zoom gray-icon"/></span>
-					{% endif %}
-					{% if device.appl_NAC_AllowAccessCEL %}
-						<span class="icon-desc" desc="Access over cellular network allowed"><img src="{% static 'icons/broadcast-pin.svg' %}" alt="appl_NAC_AllowAccessCEL" height="25" width="25" class="icon-zoom"/></span>
-					{% else %}
-						<span class="icon-desc" desc="Access over cellular network not allowed"><img src="{% static 'icons/broadcast-pin.svg' %}" alt="appl_NAC_AllowAccessCEL" height="25" width="25" class="icon-zoom gray-icon"/></span>
-					{% endif %}
-					{% if device.allowLdapSync %}
-						<span class="icon-desc" desc="Sync with LDAP allowed"><img src="{% static 'icons/arrow-repeat.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom"/></span>
-					{% else %}
-						<span class="icon-desc" desc="Sync with LDAP not allowed"><img src="{% static 'icons/arrow-repeat.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom gray-icon"/></span>
-					{% endif %}
-				</td>
-				<td>
-					{{ device.appl_NAC_FQDN }}
-				</td>
-				<td>
-					{{ device.appl_NAC_DeviceRoleProd }}
-				</td>
-				<div id="detailModal" class="modal">
-						<div class="modal-content">
-						<span class="close">&times;</span>
-						<h2 id="modalTitle"></h2>
-						<ul id="modalList"></ul>
-					</div>
-				  </div>
-				<td>
-				{% if device.get_appl_NAC_macAddressCAB%}
-					<b>
-						<span class="icon-desc" desc="Wired MAC address"><img src="{% static 'icons/favicon.svg' %}" alt="appl_NAC_macAddressCAB" height="14" width="14" class="icon-zoom"/></span>
-						<b> {{device.get_appl_NAC_macAddressCAB.0}}</b>
-							{% if device.get_appl_NAC_macAddressCAB|length > 1 %}
-								<a href="#" onclick="showDetails('Wired MAC addresses', '{{ device.get_appl_NAC_macAddressCAB|join:", " }}'); return false;" class="icon-desc" desc="{{ device.get_appl_NAC_macAddressCAB|join:', ' }}">
-									({{device.get_appl_NAC_macAddressCAB|length}})
-								</a>
-							{% endif %}
-						<br />
-					</b>
-				{% endif %}
-				{% if device.get_appl_NAC_macAddressAIR%}
-					<b>
-						<span class="icon-desc" desc="Wireless MAC address"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_macAddressAIR" height="14" width="14" class="icon-zoom"/></span>
-						<b> {{device.get_appl_NAC_macAddressAIR.0}}</b>
-							{% if device.get_appl_NAC_macAddressAIR|length > 1 %}
-								<a href="#" onclick="showDetails('Wireless MAC addresses', '{{ device.get_appl_NAC_macAddressAIR|join:", " }}'); return false;" class="icon-desc" desc="{{ device.get_appl_NAC_macAddressAIR|join:', ' }}">
-									({{device.get_appl_NAC_macAddressAIR|length}})
-								</a>
-							{% endif %}
-						<br />
-					</b>
-				{% endif %}
-				</td>
-				<td>
-					{{ device.last_modified }}
-				</td>
-				<td>
-					<a href="{% url 'device_edit' device.pk %}">
-						<span class="icon-desc" desc="edit"><img src="{% static 'icons/pencil-square.svg' %}" alt="edit" height="16" width="16" class="icon-zoom"/></span>
-
-						</a>
-						<a href="{% url 'device_delete' device.pk %}">
-							<span class="icon-desc" desc="delete"><img src="{% static 'icons/trash.svg' %}" alt="delete" height="16" width="16" class="icon-zoom"/></span>
-						</a>
-					</td>
-			</tr>
-		{% endfor %}
-	</table>
 <style>
 	.modal {
 		display: none;
@@ -154,8 +42,81 @@
 	.deleted-device {
     background-color:rgb(246, 171, 171) !important;
 	}
+	.sort-icon {
+          cursor: pointer;
+          user-select: none;
+    }
 </style>
+
+<label>
+	<input type="checkbox" id="showDeletedCheckbox" onchange="toggleDeletedCheckbox()" />
+		Show deleted Devices
+</label>
+
+<table id="deviceTable" class="table table-striped">
+	<thead>
+		<tr>
+			<th scope="col" width="45"></th>
+			<th scope="col">Asset ID <span class="sort-icon" data-column="asset_id">▲</span></th>
+			<th scope="col">Status</th>
+			<th scope="col">FQDN <span class="sort-icon" data-column="appl_NAC_FQDN">▲</span></th>
+			<th scope="col">Device Role Prod <span class="sort-icon" data-column="appl_NAC_DeviceRoleProd">▲</span></th>
+			<th scope="col">MAC</th>
+			<th scope="col">Last Modification <span class="sort-icon" data-column="last_modified">▲</span></th>
+			<th scope="col" width="60"></th>
+		</tr>
+	</thead>
+	<tbody>
+	</tbody>
+</table>
+<div id="detailModal" class="modal">
+	<div class="modal-content">
+		<span class="close">&times;</span>
+		<h2 id="modalTitle"></h2>
+		<ul id="modalList"></ul>
+	</div>
+</div>
+
 <script>
+	var itemsPerPage = 50;
+	var currentPage = 1;
+	var data = [
+		{% for device in device_list %}
+		{
+			asset_id:                "{{ device.asset_id }}",
+			detail_url:              "{% url 'device_detail' device.pk %}",
+			edit_url:                "{% url 'device_edit' device.pk %}",
+			delete_url:              "{% url 'device_delete' device.pk %}",
+
+			appl_NAC_Active:         {{ device.appl_NAC_Active|yesno:"true,false" }},
+			appl_NAC_Install:        {{ device.appl_NAC_Install|yesno:"true,false" }},
+			appl_NAC_AllowAccessCAB: {{ device.appl_NAC_AllowAccessCAB|yesno:"true,false" }},
+			appl_NAC_AllowAccessAIR: {{ device.appl_NAC_AllowAccessAIR|yesno:"true,false" }},
+			appl_NAC_AllowAccessVPN: {{ device.appl_NAC_AllowAccessVPN|yesno:"true,false" }},
+			appl_NAC_AllowAccessCEL: {{ device.appl_NAC_AllowAccessCEL|yesno:"true,false" }},
+			allowLdapSync:           {{ device.allowLdapSync|yesno:"true,false" }},
+			synchronized:            {{ device.synchronized|yesno:"true,false" }},
+
+			appl_NAC_FQDN:           "{{ device.appl_NAC_FQDN }}",
+			appl_NAC_DeviceRoleProd: "{{ device.appl_NAC_DeviceRoleProd }}",
+
+			macAddressAIR: [ {% for m in device.get_appl_NAC_macAddressAIR %}"{{ m }}",{% endfor %} ],
+			macAddressCAB: [ {% for m in device.get_appl_NAC_macAddressCAB %}"{{ m }}",{% endfor %} ],
+			ipAddress:               "{{ device.ipAddress }}",
+			boundaries:              "{{ device.boundaries }}",
+			vlan:                    "{{ device.vlan.0.value }}",
+			site:                    "{{ device.site.name }}",
+
+			last_modified:           "{{ device.last_modified }}",
+
+			deleted:								 {{ device.deleted|yesno:"true,false" }}
+		},
+		{% endfor %}
+	];
+	var filteredData = [...data]; // copies array to prevent changes on original data
+	var sortOrder = 'asc';
+	var searchTerm = '';
+
 	function toggleDeletedCheckbox() {
 		const checked = document.getElementById('showDeletedCheckbox').checked;
 		const deletedRows = document.querySelectorAll('.deleted-device');
@@ -165,11 +126,9 @@
 		} else {
 			deletedRows.forEach(row => row.style.display = 'none');
 		}
-	}
 
-	window.addEventListener('DOMContentLoaded', function() {
-		document.querySelectorAll('.deleted-device').forEach(row => row.style.display = 'none');
-	});
+		displayTable(currentPage);
+	}
 
 	function showDetails(title, addresses) {
 		const modal = document.getElementById("detailModal");
@@ -187,7 +146,7 @@
   
 		modal.style.display = "block";
 	}
-  
+
 	function setupModal() {
 		const modal = document.getElementById("detailModal");
 		const span = document.getElementsByClassName("close")[0];
@@ -202,5 +161,171 @@
 			}
 		}
 	}
+
+	function compareAddresses(addrA, addrB) {
+		const partsA = addrA.split(/[.:]/).map(part => parseInt(part, 16) || 0); //splits mac or ip Adress into integer blocks
+		const partsB = addrB.split(/[.:]/).map(part => parseInt(part, 16) || 0);
+
+		for (let i = 0; i < Math.max(partsA.length, partsB.length); i++) {
+			if (partsA[i] === undefined) return sortOrder === 'asc' ? -1 : 1;
+			if (partsB[i] === undefined) return sortOrder === 'asc' ? 1 : -1;
+			if (partsA[i] !== partsB[i]) {
+				return sortOrder === 'asc' 
+					? partsA[i] - partsB[i] //return <0 if block of A is smaller than block of B -> A comes before B
+					: partsB[i] - partsA[i];
+			}
+		}
+		return 0; //mac or IPAddress are equal
+	}
+
+	function updateSortIcons(sortedColumn) { // switches icon so user knows if order is asc oder desc
+		const sortIcons = document.querySelectorAll('.sort-icon');
+		sortIcons.forEach(icon => {
+			const column = icon.getAttribute('data-column');
+			if (column === sortedColumn) {
+				icon.textContent = sortOrder === 'asc' ? '▲' : '▼';
+			} else {
+				icon.textContent = '▲';
+			}
+		});
+	}
+
+	function sortData(column) {
+		sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'; //switches asc to desc or desc to asc for every click so user can switch between order
+
+		filteredData.sort((a, b) => { // sorts data-array by providing a function that returns <0, 0, >0 for specific comparisons 
+			const valueA = a[column];
+			const valueB = b[column];
+			
+			if (valueA === "None" && valueB === "None") return 0;
+			if (valueA === "None") return sortOrder === 'asc' ? -1 : 1; // short for if (sortOrder === 'asc') { return -1;} else {return 1;}
+			if (valueB === "None") return sortOrder === 'asc' ? 1 : -1;
+
+			if (column === 'macAddress' || column === 'ipAddress') {
+				return compareAddresses(valueA, valueB);
+			}
+			return sortOrder === 'asc' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA); // returns 0,1,-1 for string comparison
+		});
+
+		currentPage = 1;
+		displayTable(currentPage);
+		updateSortIcons(column);
+	}
+
+	function setupSorting() {
+		const sortIcons = document.querySelectorAll('.sort-icon'); // gets all html-elements that are sort-elements
+		sortIcons.forEach(icon => {
+			icon.addEventListener('click', () => {
+				const column = icon.getAttribute('data-column'); // determines which column to order
+				sortData(column);
+			});
+		});
+	}
+
+	function displayTable(page) {
+		const tableBody = document.querySelector("#deviceTable tbody");
+		tableBody.innerHTML = "";
+
+		const start = (page - 1) * itemsPerPage;
+		const end   = start + itemsPerPage;
+		const pageData = filteredData.slice(start, end);
+
+		pageData.forEach((device, index) => {
+			const row = tableBody.insertRow();
+
+			if (device.deleted) {
+				row.classList.add('deleted-device');
+				if (!document.getElementById('showDeletedCheckbox').checked) {
+					row.style.display = 'none';
+				}
+			}
+
+			const syncedCell = row.insertCell();
+			syncedCell.innerHTML = device.synchronized
+				? `<span class="icon-desc" desc="Synchronized with LDAP"><img src="{% static 'icons/arrow-repeat.svg' %}" alt="ldapSynced" height="25" width="25" class="icon-zoom"/></span>`
+				: `<span class="icon-desc" desc="Not synchronized with LDAP"><img src="{% static 'icons/arrow-repeat.svg' %}" alt="notLdapSynced" height="25" width="25" class="icon-zoom gray-icon"/></span>`;
+
+			const assetIdCell = row.insertCell();
+			assetIdCell.innerHTML = `<a href="${device.detail_url}">${device.asset_id}</a>`;
+			
+			const statusCell = row.insertCell();
+			let statusHtml = "";
+			statusHtml += device.appl_NAC_Active
+				? `<span class="icon-desc" desc="Active (access allowed)"><img src="{% static 'icons/check-lg.svg' %}" alt="appl_NAC_Active_True" height="25" width="25" class="icon-zoom" /></span>`
+				: `<span class="icon-desc" desc="Inactive (no access allowed)"><img src="{% static 'icons/x-lg.svg' %}" alt="appl_NAC_Active_False" height="25" width="25" class="icon-zoom gray-icon" /></span>`;
+			statusHtml += device.appl_NAC_Install
+				? `<span class="icon-desc" desc="Installation"><img src="{% static 'icons/wrench.svg' %}" alt="appl_NAC_Install" height="25" width="25" class="icon-zoom" /></span>`
+				: `<span class="icon-desc" desc="Not in installation"><img src="{% static 'icons/wrench.svg' %}" alt="appl_NAC_Install" height="25" width="25" class="icon-zoom gray-icon" /></span>`;
+			statusHtml += device.appl_NAC_AllowAccessCAB
+				? `<span class="icon-desc" desc="Wired access allowed"><img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_AllowAccessCAB" height="25" width="25" class="icon-zoom"/></span>`
+				: `<span class="icon-desc" desc="Wired access not allowed"><img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_AllowAccessCAB" height="25" width="25" class="icon-zoom gray-icon"/></span>`;
+			statusHtml += device.appl_NAC_AllowAccessAIR
+				? `<span class="icon-desc" desc="Wireless access allowed"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_AllowAccessAIR" height="25" width="25" class="icon-zoom"/></span>`
+				: `<span class="icon-desc" desc="Wireless access not allowed"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_AllowAccessAIR" height="25" width="25" class="icon-zoom gray-icon"/></span>`;
+			statusHtml += device.appl_NAC_AllowAccessVPN
+				? `<span class="icon-desc" desc="Access over VPN allowed"><img src="{% static 'icons/shield.svg' %}" alt="appl_NAC_AllowAccessVPN" height="25" width="25" class="icon-zoom"/></span>`
+				: `<span class="icon-desc" desc="Access over VPN not allowed"><img src="{% static 'icons/shield.svg' %}" alt="appl_NAC_AllowAccessVPN" height="25" width="25" class="icon-zoom gray-icon"/></span>`;
+			statusHtml += device.appl_NAC_AllowAccessCEL
+				? `<span class="icon-desc" desc="Access over cellular network allowed"><img src="{% static 'icons/broadcast-pin.svg' %}" alt="appl_NAC_AllowAccessCEL" height="25" width="25" class="icon-zoom"/></span>`
+				: `<span class="icon-desc" desc="Access over cellular network not allowed"><img src="{% static 'icons/broadcast-pin.svg' %}" alt="appl_NAC_AllowAccessCEL" height="25" width="25" class="icon-zoom gray-icon"/></span>`;
+			statusHtml += device.allowLdapSync
+				? `<span class="icon-desc" desc="Sync with LDAP allowed"><img src="{% static 'icons/database-lock.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom gray-icon"/></span>`
+				: `<span class="icon-desc" desc="Sync with LDAP not allowed"><img src="{% static 'icons/database-lock.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom"/></span>`;
+			statusCell.innerHTML = statusHtml;
+			
+			row.insertCell().textContent = device.appl_NAC_FQDN;
+			row.insertCell().textContent = device.appl_NAC_DeviceRoleProd;
+
+			const macCell = row.insertCell();
+			let macHtml = '';
+			if (device.macAddressAIR.length) {
+				macHtml += `<b>
+					<span class="icon-desc" desc="Wireless MAC address">
+						<img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_macAddressAIR" height="14" width="14" class="icon-zoom"/>
+					</span>
+					${device.macAddressAIR[0]}
+				`;
+				if (device.macAddressAIR.length > 1) {
+					macHtml += ` <a href="#" class="icon-desc" desc="${device.macAddressAIR.join(', ')}"
+												onclick="showDetails('Wireless MAC addresses','${device.macAddressAIR.join(', ')}');return false;">
+												(${device.macAddressAIR.length})
+											</a>`;
+				}
+				macHtml += '<br/></b>';
+			}
+			if (device.macAddressCAB.length) {
+				macHtml += `<b>
+					<span class="icon-desc" desc="Wired MAC address">
+						<img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_macAddressCAB" height="14" width="14" class="icon-zoom"/>
+					</span>
+					${device.macAddressCAB[0]}
+				`;
+				if (device.macAddressCAB.length > 1) {
+					macHtml += ` <a href="#" class="icon-desc" desc="${device.macAddressCAB.join(', ')}"
+												onclick="showDetails('Wired MAC addresses','${device.macAddressCAB.join(', ')}');return false;">
+												(${device.macAddressCAB.length})
+											</a>`;
+				}
+				macHtml += '<br/></b>';
+			}
+			macCell.innerHTML = macHtml;
+
+			row.insertCell().textContent = device.last_modified;
+
+			const editCell = row.insertCell();
+			editCell.innerHTML = `<a href="${device.edit_url}">
+					<span class="icon-desc" desc="edit"><img src="{% static 'icons/pencil-square.svg' %}" alt="edit" height="16" width="16" class="icon-zoom"/></span>
+				</a>
+				<a href="${device.delete_url}">
+					<span class="icon-desc" desc="delete"><img src="{% static 'icons/trash.svg' %}" alt="delete" height="16" width="16" class="icon-zoom"/></span>
+				</a>`;
+		});
+	}
+
+
+	displayTable(currentPage);
+	toggleDeletedCheckbox();
 	setupModal();
+	setupSorting();
+
 </script>
