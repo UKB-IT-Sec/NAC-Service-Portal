@@ -42,6 +42,15 @@ class DeviceListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
         selected_device_roles_prod = self.request.GET.get("device_role_prod")
         if selected_device_roles_prod:
             device_list = device_list.filter(appl_NAC_DeviceRoleProd__in=selected_device_roles_prod)
+
+        # filter for deleted devices
+        deleted_selection = self.request.GET.get("show_deleted")
+        if (deleted_selection == "present"):
+            device_list = device_list.filter(deleted=False)
+        elif (deleted_selection == "deleted"):
+            device_list = device_list.filter(deleted=True)
+
+        # return results
         return device_list.order_by("appl_NAC_Hostname")
 
     def get(self, request, *args, **kwargs):
