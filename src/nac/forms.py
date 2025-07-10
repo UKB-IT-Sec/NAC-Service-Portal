@@ -38,8 +38,8 @@ class DeviceSearchForm(forms.Form):
         self.fields["administration_group"] = forms.ModelChoiceField(AdministrationGroup.objects.filter(
             id__in=user.administration_group.all()), required=False, label="Administration Group")
 
-        self.fields["show_deleted"] = forms.ChoiceField(choices=[("present", "Only present devices"),
-                                                      ("both", "Both present and deleted devices"),
+        self.fields["show_deleted"] = forms.ChoiceField(choices=[("present", "Without deleted devices"),
+                                                      ("both", "With deleted devices"),
                                                       ("deleted", "Only deleted devices")],
                                              label="Show deleted devices?",
                                              required=False)
