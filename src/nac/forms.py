@@ -1,5 +1,5 @@
 from django.contrib.auth.forms import AdminUserCreationForm, UserChangeForm
-from .models import CustomUser, Device, AdministrationGroup, DeviceRoleProd
+from .models import CustomUser, Device, AdministrationGroup, DeviceRoleProd, DNSDomain
 from django import forms
 from django.forms import ModelForm, CheckboxInput
 from dal import autocomplete
@@ -11,6 +11,7 @@ from crispy_forms.bootstrap import FieldWithButtons
 import datetime
 from django.utils.timezone import localtime
 import re
+import magic
 
 
 class CustomUserCreationForm(AdminUserCreationForm):
@@ -23,6 +24,39 @@ class CustomUserChangeForm(UserChangeForm):
     class Meta:
         model = CustomUser
         fields = UserChangeForm.Meta.fields
+
+
+class FileUploadSelectForm(forms.Form):
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super(FileUploadSelectForm, self).__init__(*args, **kwargs)
+        self.fields['administration_group'] = forms.ModelChoiceField(AdministrationGroup.objects.filter(
+            id__in=user.administration_group.all()), required=True, label="Administration Group")
+        self.fields['dns_domain'] = forms.ModelChoiceField(queryset=DNSDomain.objects.all(), required=True, label="DNS-Domain")
+
+
+class FileUploadForm(forms.Form):
+    file = forms.FileField(
+        label="Upload File",
+        required=True,
+        help_text="Supports only .csv-Format",
+        allow_empty_file=False,
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control'})
+    )
+
+    def clean_file(self):
+        uploaded_file = self.cleaned_data.get('file')
+        if uploaded_file:
+            mime = magic.from_buffer(uploaded_file.read(2048), mime=True)
+            uploaded_file.seek(0)
+
+            if mime not in ['text/csv', 'text/plain']:
+                raise ValidationError("Wrong File-Format (MIME-Type: %s)" % mime)
+            from helper.file_integration import validate_header
+            if not validate_header(uploaded_file):
+                raise ValidationError("Wrong Header-Format")
+            uploaded_file.seek(0)
+        return uploaded_file
 
 
 class DeviceSearchForm(forms.Form):
@@ -115,28 +149,13 @@ class DeviceForm(ModelForm):
         if not cleaned_data.get('asset_id') or cleaned_data.get('asset_id').startswith('FQDN') and cleaned_data.get('appl_NAC_Hostname') and cleaned_data.get('dns_domain'):
             cleaned_data['asset_id'] = f"FQDN_{cleaned_data.get('appl_NAC_Hostname')}.{cleaned_data.get('dns_domain')}"
 
-        # Check for min. MAC Requirement
-        if not cleaned_data.get('appl_NAC_macAddressCAB') and not cleaned_data.get('appl_NAC_macAddressAIR'):
-            self.add_error(
-                'appl_NAC_macAddressCAB', 'Device requires at least one MAC-Address'
-            )
-            self.add_error(
-                'appl_NAC_macAddressAIR', 'Device requires at least one MAC-Address'
-            )
+        administration_group = cleaned_data.get('administration_group')
+        device_role_prod = cleaned_data.get('appl_NAC_DeviceRoleProd')
 
-        # Check for existing FQDN
-        hostname = cleaned_data.get('appl_NAC_Hostname')
-        domain = cleaned_data.get('dns_domain')
-        if hostname and domain:
-            qs = Device.objects.filter(
-                appl_NAC_Hostname=hostname,
-                dns_domain=domain
-                )
-            if self.instance.pk:
-                qs = qs.exclude(pk=self.instance.pk)
-            if qs.exists():
-                self.add_error(
-                    'appl_NAC_Hostname', 'Device with this Hostname and Domain already exists'
+        if administration_group and device_role_prod:
+            if not administration_group.DeviceRoleProd.filter(id=device_role_prod.id).exists():
+                self.add_error('appl_NAC_DeviceRoleProd', ValidationError(
+                        f"Device Role '{device_role_prod}' not in  Administration Group '{administration_group}'")
                 )
         return cleaned_data
 
