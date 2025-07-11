@@ -1,0 +1,319 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="container">
+{% if not error%}
+  <h1>File Import</h1>
+  {% if step == 1 %}
+    <form method="post" enctype="multipart/form-data" class="mb-0">
+      {% csrf_token %}
+      {{ form.file }}
+      <input type="hidden" name="step" value="1">
+      <button type="submit">Upload</button>
+	  <a href="?download_template=1" class="btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+			<path d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293z"/>
+			<path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
+		</svg>
+		Download CSV-Template
+    	</a>
+    </form>
+    
+{% if form.errors %}
+  <div class="alert alert-danger mt-3">
+    <ul>
+    {% for field in form %}
+      {% for error in field.errors %}
+        <li><strong>{{ error }}</strong></li>
+      {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+      <li><strong>{{ error }}</strong></li>
+    {% endfor %}
+    </ul>
+  </div>
+{% endif %}
+    {% elif step == 2  and not devices%}
+    <h2>Select Administration Group and DNS-Domain for all Devices:</h2>
+    <form method="post">
+      {% csrf_token %}
+      {{ select_form.administration_group|as_crispy_field }}
+      {{ select_form.dns_domain|as_crispy_field }}
+      <input type="hidden" name="step" value="2">
+      <button type="submit">Import</button>
+    </form>
+    {% endif %}
+  {% if devices and not step == 3 %}
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="step" value="3">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+        <th scope="col">Select for Import</th>
+        <th scope="col">Asset ID</th>
+        <th scope="col">Status</th>
+        <th scope="col">FQDN</th>
+        <th scope="col">Device Role Prod</th>
+        <th scope="col">MAC</th>
+		<th scope="col" width="60"> </th>
+      </tr>
+      </thead>
+      <tbody>
+        {% for device in devices %}
+        <tr>
+        	<td>
+              <input type="checkbox" name="markedForImport" value="{{ device.id }}">
+            </td>
+        <td>
+            {{ device.asset_id }}
+        </td>
+		<td>
+			{% if device.appl_NAC_Active %}
+				<span class="icon-desc" desc="Active (access allowed)"><img src="{% static 'icons/check-lg.svg' %}" alt="appl_NAC_Active_True" height="25" width="25" class="icon-zoom" /></span>
+			{% else %}
+				<span class="icon-desc" desc="Inactive (access not allowed)"><img src="{% static 'icons/x-lg.svg' %}" alt="appl_NAC_Active_False" height="25" width="25" class="icon-zoom" /></span>
+			{% endif %}
+			{% if device.appl_NAC_Install %}
+				<span class="icon-desc" desc="Installation"><img src="{% static 'icons/wrench.svg' %}" alt="appl_NAC_Install" height="25" width="25" class="icon-zoom" /></span>
+			{% else %}
+				<span class="icon-desc" desc="Not in installation"><img src="{% static 'icons/wrench.svg' %}" alt="appl_NAC_Install" height="25" width="25" class="icon-zoom gray-icon" /></span>
+			{% endif %}
+			{% if device.appl_NAC_AllowAccessCAB %}
+				<span class="icon-desc" desc="Wired access allowed"><img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_AllowAccessCAB" height="25" width="25" class="icon-zoom"/></span>
+			{% else %}
+				<span class="icon-desc" desc="Wired access not allowed"><img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_AllowAccessCAB" height="25" width="25" class="icon-zoom gray-icon"/></span>
+			{% endif %}
+			{% if device.appl_NAC_AllowAccessAIR %}
+				<span class="icon-desc" desc="Wireless access allowed"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_AllowAccessAIR" height="25" width="25" class="icon-zoom"/></span>
+			{% else %}
+				<span class="icon-desc" desc="Wireless access not allowed"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_AllowAccessAIR" height="25" width="25" class="icon-zoom gray-icon"/></span>
+			{% endif %}
+			{% if device.appl_NAC_AllowAccessVPN %}
+				<span class="icon-desc" desc="Access over VPN allowed"><img src="{% static 'icons/shield.svg' %}" alt="appl_NAC_AllowAccessVPN" height="25" width="25" class="icon-zoom"/></span>
+			{% else %}
+				<span class="icon-desc" desc="Access over VPN not allowed"><img src="{% static 'icons/shield.svg' %}" alt="appl_NAC_AllowAccessVPN" height="25" width="25" class="icon-zoom gray-icon"/></span>
+			{% endif %}
+			{% if device.appl_NAC_AllowAccessCEL %}
+				<span class="icon-desc" desc="Access over cellular network allowed"><img src="{% static 'icons/broadcast-pin.svg' %}" alt="appl_NAC_AllowAccessCEL" height="25" width="25" class="icon-zoom"/></span>
+			{% else %}
+				<span class="icon-desc" desc="Access over cellular network not allowed"><img src="{% static 'icons/broadcast-pin.svg' %}" alt="appl_NAC_AllowAccessCEL" height="25" width="25" class="icon-zoom gray-icon"/></span>
+			{% endif %}
+			{% if device.allowLdapSync %}
+				<span class="icon-desc" desc="Sync with LDAP allowed"><img src="{% static 'icons/arrow-repeat.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom"/></span>
+			{% else %}
+				<span class="icon-desc" desc="Sync with LDAP not allowed"><img src="{% static 'icons/arrow-repeat.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom gray-icon"/></span>
+			{% endif %}
+		</td>
+		<td>
+			{{ device.appl_NAC_Hostname }}
+		</td>
+		<td>
+			{{ device.appl_NAC_DeviceRoleProd }}
+		</td>
+			<td>
+			{% if device.appl_NAC_macAddressCAB%}
+				<b>
+					<span class="icon-desc" desc="Wired MAC address"><img src="{% static 'icons/favicon.svg' %}" alt="appl_NAC_macAddressCAB" height="14" width="14" class="icon-zoom"/></span>
+					<b> {{device.appl_NAC_macAddressCAB.0}}</b>
+						{% if device.appl_NAC_macAddressCAB|length > 1 %}
+							<a href="#" onclick="showDetails('Wired MAC addresses', '{{ device.appl_NAC_macAddressCAB|join:", " }}'); return false;" class="icon-desc" desc="{{ device.appl_NAC_macAddressCAB|join:', ' }}">
+								({{device.appl_NAC_macAddressCAB|length}})
+							</a>
+						{% endif %}
+					<br />
+				</b>
+			{% endif %}
+			{% if device.appl_NAC_macAddressAIR%}
+				<b>
+					<span class="icon-desc" desc="Wireless MAC address"><img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_macAddressAIR" height="14" width="14" class="icon-zoom"/></span>
+					<b> {{device.appl_NAC_macAddressAIR.0}}</b>
+						{% if device.appl_NAC_macAddressAIR|length > 1 %}
+							<a href="#" onclick="showDetails('Wireless MAC addresses', '{{ device.appl_NAC_macAddressAIR|join:", " }}'); return false;" class="icon-desc" desc="{{ device.appl_NAC_macAddressAIR|join:', ' }}">
+								({{device.appl_NAC_macAddressAIR|length}})
+							</a>
+						{% endif %}
+					<br />
+				</b>
+			{% endif %}
+			</td>
+			<td>
+                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#deviceModal{{ device.id }}">
+                    Details
+                </button>
+                <div class="modal fade" id="deviceModal{{ device.id }}" tabindex="-1" aria-labelledby="deviceModalLabel{{ device.id }}" aria-hidden="true">
+                  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="deviceModalLabel{{ device.id }}">Details for Device {{ device.appl_NAC_Hostname }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th><h4>AssetID</h4></th>
+                                <th><h4>{{ device.asset_id }}</h4></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td><strong>Administration Group</strong></td>
+                                <td>{{ device.administration_group }}</td>
+                            </tr>
+							<tr>
+                                <td><strong>Device Role Productive</strong></td>
+                                <td>{{ device.appl_NAC_DeviceRoleProd }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Hostname</strong></td>
+                                <td>{{ device.appl_NAC_Hostname }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Active</strong></td>
+                                <td>{{ device.appl_NAC_Active }}</td>
+                            </tr>
+							<tr>
+                                <td><strong>ForceDot1X</strong></td>
+                                <td>{{ device.appl_NAC_ForceDot1X }}</td>
+                            </tr>
+							<tr>
+                                <td><strong>Install</strong></td>
+                                <td>{{ device.appl_NAC_Install }}</td>
+                            </tr>
+							<tr>
+                                <td><strong>AllowAccessCAB</strong></td>
+                                <td>{{ device.appl_NAC_AllowAccessCAB }}</td>
+                            </tr>
+							<tr>
+                                <td><strong>AllowAccessAIR</strong></td>
+                                <td>{{ device.appl_NAC_AllowAccessAIR }}</td>
+                            </tr>
+							<tr>
+                                <td><strong>AllowAccessVPN</strong></td>
+                                <td>{{ device.appl_NAC_AllowAccessVPN }}</td>
+                            </tr>
+							<tr>
+                                <td><strong>AllowAccessCEL</strong></td>
+                                <td>{{ device.appl_NAC_AllowAccessCEL }}</td>
+                            </tr>
+							<tr>
+                                <td><strong>MacAddressWireless</strong></td>
+								<td>
+								{% for mac in device.appl_NAC_macAddressAIR%}
+                                	{{ mac }}<br/>
+								{%endfor%}
+								</td>
+                            </tr>
+							<tr>
+                                <td><strong>MacAddressWired</strong></td>
+								<td>
+                                {% for mac in device.appl_NAC_macAddressCAB%}
+                                	{{ mac }}<br/>
+								{%endfor%}
+								</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </td>
+      </tr>
+    {% endfor %}
+      </tbody>
+    </table>
+    <button type="submit">Import</button>
+  </form>
+  {% endif%}
+  {% if invalid_devices %}
+  <h3>The following Devices are invalid:</h3>
+	<ol>
+		{%for device in invalid_devices%}
+			<li><b>{{ device.appl_NAC_Hostname }}</b> {{device.error}} </li>
+		{% endfor%}
+	</ol>
+  {% endif%}
+  <div id="detailModal" class="modal">
+		<div class="modal-content">
+			<span class="close">&times;</span>
+			<h2 id="modalTitle"></h2>
+			<ul id="modalList"></ul>
+		</div>
+	</div>
+  {% if step == 3%}
+  <h3>The following Devices have been saved:</h3>
+	<ol>
+		{%for device in importedDeviceList%}
+			<li>{{ device }}</li>
+		{% endfor%}
+	</ol>
+  {% endif%}
+  {% else %}
+	<div class="alert alert-danger mt-4" role="alert" style="font-size:1.15em;">
+		<strong>Error:</strong> {{ error }}
+	</div>
+  {%endif%}
+</div>
+<style>
+	.gray-icon {
+    	 opacity: 0.2;
+    	 filter: grayscale(100%);
+	}
+	.close {
+		color: #aaa;
+		float: right;
+		font-size: 22px;
+		font-weight: bold;
+		cursor: pointer;
+	}
+	  .close:hover,
+	  .close:focus {
+		color: black;
+		text-decoration: none;
+		cursor: pointer;
+	  }
+	  td, th {
+		white-space: nowrap;
+  	}
+</style>
+<script>
+	function showDetails(title, addresses) {
+		const modal = document.getElementById("detailModal");
+		const modalTitle = document.getElementById("modalTitle");
+		const modalList = document.getElementById("modalList");
+  
+		modalTitle.textContent = title;
+		modalList.innerHTML = "";
+  
+		addresses.split(',').forEach(address => {
+			const li = document.createElement("li");
+			li.textContent = address.trim();
+			modalList.appendChild(li);
+		});
+  
+		modal.style.display = "block";
+	}
+  
+	function setupModal() {
+		const modal = document.getElementById("detailModal");
+		const span = document.getElementsByClassName("close")[0];
+  
+		span.onclick = function() {
+			modal.style.display = "none";
+		}
+  
+		window.onclick = function(event) {
+			if (event.target == modal) {
+				modal.style.display = "none";
+			}
+		}
+	}
+	setupModal();
+</script>
+{% endblock %}
