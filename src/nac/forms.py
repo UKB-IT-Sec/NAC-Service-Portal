@@ -150,7 +150,7 @@ class DeviceForm(ModelForm):
             if not administration_group.DeviceRoleProd.filter(id=device_role_prod.id).exists():
                 self.add_error('appl_NAC_DeviceRoleProd', ValidationError(
                         f"Device Role '{device_role_prod}' not in Administration Group '{administration_group}'")
-                )
+                               )
         return cleaned_data
 
     def clean_appl_NAC_Hostname(self):
