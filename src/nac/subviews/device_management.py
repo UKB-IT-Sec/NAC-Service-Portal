@@ -10,6 +10,11 @@ from django.template.loader import render_to_string
 from django.forms.models import model_to_dict
 from django.utils import timezone
 
+# for csv_export
+from django.http import HttpResponse
+import csv
+from helper.file_integration import ESSENTIAL_HEADER
+
 from ..models import Device, AdministrationGroup, DeviceRoleProd
 from ..forms import DeviceForm, DeviceSearchForm, DeviceHistoryForm
 from ..validation import normalize_mac
@@ -75,8 +80,29 @@ class DeviceListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
 
 
 class DeviceListCsvView(DeviceListView):
-    template_name = "device_export.csv"
-    content_type = "text/csv"
+    def render_to_response(self, context, **response_kwargs):
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="devices.csv"'
+        writer = csv.writer(response, delimiter=';')
+        header_list = ESSENTIAL_HEADER + ['Deleted']
+        writer.writerow(header_list)
+        for device in context['device_list']:
+            writer.writerow([
+                device.asset_id,
+                device.appl_NAC_Hostname,
+                device.appl_NAC_Active,
+                device.appl_NAC_ForceDot1X,
+                device.appl_NAC_Install,
+                device.appl_NAC_AllowAccessCAB,
+                device.appl_NAC_AllowAccessAIR,
+                device.appl_NAC_AllowAccessVPN,
+                device.appl_NAC_AllowAccessCEL,
+                device.appl_NAC_DeviceRoleProd,
+                device.appl_NAC_macAddressAIR,
+                device.appl_NAC_macAddressCAB,
+                device.deleted
+            ])
+        return response
 
 
 class DeviceDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
