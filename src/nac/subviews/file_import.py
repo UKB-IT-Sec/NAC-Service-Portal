@@ -30,9 +30,8 @@ class FileImportView(LoginRequiredMixin, View):
         if request.GET.get("download_template") == "1":
             response = HttpResponse(content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename="import_schema.csv"'
-            writer = csv.writer(response)
-            header_string = ";".join(ESSENTIAL_HEADER)
-            writer.writerow([header_string])
+            writer = csv.writer(response, delimiter=';')
+            writer.writerow(ESSENTIAL_HEADER)
             return response
 
         form = FileUploadForm()
