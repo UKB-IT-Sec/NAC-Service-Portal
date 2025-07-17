@@ -21,6 +21,7 @@ from .subviews.account import (
 )
 
 from .subviews.armis import ArmisView
+from .subviews.file_import import FileImportView
 
 
 urlpatterns = [
@@ -31,6 +32,7 @@ urlpatterns = [
     path("devices/<int:pk>/delete", DeviceDeleteView.as_view(), name="device_delete"),
     path("devices/new/", DeviceCreateView.as_view(), name="device_new"),
     path("armis/", ArmisView.as_view(), name="armis_import"),
+    path("file_import/", FileImportView.as_view(), name="file_import"),
     path("dns_domain-autocomplete/", DNSDomainAutocomplete.as_view(), name="dns_domain-autocomplete"),
     path("DeviceRoleProd-autocomplete/", DeviceRoleProdAutocomplete.as_view(), name="DeviceRoleProd-autocomplete"),
     path("administration-group-autocomplete/", AdministrationGroupAutocomplete.as_view(), name="administration-group-autocomplete"),
