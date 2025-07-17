@@ -149,6 +149,29 @@ class DeviceForm(ModelForm):
         if not cleaned_data.get('asset_id') or cleaned_data.get('asset_id').startswith('FQDN') and cleaned_data.get('appl_NAC_Hostname') and cleaned_data.get('dns_domain'):
             cleaned_data['asset_id'] = f"FQDN_{cleaned_data.get('appl_NAC_Hostname')}.{cleaned_data.get('dns_domain')}"
 
+        # Check for min. MAC Requirement
+        if not cleaned_data.get('appl_NAC_macAddressCAB') and not cleaned_data.get('appl_NAC_macAddressAIR'):
+            self.add_error(
+                'appl_NAC_macAddressCAB', 'Device requires at least one MAC-Address'
+            )
+            self.add_error(
+                'appl_NAC_macAddressAIR', 'Device requires at least one MAC-Address'
+            )
+
+        # Check for existing FQDN
+        hostname = cleaned_data.get('appl_NAC_Hostname')
+        domain = cleaned_data.get('dns_domain')
+        if hostname and domain:
+            qs = Device.objects.filter(
+                appl_NAC_Hostname=hostname,
+                dns_domain=domain
+                )
+            if self.instance.pk:
+                qs = qs.exclude(pk=self.instance.pk)
+            if qs.exists():
+                self.add_error(
+                    'appl_NAC_Hostname', 'Device with this Hostname and Domain already exists')
+
         administration_group = cleaned_data.get('administration_group')
         device_role_prod = cleaned_data.get('appl_NAC_DeviceRoleProd')
 
