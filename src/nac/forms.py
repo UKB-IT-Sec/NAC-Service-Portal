@@ -172,7 +172,7 @@ class DeviceForm(ModelForm):
         if administration_group and device_role_prod:
             if not administration_group.DeviceRoleProd.filter(id=device_role_prod.id).exists():
                 self.add_error('appl_NAC_DeviceRoleProd', ValidationError(
-                        f"Device Role '{device_role_prod}' not in  Administration Group '{administration_group}'")
+                        f"Device Role '{device_role_prod}' not in Administration Group '{administration_group}'")
                 )
         return cleaned_data
 
@@ -206,7 +206,6 @@ class DeviceForm(ModelForm):
 
     def clean_synchronized(self):
         return False
-
 
 
 class DeviceHistoryForm(forms.Form):
