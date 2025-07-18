@@ -3,6 +3,7 @@ from .subviews.home import HomePageView
 
 from .subviews.device_management import (
     DeviceListView,
+    DeviceListCsvView,
     DeviceDetailView,
     DeviceUpdateView,
     DeviceDeleteView,
@@ -27,6 +28,7 @@ from .subviews.file_import import FileImportView
 urlpatterns = [
     path("", HomePageView.as_view(), name="home"),
     path("devices/", DeviceListView.as_view(), name="devices"),
+    path("devices/export", DeviceListCsvView.as_view(), name="device_export_csv"),
     path("devices/<int:pk>/", DeviceDetailView.as_view(), name="device_detail"),
     path("devices/<int:pk>/edit/", DeviceUpdateView.as_view(), name="device_edit"),
     path("devices/<int:pk>/delete", DeviceDeleteView.as_view(), name="device_delete"),

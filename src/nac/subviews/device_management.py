@@ -10,6 +10,11 @@ from django.template.loader import render_to_string
 from django.forms.models import model_to_dict
 from django.utils import timezone
 
+# for csv_export
+from django.http import HttpResponse
+import csv
+from helper.file_integration import ESSENTIAL_HEADER
+
 from ..models import Device, AdministrationGroup, DeviceRoleProd
 from ..forms import DeviceForm, DeviceSearchForm, DeviceHistoryForm
 from ..validation import normalize_mac
@@ -42,6 +47,17 @@ class DeviceListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
         selected_device_roles_prod = self.request.GET.get("device_role_prod")
         if selected_device_roles_prod:
             device_list = device_list.filter(appl_NAC_DeviceRoleProd__in=selected_device_roles_prod)
+
+        # filter for deleted devices
+        deleted_selection = "active"
+        if self.request.GET.get("show_deleted"):
+            deleted_selection = self.request.GET.get("show_deleted")
+        if (deleted_selection == "active"):
+            device_list = device_list.filter(deleted=False)
+        elif (deleted_selection == "deleted"):
+            device_list = device_list.filter(deleted=True)
+
+        # return results
         return device_list.order_by("appl_NAC_Hostname")
 
     def get(self, request, *args, **kwargs):
@@ -61,6 +77,33 @@ class DeviceListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
         context["device_role_prod_list"] = DeviceRoleProd.objects.all()
         context["search_form"] = DeviceSearchForm(user=self.request.user)
         return context
+
+
+class DeviceListCsvView(DeviceListView):
+    def render_to_response(self, context, **response_kwargs):
+        response = HttpResponse(content_type='text/csv')
+        filename = 'DeviceExport_{}.csv'.format(self.request.GET.get("show_deleted"))
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
+        writer = csv.writer(response, delimiter=';')
+        header_list = ESSENTIAL_HEADER + ['Deleted']
+        writer.writerow(header_list)
+        for device in context['device_list']:
+            writer.writerow([
+                device.asset_id,
+                device.appl_NAC_Hostname,
+                device.appl_NAC_Active,
+                device.appl_NAC_ForceDot1X,
+                device.appl_NAC_Install,
+                device.appl_NAC_AllowAccessCAB,
+                device.appl_NAC_AllowAccessAIR,
+                device.appl_NAC_AllowAccessVPN,
+                device.appl_NAC_AllowAccessCEL,
+                device.appl_NAC_DeviceRoleProd,
+                device.appl_NAC_macAddressAIR,
+                device.appl_NAC_macAddressCAB,
+                device.deleted
+            ])
+        return response
 
 
 class DeviceDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):

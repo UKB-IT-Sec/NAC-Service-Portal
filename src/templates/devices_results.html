@@ -47,10 +47,6 @@
     }
 </style>
 
-<label>
-	<input type="checkbox" id="showDeletedCheckbox" onchange="toggleDeletedCheckbox()" />
-		Show deleted Devices
-</label>
 
 <table id="deviceTable" class="table table-striped">
 	<thead>
@@ -116,18 +112,6 @@
 	var sortOrder = 'asc';
 	var searchTerm = '';
 
-	function toggleDeletedCheckbox() {
-		const checked = document.getElementById('showDeletedCheckbox').checked;
-		const deletedRows = document.querySelectorAll('.deleted-device');
-
-		if (checked) {
-			deletedRows.forEach(row => row.style.display = '');
-		} else {
-			deletedRows.forEach(row => row.style.display = 'none');
-		}
-
-		displayTable(currentPage);
-	}
 
 	function showDetails(title, addresses) {
 		const modal = document.getElementById("detailModal");
@@ -234,9 +218,6 @@
 
 			if (device.deleted) {
 				row.classList.add('deleted-device');
-				if (!document.getElementById('showDeletedCheckbox').checked) {
-					row.style.display = 'none';
-				}
 			}
 
 			const syncedCell = row.insertCell();
