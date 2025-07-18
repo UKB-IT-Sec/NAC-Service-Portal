@@ -49,10 +49,10 @@ class DeviceListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
             device_list = device_list.filter(appl_NAC_DeviceRoleProd__in=selected_device_roles_prod)
 
         # filter for deleted devices
-        deleted_selection = "present"
+        deleted_selection = "active"
         if self.request.GET.get("show_deleted"):
             deleted_selection = self.request.GET.get("show_deleted")
-        if (deleted_selection == "present"):
+        if (deleted_selection == "active"):
             device_list = device_list.filter(deleted=False)
         elif (deleted_selection == "deleted"):
             device_list = device_list.filter(deleted=True)
@@ -82,7 +82,7 @@ class DeviceListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
 class DeviceListCsvView(DeviceListView):
     def render_to_response(self, context, **response_kwargs):
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="devices.csv"'
+        response['Content-Disposition'] = f'attachment; filename="DeviceExport_{self.request.GET.get("show_deleted")}.csv"'
         writer = csv.writer(response, delimiter=';')
         header_list = ESSENTIAL_HEADER + ['Deleted']
         writer.writerow(header_list)

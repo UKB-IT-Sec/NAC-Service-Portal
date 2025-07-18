@@ -73,8 +73,8 @@ class DeviceSearchForm(forms.Form):
             id__in=user.administration_group.all()), required=False, label="Administration Group")
 
         self.fields["show_deleted"] = forms.ChoiceField(
-            choices=[("present", "Without deleted devices"),
-                     ("both", "With deleted devices"),
+            choices=[("active", "Without deleted devices"),
+                     ("all", "With deleted devices"),
                      ("deleted", "Only deleted devices")],
             label="Show deleted devices?", required=False)
 
