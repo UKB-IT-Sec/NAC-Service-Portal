@@ -17,7 +17,8 @@ search_form.on('input', function () {
     const request_parameters = {
         search_string: $('#id_search_string').val(),
         device_role_prod: $('#id_device_role_prod').val(),
-        administration_group: $('#id_administration_group').val()
+        administration_group: $('#id_administration_group').val(),
+        show_deleted: $('#id_show_deleted').val()
     }
 
     // if scheduled_function is NOT false, cancel the execution of the function

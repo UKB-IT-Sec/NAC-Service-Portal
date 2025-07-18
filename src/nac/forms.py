@@ -1,5 +1,5 @@
 from django.contrib.auth.forms import AdminUserCreationForm, UserChangeForm
-from .models import CustomUser, Device, AdministrationGroup, DeviceRoleProd
+from .models import CustomUser, Device, AdministrationGroup, DeviceRoleProd, DNSDomain
 from django import forms
 from django.forms import ModelForm, CheckboxInput
 from dal import autocomplete
@@ -11,6 +11,7 @@ from crispy_forms.bootstrap import FieldWithButtons
 import datetime
 from django.utils.timezone import localtime
 import re
+import magic
 
 
 class CustomUserCreationForm(AdminUserCreationForm):
@@ -25,18 +26,57 @@ class CustomUserChangeForm(UserChangeForm):
         fields = UserChangeForm.Meta.fields
 
 
+class FileUploadSelectForm(forms.Form):
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super(FileUploadSelectForm, self).__init__(*args, **kwargs)
+        self.fields['administration_group'] = forms.ModelChoiceField(AdministrationGroup.objects.filter(
+            id__in=user.administration_group.all()), required=True, label="Administration Group")
+        self.fields['dns_domain'] = forms.ModelChoiceField(queryset=DNSDomain.objects.all(), required=True, label="DNS-Domain")
+
+
+class FileUploadForm(forms.Form):
+    file = forms.FileField(
+        label="Upload File",
+        required=True,
+        help_text="Supports only .csv-Format",
+        allow_empty_file=False,
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control'})
+    )
+
+    def clean_file(self):
+        uploaded_file = self.cleaned_data.get('file')
+        if uploaded_file:
+            mime = magic.from_buffer(uploaded_file.read(2048), mime=True)
+            uploaded_file.seek(0)
+
+            if mime not in ['text/csv', 'text/plain']:
+                raise ValidationError("Wrong File-Format (MIME-Type: %s)" % mime)
+            from helper.file_integration import validate_header
+            if not validate_header(uploaded_file):
+                raise ValidationError("Wrong Header-Format")
+            uploaded_file.seek(0)
+        return uploaded_file
+
+
 class DeviceSearchForm(forms.Form):
+
     def __init__(self, user, *args, **kwargs):
         self.user = user
         super(DeviceSearchForm, self).__init__(*args, **kwargs)
 
-        self.fields['administration_group'] = forms.ModelChoiceField(AdministrationGroup.objects.filter(
+        self.fields["search_string"] = forms.CharField(
+            label="Search for Asset ID, Hostname or MAC Address:", max_length=100, required=False)
+        self.fields["device_role_prod"] = forms.ModelChoiceField(DeviceRoleProd.objects.all(),
+                                                                 required=False, label="Device Role Prod:")
+        self.fields["administration_group"] = forms.ModelChoiceField(AdministrationGroup.objects.filter(
             id__in=user.administration_group.all()), required=False, label="Administration Group")
 
-    search_string = forms.CharField(
-        label="Search for Asset ID, Hostname or MAC Address:", max_length=100, required=False)
-    device_role_prod = forms.ModelChoiceField(DeviceRoleProd.objects.all(),
-                                              required=False, label="Device Role Prod:")
+        self.fields["show_deleted"] = forms.ChoiceField(
+            choices=[("active", "Without deleted devices"),
+                     ("all", "With deleted devices"),
+                     ("deleted", "Only deleted devices")],
+            label="Show deleted devices?", required=False)
 
 
 class MacAddressFormat(forms.Textarea):
@@ -130,7 +170,15 @@ class DeviceForm(ModelForm):
                 qs = qs.exclude(pk=self.instance.pk)
             if qs.exists():
                 self.add_error(
-                    'appl_NAC_Hostname', 'Device with this Hostname and Domain already exists'
+                    'appl_NAC_Hostname', 'Device with this Hostname and Domain already exists')
+
+        administration_group = cleaned_data.get('administration_group')
+        device_role_prod = cleaned_data.get('appl_NAC_DeviceRoleProd')
+
+        if administration_group and device_role_prod:
+            if not administration_group.DeviceRoleProd.filter(id=device_role_prod.id).exists():
+                self.add_error('appl_NAC_DeviceRoleProd', ValidationError(
+                        f"Device Role '{device_role_prod}' not in Administration Group '{administration_group}'")
                 )
         return cleaned_data
 
