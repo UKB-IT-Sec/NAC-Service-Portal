@@ -53,12 +53,14 @@ def _modify_macs(deviceDict):
     modified_list = []
     for device in deviceDict:
         modified_device = device.copy()
-        modified_device['appl_NAC_macAddressAIR'] = [
-            _format_mac(mac) for mac in modified_device['appl_NAC_macAddressAIR'].split(',')
-        ]
-        modified_device['appl_NAC_macAddressCAB'] = [
-            _format_mac(mac) for mac in modified_device['appl_NAC_macAddressCAB'].split(',')
-        ]
+        if modified_device['appl_NAC_macAddressAIR']:
+            modified_device['appl_NAC_macAddressAIR'] = [
+                _format_mac(mac) for mac in modified_device['appl_NAC_macAddressAIR'].split(',')
+            ]
+        if modified_device['appl_NAC_macAddressCAB']:
+            modified_device['appl_NAC_macAddressCAB'] = [
+                _format_mac(mac) for mac in modified_device['appl_NAC_macAddressCAB'].split(',')
+            ]
         modified_list.append(modified_device)
     return modified_list
 
