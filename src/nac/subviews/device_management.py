@@ -82,7 +82,8 @@ class DeviceListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
 class DeviceListCsvView(DeviceListView):
     def render_to_response(self, context, **response_kwargs):
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = f'attachment; filename="DeviceExport_{self.request.GET.get("show_deleted")}.csv"'
+        filename = 'DeviceExport_{}.csv'.format(self.request.GET.get("show_deleted"))
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
         writer = csv.writer(response, delimiter=';')
         header_list = ESSENTIAL_HEADER + ['Deleted']
         writer.writerow(header_list)
