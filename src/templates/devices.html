@@ -8,7 +8,7 @@
 	 <form id="search_form" action="{% url 'devices' %}" method="get">
 		 <div class="row">
 			 {% for field in search_form %}
-			 <div class="col-md-4 ">
+			 <div class="col-md-4">
 				{{ field | as_crispy_field }}
 			 </div>
 			 {% endfor %}
