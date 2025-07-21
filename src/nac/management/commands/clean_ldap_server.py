@@ -19,7 +19,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from ldap3 import SUBTREE
 
 from helper.filesystem import get_config_directory
-from nac.models import Device
+from nac.models import Device, DNSDomain
 from helper.config import get_config_from_file
 from helper.logging import setup_console_logger
 from helper.ldap import connect_to_ldap_server, delete_device
@@ -50,13 +50,14 @@ class Command(BaseCommand):
         entry_generator = self.ldap_connection.extend.standard.paged_search(search_base=self.config['ldap-server']['search_base'],
                                                                             search_filter='(objectClass=appl-NAC-Device)',
                                                                             search_scope=SUBTREE,
-                                                                            attributes=['appl-NAC-FQDN', 'appl-NAC-Hostname', 'dns_domain'],
+                                                                            attributes=['appl-NAC-FQDN', 'appl-NAC-Hostname'],
                                                                             paged_size=5,
                                                                             generator=True)
         for entry in entry_generator:
             logging.debug('checking device %s', entry['attributes']['appl-NAC-FQDN'])
             try:
-                Device.objects.get(appl_NAC_Hostname=entry['attributes']['appl-NAC-Hostname'], dns_domain=entry['attributes']['dns_domain'])
+                stripped_dns = str(entry['attributes']['appl-NAC-FQDN']).replace(entry['attributes']['appl-NAC-Hostname']+".", "")
+                Device.objects.get(appl_NAC_Hostname=entry['attributes']['appl-NAC-Hostname'], dns_domain=DNSDomain.objects.get(name=stripped_dns))
             except ObjectDoesNotExist:
                 if options['dry_run']:
                     logging.warning('%s would be deleted (DRY RUN)', entry['attributes']['appl-NAC-FQDN'])
