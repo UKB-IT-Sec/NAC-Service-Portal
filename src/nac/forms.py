@@ -143,8 +143,9 @@ class DeviceForm(ModelForm):
         for field in dependencies:
             if cleaned_data.get(field) and not cleaned_data.get(dependencies[field]):
                 self.add_error(dependencies[field],
-                               ValidationError("This field cannot be empty while %(field)s is selected",
-                                               params={"field": field}))
+                               ValidationError("This field cannot be empty while \"%(field_name)s\" is selected",
+                                               params={"field_name": Device._meta.get_field(field).verbose_name}))
+
         # prefill asset_id if not set
         if not cleaned_data.get('asset_id') or cleaned_data.get('asset_id').startswith('FQDN') and cleaned_data.get('appl_NAC_Hostname') and cleaned_data.get('dns_domain'):
             cleaned_data['asset_id'] = f"FQDN_{cleaned_data.get('appl_NAC_Hostname')}.{cleaned_data.get('dns_domain')}"
