@@ -59,19 +59,22 @@ class Command(BaseCommand):
         return Device.objects.all().filter(synchronized=False)
 
     def _add_device(self, device):
-        if self.ldap_connection.add('appl-NAC-Hostname={},{}'.format(device.name, self.config['ldap-server']['search_base']),
-                                    'appl-NAC-Device',
-                                    map_device_data(device)):
-            logging.info('%s added', device.name)
-            device.synchronized = True
-            device.save()
-            return True
+        if device.allowLdapSync:
+            if self.ldap_connection.add('appl-NAC-FQDN={},{}'.format(f'{device.appl_NAC_Hostname}.{device.dns_domain}', self.config['ldap-server']['search_base']),
+                                        'appl-NAC-Device',
+                                        map_device_data(device)):
+                logging.info('%s added', device.appl_NAC_Hostname)
+                device.synchronized = True
+                device.save()
+                return True
+            else:
+                logging.error('failed to add %s', device.appl_NAC_Hostname)
+            return False
         else:
-            logging.error('failed to add %s', device.name)
-        return False
+            logging.error('Device %s not allowed to Sync', device.appl_NAC_Hostname)
 
     def _add_or_update_device_in_ldap_database(self, device):
-        logging.debug('processing %s', device.name)
-        if device_exists(device.name, self.ldap_connection, self.config['ldap-server']['search_base']):
-            delete_device(device.name, self.ldap_connection, self.config['ldap-server']['search_base'])
+        logging.debug('processing %s', device.appl_NAC_Hostname)
+        if device_exists(f'{device.appl_NAC_Hostname}.{device.dns_domain}', self.ldap_connection, self.config['ldap-server']['search_base']):
+            delete_device(f'{device.appl_NAC_Hostname}.{device.dns_domain}', self.ldap_connection, self.config['ldap-server']['search_base'])
         self._add_device(device)

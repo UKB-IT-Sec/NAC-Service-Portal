@@ -29,13 +29,13 @@ def test_map_device_data():
     test_device = Device()
     result = map_device_data(test_device)
     assert isinstance(result, dict)
-    assert len(result) == 9
+    assert len(result) == 13
     test_device.appl_NAC_macAddressCAB = 'aabbccddeeff'
     test_device.appl_NAC_macAddressAIR = '112233445566,112211445566'
     test_device.appl_NAC_Certificate = 'testCert'
     test_device.appl_NAC_DeviceRoleProd = DeviceRoleProd.objects.create(name='testRole')
     result = map_device_data(test_device)
-    assert len(result) == 13
+    assert len(result) == 16
     assert result['appl-NAC-macAddressCAB'] == 'aabbccddeeff'
     assert result['appl-NAC-DeviceRoleProd'] == 'testRole'
     assert result['appl-NAC-macAddressAIR'] == '112233445566,112211445566'
@@ -45,16 +45,16 @@ def test_device_exists():
     connection = _setup_test_server()
 
     assert not device_exists('NoneExistingDevice', connection, SEARCH_BASE)
-    assert device_exists('testDeviceCable', connection, SEARCH_BASE)
+    assert device_exists('testDeviceCable.ukbonn.de', connection, SEARCH_BASE)
 
     connection.unbind()
 
 
 def test_delete_device():
     connection = _setup_test_server()
-    assert device_exists('testDeviceCable', connection, SEARCH_BASE)
+    assert device_exists('testDeviceCable.ukbonn.de', connection, SEARCH_BASE)
 
-    delete_device('testDeviceCable', connection, SEARCH_BASE)
+    delete_device('testDeviceCable.ukbonn.de', connection, SEARCH_BASE)
 
     assert not device_exists('testDeviceCable', connection, SEARCH_BASE)
 

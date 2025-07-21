@@ -7,7 +7,6 @@
                 "appl-NAC-AllowAccessCAB": true,
                 "appl-NAC-AllowAccessCEL": false,
                 "appl-NAC-AllowAccessVPN": false,
-                "appl-NAC-DeviceRoleInst": "A-Netz",
                 "appl-NAC-DeviceRoleProd": "A_komplett",
                 "appl-NAC-FQDN": "testDeviceCable.ukbonn.de",
                 "appl-NAC-ForceDot1X": false,
@@ -20,7 +19,7 @@
                     "appl-NAC-Device"
                 ]
             },
-            "dn": "appl-NAC-Hostname=testDeviceCable,ou=Devices,dc=ukbonn,dc=de",
+            "dn": "appl-NAC-FQDN=testDeviceCable.ukbonn.de,ou=Devices,dc=ukbonn,dc=de",
             "raw": {
                 "appl-NAC-Active": [
                     "TRUE"

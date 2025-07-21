@@ -18,7 +18,7 @@ from ldap3.utils.log import set_library_log_detail_level, EXTENDED
 import logging
 
 
-def connect_to_ldap_server(address, username, password, port=389, tls=False):
+def connect_to_ldap_server(address, username, password, port=636, tls=False):
     set_library_log_detail_level(EXTENDED)
     logging.info('connecting to LDAP server: {}:{} user: {}'.format(address, port, username))
     ldap_server = Server(address, port=port, use_ssl=tls, get_info=ALL)
@@ -27,35 +27,40 @@ def connect_to_ldap_server(address, username, password, port=389, tls=False):
     return ldap_connection
 
 
-def device_exists(device_name, ldap_connection, search_base):
-    return ldap_connection.search('appl-NAC-Hostname={},{}'.format(device_name, search_base), '(objectclass=appl-NAC-Device)')
+def device_exists(device_fqdn, ldap_connection, search_base):
+    return ldap_connection.search('appl-NAC-FQDN={},{}'.format(device_fqdn, search_base), '(objectclass=appl-NAC-Device)')
 
 
-def delete_device(device_name, ldap_connection, search_base):
-    if ldap_connection.delete('appl-NAC-Hostname={},{}'.format(device_name, search_base)):
-        logging.info('%s deleted', device_name)
+def delete_device(device_fqdn, ldap_connection, search_base):
+    if ldap_connection.delete('appl-NAC-FQDN={},{}'.format(device_fqdn, search_base)):
+        logging.info('%s deleted', device_fqdn)
     else:
-        logging.error('failed to delete %s', device_name)
+        logging.error('failed to delete %s', device_fqdn)
 
 
 def map_device_data(device):
+
     device_data = {
-        'appl-NAC-FQDN': device.appl_NAC_FQDN,
+        'appl-NAC-AssetID': device.asset_id,
         'appl-NAC-Hostname': device.appl_NAC_Hostname,
+        'appl-NAC-FQDN': f'{device.appl_NAC_Hostname}.{device.dns_domain}',
+        'appl-NAC-Deleted': device.deleted,
         'appl-NAC-Active': device.appl_NAC_Active,
         'appl-NAC-ForceDot1X': device.appl_NAC_ForceDot1X,
         'appl-NAC-Install': device.appl_NAC_Install,
         'appl-NAC-AllowAccessCAB': device.appl_NAC_AllowAccessCAB,
         'appl-NAC-AllowAccessAIR': device.appl_NAC_AllowAccessAIR,
         'appl-NAC-AllowAccessVPN': device.appl_NAC_AllowAccessVPN,
-        'appl-NAC-AllowAccessCEL': device.appl_NAC_AllowAccessCEL
+        'appl-NAC-AllowAccessCEL': device.appl_NAC_AllowAccessCEL,
+        'appl-NAC-LastModified': device.last_modified,
+        'appl-NAC-CreationDate': device.creationDate
+
         }
     if device.appl_NAC_DeviceRoleProd:
         device_data['appl-NAC-DeviceRoleProd'] = device.appl_NAC_DeviceRoleProd.__str__()
-    if device.appl_NAC_macAddressCAB:
-        device_data['appl-NAC-macAddressCAB'] = device.appl_NAC_macAddressCAB
     if device.appl_NAC_macAddressAIR:
         device_data['appl-NAC-macAddressAIR'] = device.appl_NAC_macAddressAIR
-    if device.appl_NAC_Certificate:
-        device_data['appl-NAC-Certificate'] = device.appl_NAC_Certificate
+    if device.appl_NAC_macAddressCAB:
+        device_data['appl-NAC-macAddressCAB'] = device.appl_NAC_macAddressCAB
+
     return device_data
