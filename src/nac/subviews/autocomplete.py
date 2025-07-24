@@ -1,9 +1,11 @@
 from dal import autocomplete
 from ..models import DeviceRoleProd, AdministrationGroup, DNSDomain
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 
-class DNSDomainAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
+class DNSDomainAutocomplete(LoginRequiredMixin, PermissionRequiredMixin, autocomplete.Select2QuerySetView):
+    permission_required = "nac.view_device"
+
     def get_queryset(self):
         if not self.request.user.is_authenticated:
             return DNSDomain.objects.none()
@@ -17,7 +19,9 @@ class DNSDomainAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView
         return qs
 
 
-class DeviceRoleProdAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
+class DeviceRoleProdAutocomplete(LoginRequiredMixin, PermissionRequiredMixin, autocomplete.Select2QuerySetView):
+    permission_required = "nac.view_device"
+
     def get_queryset(self):
         if not self.request.user.is_authenticated:
             return DeviceRoleProd.objects.none()
@@ -38,7 +42,9 @@ class DeviceRoleProdAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySe
         return qs
 
 
-class AdministrationGroupAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
+class AdministrationGroupAutocomplete(LoginRequiredMixin, PermissionRequiredMixin, autocomplete.Select2QuerySetView):
+    permission_required = "nac.view_device"
+
     def get_queryset(self):
         if not self.request.user.is_authenticated:
             return AdministrationGroup.objects.none()
