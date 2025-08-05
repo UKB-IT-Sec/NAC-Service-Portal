@@ -59,8 +59,8 @@ def map_device_data(device):
     if device.appl_NAC_DeviceRoleProd:
         device_data['appl-NAC-DeviceRoleProd'] = device.appl_NAC_DeviceRoleProd.__str__()
     if device.appl_NAC_macAddressAIR:
-        device_data['appl-NAC-macAddressAIR'] = device.appl_NAC_macAddressAIR
+        device_data['appl-NAC-macAddressAIR'] = device.appl_NAC_macAddressAIR.split(',')
     if device.appl_NAC_macAddressCAB:
-        device_data['appl-NAC-macAddressCAB'] = device.appl_NAC_macAddressCAB
+        device_data['appl-NAC-macAddressCAB'] = device.appl_NAC_macAddressCAB.split(',')
 
     return device_data
