@@ -36,9 +36,9 @@ def test_map_device_data():
     test_device.appl_NAC_DeviceRoleProd = DeviceRoleProd.objects.create(name='testRole')
     result = map_device_data(test_device)
     assert len(result) == 16
-    assert result['appl-NAC-macAddressCAB'] == 'aabbccddeeff'
+    assert result['appl-NAC-macAddressCAB'] == ['aabbccddeeff']
     assert result['appl-NAC-DeviceRoleProd'] == 'testRole'
-    assert result['appl-NAC-macAddressAIR'] == '112233445566,112211445566'
+    assert result['appl-NAC-macAddressAIR'] == ['112233445566', '112211445566']
 
 
 def test_device_exists():
