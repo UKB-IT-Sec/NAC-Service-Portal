@@ -250,7 +250,7 @@
 				: `<span class="icon-desc" desc="Access over cellular network not allowed"><img src="{% static 'icons/broadcast-pin.svg' %}" alt="appl_NAC_AllowAccessCEL" height="25" width="25" class="icon-zoom gray-icon"/></span>`;
 			statusHtml += device.allowLdapSync
 				? `<span class="icon-desc" desc="Sync with LDAP allowed"><img src="{% static 'icons/database.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom"/></span>`
-				: `<span class="icon-desc" desc="Sync with LDAP not allowed"><img src="{% static 'icons/database.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom"/></span>`;
+				: `<span class="icon-desc" desc="Sync with LDAP not allowed"><img src="{% static 'icons/database.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom gray-icon"/></span>`;
 			statusCell.innerHTML = statusHtml;
 			
 			row.insertCell().textContent = device.appl_NAC_FQDN;
