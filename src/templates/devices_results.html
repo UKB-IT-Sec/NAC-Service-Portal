@@ -53,7 +53,7 @@
 		<tr>
 			<th scope="col" width="45"></th>
 			<th scope="col">Asset ID <span class="sort-icon" data-column="asset_id">▲</span></th>
-			<th scope="col">Status</th>
+			<th scope="col">Attributes</th>
 			<th scope="col">FQDN <span class="sort-icon" data-column="appl_NAC_FQDN">▲</span></th>
 			<th scope="col">Device Role Prod <span class="sort-icon" data-column="appl_NAC_DeviceRoleProd">▲</span></th>
 			<th scope="col">MAC</th>
@@ -231,8 +231,8 @@
 			const statusCell = row.insertCell();
 			let statusHtml = "";
 			statusHtml += device.appl_NAC_Active
-				? `<span class="icon-desc" desc="Active (access allowed)"><img src="{% static 'icons/check-lg.svg' %}" alt="appl_NAC_Active_True" height="25" width="25" class="icon-zoom" /></span>`
-				: `<span class="icon-desc" desc="Inactive (no access allowed)"><img src="{% static 'icons/x-lg.svg' %}" alt="appl_NAC_Active_False" height="25" width="25" class="icon-zoom gray-icon" /></span>`;
+				? `<span class="icon-desc" desc="Active (access allowed)"><img src="{% static 'icons/check.svg' %}" alt="appl_NAC_Active_True" height="25" width="25" class="icon-zoom" /></span>`
+				: `<span class="icon-desc" desc="Inactive (no access allowed)"><img src="{% static 'icons/x.svg' %}" alt="appl_NAC_Active_False" height="25" width="25" class="icon-zoom" /></span>`;
 			statusHtml += device.appl_NAC_Install
 				? `<span class="icon-desc" desc="Installation"><img src="{% static 'icons/wrench.svg' %}" alt="appl_NAC_Install" height="25" width="25" class="icon-zoom" /></span>`
 				: `<span class="icon-desc" desc="Not in installation"><img src="{% static 'icons/wrench.svg' %}" alt="appl_NAC_Install" height="25" width="25" class="icon-zoom gray-icon" /></span>`;
@@ -249,8 +249,8 @@
 				? `<span class="icon-desc" desc="Access over cellular network allowed"><img src="{% static 'icons/broadcast-pin.svg' %}" alt="appl_NAC_AllowAccessCEL" height="25" width="25" class="icon-zoom"/></span>`
 				: `<span class="icon-desc" desc="Access over cellular network not allowed"><img src="{% static 'icons/broadcast-pin.svg' %}" alt="appl_NAC_AllowAccessCEL" height="25" width="25" class="icon-zoom gray-icon"/></span>`;
 			statusHtml += device.allowLdapSync
-				? `<span class="icon-desc" desc="Sync with LDAP allowed"><img src="{% static 'icons/database-lock.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom gray-icon"/></span>`
-				: `<span class="icon-desc" desc="Sync with LDAP not allowed"><img src="{% static 'icons/database-lock.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom"/></span>`;
+				? `<span class="icon-desc" desc="Sync with LDAP allowed"><img src="{% static 'icons/database.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom"/></span>`
+				: `<span class="icon-desc" desc="Sync with LDAP not allowed"><img src="{% static 'icons/database.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom gray-icon"/></span>`;
 			statusCell.innerHTML = statusHtml;
 			
 			row.insertCell().textContent = device.appl_NAC_FQDN;
