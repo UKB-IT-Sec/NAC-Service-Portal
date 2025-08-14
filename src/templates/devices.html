@@ -13,7 +13,8 @@
 			 </div>
 			 {% endfor %}
 		 </div>
-	 	<button type="submit" class="btn btn-secondary btn-sm" formaction="{% url 'device_export_csv' %}?export=csv">Export as CSV</button>
+	 	<button type="submit" class="btn btn-secondary btn-sm"><img src="{% static 'icons/arrow-clockwise.svg' %}" alt="Refresh" height="18" width="18"/></button>
+		<button type="submit" class="btn btn-secondary btn-sm" formaction="{% url 'device_export_csv' %}?export=csv">Export as CSV</button>
     </form>
 
 	<div id="results">
