@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import AdminUserCreationForm, UserChangeForm
 from .models import CustomUser, Device, AdministrationGroup, DeviceRoleProd, DNSDomain
 from django import forms
-from django.forms import ModelForm, CheckboxInput
+from django.forms import ModelForm, CheckboxInput, Textarea
 from dal import autocomplete
 from .validation import normalize_mac, validate_mac
 from django.core.exceptions import ValidationError
@@ -112,6 +112,11 @@ class DeviceForm(ModelForm):
                   "deleted"
                   ]
 
+        labels = {
+            "appl_NAC_macAddressCAB": "Wired MAC address (all formats allowed)",
+            "appl_NAC_macAddressAIR": "Wireless MAC address (all formats allowed)"
+        }
+
         widgets = {"dns_domain": autocomplete.ModelSelect2(url="dns_domain-autocomplete"),
                    "administration_group": autocomplete.ModelSelect2(url="administration-group-autocomplete"),
                    "appl_NAC_DeviceRoleProd": autocomplete.ModelSelect2(url="DeviceRoleProd-autocomplete", forward=["administration_group"], ),
@@ -123,8 +128,9 @@ class DeviceForm(ModelForm):
                    "appl_NAC_AllowAccessAIR": CheckboxInput,
                    "appl_NAC_AllowAccessVPN": CheckboxInput,
                    "appl_NAC_AllowAccessCEL": CheckboxInput,
-                   "appl_NAC_macAddressCAB": MacAddressFormat(),
-                   "appl_NAC_macAddressAIR": MacAddressFormat(),
+                   "appl_NAC_macAddressCAB": MacAddressFormat(attrs={'rows':1, 'cols':20}),
+                   "appl_NAC_macAddressAIR": MacAddressFormat(attrs={'rows':1, 'cols':20}),
+                   "additional_info": Textarea(attrs={'rows':1, 'cols':20}),
                    "synchronized": forms.HiddenInput(),
                    "deleted": CheckboxInput(attrs={'class': 'form-check-input', 'role': 'switch'}),
                    }

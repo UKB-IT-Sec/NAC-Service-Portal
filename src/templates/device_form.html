@@ -21,13 +21,29 @@
     {% if form.vlan.value %}
         {{ form.vlan|as_crispy_field }}
     {% endif %}
-    {% for field in form.visible_fields %}
-        {% if field.name not in 'vlan,asset_id,appl_NAC_Hostname,dns_domain,administration_group,appl_NAC_DeviceRoleProd,deleted' %}
-            <div class="form-group">
-                {{ field|as_crispy_field }}
-            </div>
-        {% endif %}
-    {% endfor %}
+
+    <div class="row">
+        <div class="column">
+            {{ form.appl_NAC_Active | as_crispy_field }}
+            <ul class="list-unstyled" style="padding-left: 2em">
+                <li>{{ form.appl_NAC_AllowAccessVPN | as_crispy_field }}</li>
+                <li>{{ form.appl_NAC_AllowAccessCEL | as_crispy_field }}</li>
+            </ul>
+        </div>
+        <div class="column">
+            {{ form.allowLdapSync | as_crispy_field }}
+            {{ form.appl_NAC_ForceDot1X | as_crispy_field }}
+            {{ form.appl_NAC_Install | as_crispy_field }}
+        </div>
+    </div>
+    <br>
+    {{ form.appl_NAC_AllowAccessCAB | as_crispy_field }}
+    {{ form.appl_NAC_macAddressCAB | as_crispy_field }}
+    <br>
+    {{ form.appl_NAC_AllowAccessAIR | as_crispy_field }}
+    {{ form.appl_NAC_macAddressAIR | as_crispy_field }}
+    {{ form.additional_info | as_crispy_field }}
+    {{ form.source | as_crispy_field }}
     <button type="submit" class="btn btn-secondary btn-sm">Save</button>
 </form>
 
@@ -44,4 +60,15 @@
     });
 });
 </script>
+
+<style>
+    .row {
+        display: flex;
+    }
+
+    .column {
+      flex: 50%;
+    }
+</style>
+
 {{ form.media }}
