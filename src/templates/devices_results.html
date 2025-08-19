@@ -255,10 +255,17 @@
 
 			const fqdnCell = row.insertCell();
 			fqdnCell.innerHTML = `<span class="icon-desc" desc="Copy FQDN">
-					<img src="{% static 'icons/copy.svg' %}" alt="Copy FQDN" height="14" width="14" class="icon-zoom"/>
+					<img src="{% static 'icons/copy.svg' %}" alt="Copy FQDN" height="14" width="14" class="icon-zoom copy-icon" style="cursor:pointer;"/>
 				</span>
 				${device.appl_NAC_FQDN}
 			`;
+			fqdnCell.querySelector(".copy-icon").addEventListener("click", () => {
+				navigator.clipboard.writeText(device.appl_NAC_FQDN).then(() => {
+					console.log("Copied:", device.appl_NAC_FQDN);
+				}).catch(err => {
+					console.error("Failed to copy:", err);
+				});
+			});
 
 			row.insertCell().textContent = device.appl_NAC_DeviceRoleProd;
 
