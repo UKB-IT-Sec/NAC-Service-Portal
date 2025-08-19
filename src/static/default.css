@@ -119,3 +119,6 @@ td {
     justify-content: space-between;
     margin-bottom: 15px;
   }
+.monospace {
+  font-family: "DejaVu Sans Mono", monospace, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas;
+}

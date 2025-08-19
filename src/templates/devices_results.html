@@ -275,7 +275,7 @@
 				macHtml += `<span class="icon-desc" desc="Copy wireless MAC address">
 						<img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_macAddressAIR" height="14" width="14" class="icon-zoom copy-air-icon" style="cursor:pointer;"/>
 					</span>
-					<b>${device.macAddressAIR[0]}
+					<b><span class="monospace">${device.macAddressAIR[0]}</span>
 				`;
 				if (device.macAddressAIR.length > 1) {
 					macHtml += ` <a href="#" class="icon-desc" desc="${device.macAddressAIR.join(', ')}"
@@ -289,7 +289,7 @@
 				macHtml += `<span class="icon-desc" desc="Copy wired MAC address">
 						<img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_macAddressCAB" height="14" width="14" class="icon-zoom copy-cab-icon" style="cursor:pointer;"/>
 					</span>
-					<b>${device.macAddressCAB[0]}
+					<b><span class="monospace">${device.macAddressCAB[0]}</span>
 				`;
 				if (device.macAddressCAB.length > 1) {
 					macHtml += ` <a href="#" class="icon-desc" desc="${device.macAddressCAB.join(', ')}"
