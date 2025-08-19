@@ -252,18 +252,23 @@
 				? `<span class="icon-desc" desc="Sync with LDAP allowed"><img src="{% static 'icons/database.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom"/></span>`
 				: `<span class="icon-desc" desc="Sync with LDAP not allowed"><img src="{% static 'icons/database.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom gray-icon"/></span>`;
 			statusCell.innerHTML = statusHtml;
-			
-			row.insertCell().textContent = device.appl_NAC_FQDN;
+
+			const fqdnCell = row.insertCell();
+			fqdnCell.innerHTML = `<span class="icon-desc" desc="Copy FQDN">
+					<img src="{% static 'icons/copy.svg' %}" alt="Copy FQDN" height="14" width="14" class="icon-zoom"/>
+				</span>
+				${device.appl_NAC_FQDN}
+			`;
+
 			row.insertCell().textContent = device.appl_NAC_DeviceRoleProd;
 
 			const macCell = row.insertCell();
 			let macHtml = '';
 			if (device.macAddressAIR.length) {
-				macHtml += `<b>
-					<span class="icon-desc" desc="Wireless MAC address">
+				macHtml += `<span class="icon-desc" desc="Copy wireless MAC address">
 						<img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_macAddressAIR" height="14" width="14" class="icon-zoom"/>
 					</span>
-					${device.macAddressAIR[0]}
+					<b>${device.macAddressAIR[0]}
 				`;
 				if (device.macAddressAIR.length > 1) {
 					macHtml += ` <a href="#" class="icon-desc" desc="${device.macAddressAIR.join(', ')}"
@@ -274,11 +279,10 @@
 				macHtml += '<br/></b>';
 			}
 			if (device.macAddressCAB.length) {
-				macHtml += `<b>
-					<span class="icon-desc" desc="Wired MAC address">
+				macHtml += `<span class="icon-desc" desc="Copy wired MAC address">
 						<img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_macAddressCAB" height="14" width="14" class="icon-zoom"/>
 					</span>
-					${device.macAddressCAB[0]}
+					<b>${device.macAddressCAB[0]}
 				`;
 				if (device.macAddressCAB.length > 1) {
 					macHtml += ` <a href="#" class="icon-desc" desc="${device.macAddressCAB.join(', ')}"
