@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container">
 	<h1>Filter</h1>
-	<span class="icon-desc" desc="Reset filter"><button type="button" class="btn btn-secondary btn-sm" onclick="window.location.href={% url 'devices' %}">
+	<span class="icon-desc" desc="Reset filter"><button type="button" class="btn btn-secondary btn-sm" onclick="window.location.href='{% url 'devices' %}'">
 		<img src="{% static 'icons/trash3.svg' %}" alt="Reset" height="16" width="16"/>
 	</button></span>
 	<form id="search_form" action="{% url 'devices' %}" method="get">

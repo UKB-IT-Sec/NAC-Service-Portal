@@ -300,20 +300,24 @@
 				macHtml += '<br/></b>';
 			}
 			macCell.innerHTML = macHtml;
-			macCell.querySelector(".copy-air-icon").addEventListener("click", () => {
-				navigator.clipboard.writeText(device.macAddressAIR).then(() => {
-					console.log("Copied:", device.macAddressAIR);
-				}).catch(err => {
-					console.error("Failed to copy:", err);
+			if (device.macAddressAIR.length) {
+				macCell.querySelector(".copy-air-icon").addEventListener("click", () => {
+					navigator.clipboard.writeText(device.macAddressAIR).then(() => {
+						console.log("Copied:", device.macAddressAIR);
+					}).catch(err => {
+						console.error("Failed to copy:", err);
+					});
 				});
-			});
-			macCell.querySelector(".copy-cab-icon").addEventListener("click", () => {
-				navigator.clipboard.writeText(device.macAddressCAB).then(() => {
-					console.log("Copied:", device.macAddressCAB);
-				}).catch(err => {
-					console.error("Failed to copy:", err);
+			}
+			if (device.macAddressCAB.length) {
+				macCell.querySelector(".copy-cab-icon").addEventListener("click", () => {
+					navigator.clipboard.writeText(device.macAddressCAB).then(() => {
+						console.log("Copied:", device.macAddressCAB);
+					}).catch(err => {
+						console.error("Failed to copy:", err);
+					});
 				});
-			});
+			}
 
 			row.insertCell().textContent = device.last_modified;
 
