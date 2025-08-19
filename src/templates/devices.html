@@ -5,7 +5,9 @@
 {% block content %}
 <div class="container">
 	<h1>Filter</h1>
-	<button type="button" class="btn btn-secondary btn-sm" onclick="window.location.href={% url 'devices' %}"><img src="{% static 'icons/trash3.svg' %}" alt="Reset" height="16" width="16"/></button>
+	<span class="icon-desc" desc="Reset filter"><button type="button" class="btn btn-secondary btn-sm" onclick="window.location.href={% url 'devices' %}">
+		<img src="{% static 'icons/trash3.svg' %}" alt="Reset" height="16" width="16"/>
+	</button></span>
 	<form id="search_form" action="{% url 'devices' %}" method="get">
 		<div class="row">
 			{% for field in search_form %}
@@ -18,7 +20,9 @@
 
 	<h1>Devices</h1>
 	<div style="display: flex; justify-content: space-between;">
-	<button type="submit" class="btn btn-secondary btn-sm"><img src="{% static 'icons/arrow-clockwise.svg' %}" alt="Refresh" height="18" width="18"/></button>
+	<span class="icon-desc" desc="Refresh results"><button type="submit" class="btn btn-secondary btn-sm">
+		<img src="{% static 'icons/arrow-clockwise.svg' %}" alt="Refresh" height="18" width="18"/>
+	</button></span>
 	<button type="submit" class="btn btn-secondary btn-sm" formaction="{% url 'device_export_csv' %}?export=csv">Export as CSV</button>
 	</div>
 	<div id="results">
