@@ -56,7 +56,7 @@
 			<th scope="col">Attributes</th>
 			<th scope="col">FQDN <span class="sort-icon" data-column="appl_NAC_FQDN">▲</span></th>
 			<th scope="col">Device Role Prod <span class="sort-icon" data-column="appl_NAC_DeviceRoleProd">▲</span></th>
-			<th scope="col">MAC</th>
+			<th scope="col">MAC Addresses</th>
 			<th scope="col">Last Modification <span class="sort-icon" data-column="last_modified">▲</span></th>
 			<th scope="col" width="60"></th>
 		</tr>
@@ -273,7 +273,7 @@
 			let macHtml = '';
 			if (device.macAddressAIR.length) {
 				macHtml += `<span class="icon-desc" desc="Copy wireless MAC address">
-						<img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_macAddressAIR" height="14" width="14" class="icon-zoom"/>
+						<img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_macAddressAIR" height="14" width="14" class="icon-zoom copy-air-icon" style="cursor:pointer;"/>
 					</span>
 					<b>${device.macAddressAIR[0]}
 				`;
@@ -287,7 +287,7 @@
 			}
 			if (device.macAddressCAB.length) {
 				macHtml += `<span class="icon-desc" desc="Copy wired MAC address">
-						<img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_macAddressCAB" height="14" width="14" class="icon-zoom"/>
+						<img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_macAddressCAB" height="14" width="14" class="icon-zoom copy-cab-icon" style="cursor:pointer;"/>
 					</span>
 					<b>${device.macAddressCAB[0]}
 				`;
@@ -300,6 +300,20 @@
 				macHtml += '<br/></b>';
 			}
 			macCell.innerHTML = macHtml;
+			macCell.querySelector(".copy-air-icon").addEventListener("click", () => {
+				navigator.clipboard.writeText(device.macAddressAIR).then(() => {
+					console.log("Copied:", device.macAddressAIR);
+				}).catch(err => {
+					console.error("Failed to copy:", err);
+				});
+			});
+			macCell.querySelector(".copy-cab-icon").addEventListener("click", () => {
+				navigator.clipboard.writeText(device.macAddressCAB).then(() => {
+					console.log("Copied:", device.macAddressCAB);
+				}).catch(err => {
+					console.error("Failed to copy:", err);
+				});
+			});
 
 			row.insertCell().textContent = device.last_modified;
 
