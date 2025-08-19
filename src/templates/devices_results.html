@@ -119,6 +119,8 @@
 		const modalList = document.getElementById("modalList");
   
 		modalTitle.textContent = title;
+
+		modalList.classList.add("monospace");
 		modalList.innerHTML = "";
   
 		addresses.split(",").forEach(address => {
@@ -278,7 +280,7 @@
 					<b><span class="monospace">${device.macAddressAIR[0]}</span>
 				`;
 				if (device.macAddressAIR.length > 1) {
-					macHtml += ` <a href="#" class="icon-desc" desc="${device.macAddressAIR.join(', ')}"
+					macHtml += ` <a href="#" class="icon-desc monospace" desc="${device.macAddressAIR.join(', ')}"
 												onclick="showDetails('Wireless MAC addresses','${device.macAddressAIR.join(', ')}');return false;">
 												(${device.macAddressAIR.length})
 											</a>`;
@@ -292,7 +294,7 @@
 					<b><span class="monospace">${device.macAddressCAB[0]}</span>
 				`;
 				if (device.macAddressCAB.length > 1) {
-					macHtml += ` <a href="#" class="icon-desc" desc="${device.macAddressCAB.join(', ')}"
+					macHtml += ` <a href="#" class="icon-desc monospace" desc="${device.macAddressCAB.join(', ')}"
 												onclick="showDetails('Wired MAC addresses','${device.macAddressCAB.join(', ')}');return false;">
 												(${device.macAddressCAB.length})
 											</a>`;
