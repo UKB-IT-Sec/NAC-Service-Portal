@@ -142,15 +142,6 @@ class DeviceForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        dependencies = {"appl_NAC_AllowAccessCAB": "appl_NAC_macAddressCAB",
-                        "appl_NAC_AllowAccessAIR": "appl_NAC_macAddressAIR",
-                        }
-
-        for field in dependencies:
-            if cleaned_data.get(field) and not cleaned_data.get(dependencies[field]):
-                self.add_error(dependencies[field],
-                               ValidationError("This field cannot be empty while \"%(field_name)s\" is selected",
-                                               params={"field_name": Device._meta.get_field(field).verbose_name}))
 
         # prefill asset_id if not set
         if not cleaned_data.get('asset_id') or cleaned_data.get('asset_id').startswith('FQDN') and cleaned_data.get('appl_NAC_Hostname') and cleaned_data.get('dns_domain'):
