@@ -44,8 +44,10 @@
     {{ form.appl_NAC_macAddressAIR | as_crispy_field }}
     {{ form.additional_info | as_crispy_field }}
     {{ form.source | as_crispy_field }}
-    <button type="submit" class="btn btn-secondary btn-sm">Save</button>
-    <a href="{% url 'devices' %}" class="btn btn-secondary btn-sm" style="color: white;">Cancel</a>
+    <div class="mb-4">
+        <button type="submit" class="btn btn-secondary btn-sm">Save</button>
+        <a href="{% url 'devices' %}" class="btn btn-secondary btn-sm" style="color: white;">Cancel</a>
+    </div>
 </form>
 
 <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
