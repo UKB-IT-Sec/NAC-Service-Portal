@@ -136,7 +136,7 @@
             <td>
                 {% for mac in device.get_appl_NAC_macAddressCAB %}
                 {% if mac != None%}
-                {{mac}} <br/>
+                <span class="monospace">{{mac}}</span><br/>
                 {% endif %}
                 {% endfor %}
             </td>
@@ -148,7 +148,7 @@
             <td>
                 {% for mac in device.get_appl_NAC_macAddressAIR %}
                 {% if mac != None%}
-                {{mac}} <br/>
+                <span class="monospace">{{mac}}</span><br/>
                 {% endif %}
                 {% endfor %}
             </td>

@@ -64,7 +64,7 @@ td {
 .icon-desc {
 	position: relative;
 	display: inline-block;
-  }
+}
 .icon-desc:hover::after {
 	content: attr(desc);
 	font-size: 12px;
@@ -80,42 +80,40 @@ td {
 	margin-top: 5px;
 	white-space: nowrap;
 	z-index: 2000;
-  }
-  .checkbox-container {
+}
+.checkbox-container {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* displays checkbox in 100pt width columns, as many as possible based on window size*/
 	gap: 10px 20px;
 	padding: 10px;
 	flex: 1;
     margin-right: 20px;
-  }
-  
-  .checkbox-item {
+}
+.checkbox-item {
 	display: flex;
 	align-items: center;
-  }
-  
-  .checkbox-label {
+}
+.checkbox-label {
 	margin-left: 8px;
 	cursor: pointer;
-  }
-
-  .custom-checkbox {
+}
+.custom-checkbox {
 	width: 20px;
 	height: 20px;
 	cursor: pointer;
-  }
-  .search-container {
+}
+.search-container {
 	display: flex;
 	align-items: center;
-  }
-  
-  .search-container input {
+}
+.search-container input {
 	margin-right: 8px;
-  }
-  
-  .split-content {
+}
+.split-content {
     display: flex;
     justify-content: space-between;
     margin-bottom: 15px;
-  }
+}
+.monospace {
+  font-family: "DejaVu Sans Mono", monospace, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas;
+}
