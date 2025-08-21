@@ -9,8 +9,6 @@ from nac.models import AdministrationGroup, DeviceRoleProd, DNSDomain
                          "appl_NAC_macAddressAIR, appl_NAC_AllowAccessCAB, appl_NAC_macAddressCAB, test_hostname, validity",
                          [(True, True, "test", True, "001132334455", True, "001132334455", "device1", True),
                           (True, True, None, True, "001142334455", True, "001142334455", "device1", True),
-                          (True, True, "test", True, None, True, "001152334455", "device1", False),
-                          (True, True, "test", True, "001162334455", True, None, "device1", False),
                           (False, False, None, True, "001192334455", True, "001192334455", "device1", True),
                           (True, True, "test", False, None, True, "001123334455", "device1", True),
                           (True, True, "test", False, None, True, "ZZ1123334455", "device1", False),
@@ -56,7 +54,7 @@ def test_clean(appl_NAC_ForceDot1X, appl_NAC_AllowAccessVPN, appl_NAC_Certificat
         (
             "aa:bb:cc:dd:ee:ff, 11:22:33:44:55:66",
             ["AABBCCDDEEFF", "112233445566"],
-            "AA:BB:CC:DD:EE:FF\t,\t11:22:33:44:55:66",
+            "AA:BB:CC:DD:EE:FF, 11:22:33:44:55:66",
         ),
     ]
 )

@@ -128,9 +128,9 @@ class DeviceForm(ModelForm):
                    "appl_NAC_AllowAccessAIR": CheckboxInput,
                    "appl_NAC_AllowAccessVPN": CheckboxInput,
                    "appl_NAC_AllowAccessCEL": CheckboxInput,
-                   "appl_NAC_macAddressCAB": MacAddressFormat(attrs={'rows':1, 'cols':20}),
-                   "appl_NAC_macAddressAIR": MacAddressFormat(attrs={'rows':1, 'cols':20}),
-                   "additional_info": Textarea(attrs={'rows':1, 'cols':20}),
+                   "appl_NAC_macAddressCAB": MacAddressFormat(attrs={'rows': 1, 'cols': 20}),
+                   "appl_NAC_macAddressAIR": MacAddressFormat(attrs={'rows': 1, 'cols': 20}),
+                   "additional_info": Textarea(attrs={'rows': 1, 'cols': 20}),
                    "synchronized": forms.HiddenInput(),
                    "deleted": CheckboxInput(attrs={'class': 'form-check-input', 'role': 'switch'}),
                    }
