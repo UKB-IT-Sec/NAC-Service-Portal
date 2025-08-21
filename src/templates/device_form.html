@@ -4,8 +4,8 @@
 <form method="post">
     {% csrf_token %}
     <div class="form-check form-switch">
-        {{ form.deleted.label_tag|cut:":" }}
         {{ form.deleted }}
+        {{ form.deleted.label_tag|cut:":" }}
     </div>
     {{ form.asset_id|as_crispy_field }}
     {{ form.administration_group|as_crispy_field }}
@@ -21,14 +21,31 @@
     {% if form.vlan.value %}
         {{ form.vlan|as_crispy_field }}
     {% endif %}
-    {% for field in form.visible_fields %}
-        {% if field.name not in 'vlan,asset_id,appl_NAC_Hostname,dns_domain,administration_group,appl_NAC_DeviceRoleProd,deleted' %}
-            <div class="form-group">
-                {{ field|as_crispy_field }}
-            </div>
-        {% endif %}
-    {% endfor %}
-    <button type="submit" class="btn btn-secondary btn-sm">Save</button>
+
+    <div class="row">
+        <div class="column">
+            {{ form.appl_NAC_Active | as_crispy_field }}
+            <ul class="list-unstyled" style="padding-left: 2em">
+                <li>{{ form.appl_NAC_AllowAccessVPN | as_crispy_field }}</li>
+                <li>{{ form.appl_NAC_AllowAccessCEL | as_crispy_field }}</li>
+                <li>{{ form.appl_NAC_AllowAccessCAB | as_crispy_field }}</li>
+                <li><span class="monospace">{{ form.appl_NAC_macAddressCAB | as_crispy_field }}</span></li>
+                <li>{{ form.appl_NAC_AllowAccessAIR | as_crispy_field }}</li>
+                <li><span class="monospace">{{ form.appl_NAC_macAddressAIR | as_crispy_field }}</span></li>
+            </ul>
+        </div>
+        <div class="column">
+            {{ form.allowLdapSync | as_crispy_field }}
+            {{ form.appl_NAC_ForceDot1X | as_crispy_field }}
+            {{ form.appl_NAC_Install | as_crispy_field }}
+        </div>
+    </div>
+    {{ form.additional_info | as_crispy_field }}
+    {{ form.source | as_crispy_field }}
+    <div class="mb-4">
+        <button type="submit" class="btn btn-secondary btn-sm">Save</button>
+        <a href="{% url 'devices' %}" class="btn btn-secondary btn-sm" style="color: white;">Cancel</a>
+    </div>
 </form>
 
 <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
@@ -44,4 +61,49 @@
     });
 });
 </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const checkboxes = document.querySelectorAll('.checkbox');
+        const activeCheckbox = document.querySelector('#id_appl_NAC_Active');
+        const vpnCheckbox = document.querySelector('#id_appl_NAC_AllowAccessVPN');
+        const celCheckbox = document.querySelector('#id_appl_NAC_AllowAccessCEL');
+        const cabCheckbox = document.querySelector('#id_appl_NAC_AllowAccessCAB');
+        const airCheckbox = document.querySelector('#id_appl_NAC_AllowAccessAIR');
+
+        const accessCheckboxes = [vpnCheckbox, celCheckbox, cabCheckbox, airCheckbox];
+
+        // grey out access checkboxes if "Active" flag is not set
+        function updateActiveStatus() {
+            for (let i=0; i<accessCheckboxes.length; i++) {
+                if (activeCheckbox.checked) {
+                    accessCheckboxes[i].classList.remove('greyed-out');
+                } else {
+                    accessCheckboxes[i].classList.add('greyed-out');
+                }
+            }
+        }
+
+        // Initial check when the page loads
+        updateActiveStatus();
+
+        // Add event listener to the active checkbox to trigger grey out on change
+        activeCheckbox.addEventListener('change', updateActiveStatus);
+    });
+</script>
+
+<style>
+    .row {
+        display: flex;
+    }
+
+    .column {
+      flex: 50%;
+    }
+
+    .greyed-out {
+      opacity: 0.5;
+    }
+</style>
+
 {{ form.media }}

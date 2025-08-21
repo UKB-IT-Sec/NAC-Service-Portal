@@ -102,6 +102,9 @@ td {
 	height: 20px;
 	cursor: pointer;
 }
+.form-check-input {
+  cursor: pointer;
+}
 .search-container {
 	display: flex;
 	align-items: center;

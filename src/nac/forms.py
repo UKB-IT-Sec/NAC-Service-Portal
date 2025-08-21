@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import AdminUserCreationForm, UserChangeForm
 from .models import CustomUser, Device, AdministrationGroup, DeviceRoleProd, DNSDomain
 from django import forms
-from django.forms import ModelForm, CheckboxInput
+from django.forms import ModelForm, CheckboxInput, Textarea
 from dal import autocomplete
 from .validation import normalize_mac, validate_mac
 from django.core.exceptions import ValidationError
@@ -84,7 +84,7 @@ class MacAddressFormat(forms.Textarea):
         if not value:
             return value
         macs = [normalize_mac(mac.strip()) for mac in value.split(",")]
-        return '\t,\t'.join(':'.join(mac[i:i+2] for i in range(0, 12, 2)) for mac in macs)
+        return ', '.join(':'.join(mac[i:i+2] for i in range(0, 12, 2)) for mac in macs)
 
 
 class DeviceForm(ModelForm):
@@ -112,6 +112,11 @@ class DeviceForm(ModelForm):
                   "deleted"
                   ]
 
+        labels = {
+            "appl_NAC_macAddressCAB": "Wired MAC address (all formats allowed)",
+            "appl_NAC_macAddressAIR": "Wireless MAC address (all formats allowed)"
+        }
+
         widgets = {"dns_domain": autocomplete.ModelSelect2(url="dns_domain-autocomplete"),
                    "administration_group": autocomplete.ModelSelect2(url="administration-group-autocomplete"),
                    "appl_NAC_DeviceRoleProd": autocomplete.ModelSelect2(url="DeviceRoleProd-autocomplete", forward=["administration_group"], ),
@@ -123,8 +128,9 @@ class DeviceForm(ModelForm):
                    "appl_NAC_AllowAccessAIR": CheckboxInput,
                    "appl_NAC_AllowAccessVPN": CheckboxInput,
                    "appl_NAC_AllowAccessCEL": CheckboxInput,
-                   "appl_NAC_macAddressCAB": MacAddressFormat(),
-                   "appl_NAC_macAddressAIR": MacAddressFormat(),
+                   "appl_NAC_macAddressCAB": MacAddressFormat(attrs={'rows': 1, 'cols': 20}),
+                   "appl_NAC_macAddressAIR": MacAddressFormat(attrs={'rows': 1, 'cols': 20}),
+                   "additional_info": Textarea(attrs={'rows': 1, 'cols': 20}),
                    "synchronized": forms.HiddenInput(),
                    "deleted": CheckboxInput(attrs={'class': 'form-check-input', 'role': 'switch'}),
                    }
@@ -136,15 +142,6 @@ class DeviceForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        dependencies = {"appl_NAC_AllowAccessCAB": "appl_NAC_macAddressCAB",
-                        "appl_NAC_AllowAccessAIR": "appl_NAC_macAddressAIR",
-                        }
-
-        for field in dependencies:
-            if cleaned_data.get(field) and not cleaned_data.get(dependencies[field]):
-                self.add_error(dependencies[field],
-                               ValidationError("This field cannot be empty while \"%(field_name)s\" is selected",
-                                               params={"field_name": Device._meta.get_field(field).verbose_name}))
 
         # prefill asset_id if not set
         if not cleaned_data.get('asset_id') or cleaned_data.get('asset_id').startswith('FQDN') and cleaned_data.get('appl_NAC_Hostname') and cleaned_data.get('dns_domain'):
