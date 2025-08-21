@@ -28,6 +28,10 @@
             <ul class="list-unstyled" style="padding-left: 2em">
                 <li>{{ form.appl_NAC_AllowAccessVPN | as_crispy_field }}</li>
                 <li>{{ form.appl_NAC_AllowAccessCEL | as_crispy_field }}</li>
+                <li>{{ form.appl_NAC_AllowAccessCAB | as_crispy_field }}</li>
+                <li>{{ form.appl_NAC_macAddressCAB | as_crispy_field }}</li>
+                <li>{{ form.appl_NAC_AllowAccessAIR | as_crispy_field }}</li>
+                <li>{{ form.appl_NAC_macAddressAIR | as_crispy_field }}</li>
             </ul>
         </div>
         <div class="column">
@@ -36,12 +40,6 @@
             {{ form.appl_NAC_Install | as_crispy_field }}
         </div>
     </div>
-    <br>
-    {{ form.appl_NAC_AllowAccessCAB | as_crispy_field }}
-    {{ form.appl_NAC_macAddressCAB | as_crispy_field }}
-    <br>
-    {{ form.appl_NAC_AllowAccessAIR | as_crispy_field }}
-    {{ form.appl_NAC_macAddressAIR | as_crispy_field }}
     {{ form.additional_info | as_crispy_field }}
     {{ form.source | as_crispy_field }}
     <div class="mb-4">
@@ -64,6 +62,36 @@
 });
 </script>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const checkboxes = document.querySelectorAll('.checkbox');
+        const activeCheckbox = document.querySelector('#id_appl_NAC_Active');
+        const vpnCheckbox = document.querySelector('#id_appl_NAC_AllowAccessVPN');
+        const celCheckbox = document.querySelector('#id_appl_NAC_AllowAccessCEL');
+        const cabCheckbox = document.querySelector('#id_appl_NAC_AllowAccessCAB');
+        const airCheckbox = document.querySelector('#id_appl_NAC_AllowAccessAIR');
+
+        const accessCheckboxes = [vpnCheckbox, celCheckbox, cabCheckbox, airCheckbox];
+
+        // grey out access checkboxes if "Active" flag is not set
+        function updateActiveStatus() {
+            for (let i=0; i<accessCheckboxes.length; i++) {
+                if (activeCheckbox.checked) {
+                    accessCheckboxes[i].classList.remove('greyed-out');
+                } else {
+                    accessCheckboxes[i].classList.add('greyed-out');
+                }
+            }
+        }
+
+        // Initial check when the page loads
+        updateActiveStatus();
+
+        // Add event listener to the active checkbox to trigger grey out on change
+        activeCheckbox.addEventListener('change', updateActiveStatus);
+    });
+</script>
+
 <style>
     .row {
         display: flex;
@@ -71,6 +99,10 @@
 
     .column {
       flex: 50%;
+    }
+
+    .greyed-out {
+      opacity: 0.5;
     }
 </style>
 
