@@ -4,8 +4,8 @@
 <form method="post">
     {% csrf_token %}
     <div class="form-check form-switch">
-        {{ form.deleted.label_tag|cut:":" }}
         {{ form.deleted }}
+        {{ form.deleted.label_tag|cut:":" }}
     </div>
     {{ form.asset_id|as_crispy_field }}
     {{ form.administration_group|as_crispy_field }}
