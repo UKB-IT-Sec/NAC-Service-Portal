@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.forms.models import model_to_dict
 from django.utils import timezone
+import datetime
 
 # for csv_export
 from django.http import HttpResponse
@@ -82,7 +83,23 @@ class DeviceListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
 class DeviceListCsvView(DeviceListView):
     def render_to_response(self, context, **response_kwargs):
         response = HttpResponse(content_type='text/csv')
-        filename = 'DeviceExport_{}.csv'.format(self.request.GET.get("show_deleted"))
+
+        # generate file name
+        timestamp = str(datetime.datetime.now())
+        params = self.request.GET
+        filter_params = []
+        if params.get("search_string"):
+            filter_params.append(params.get("search_string"))
+        if params.get("device_role_prod"):
+            filter_params.append(DeviceRoleProd.objects.get(id=params.get("device_role_prod")).name)
+        if params.get("administration_group"):
+            filter_params.append(AdministrationGroup.objects.get(id=params.get("administration_group")).name)
+        if params.get("show_deleted"):
+            filter_params.append(params.get("show_deleted"))
+
+        filter_params = '_'.join(filter_params)
+        filename = '_'.join([timestamp, filter_params]) + ".csv"
+
         response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
         writer = csv.writer(response, delimiter=';')
         header_list = ESSENTIAL_HEADER + ['Deleted']
