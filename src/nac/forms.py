@@ -84,7 +84,7 @@ class MacAddressFormat(forms.Textarea):
         if not value:
             return value
         macs = [normalize_mac(mac.strip()) for mac in value.split(",")]
-        return '\t,\t'.join(':'.join(mac[i:i+2] for i in range(0, 12, 2)) for mac in macs)
+        return ', '.join(':'.join(mac[i:i+2] for i in range(0, 12, 2)) for mac in macs)
 
 
 class DeviceForm(ModelForm):
