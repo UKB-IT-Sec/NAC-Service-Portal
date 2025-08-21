@@ -56,7 +56,7 @@
 			<th scope="col">Attributes</th>
 			<th scope="col">FQDN <span class="sort-icon" data-column="appl_NAC_FQDN">▲</span></th>
 			<th scope="col">Device Role Prod <span class="sort-icon" data-column="appl_NAC_DeviceRoleProd">▲</span></th>
-			<th scope="col">MAC</th>
+			<th scope="col">MAC Address</th>
 			<th scope="col">Last Modification <span class="sort-icon" data-column="last_modified">▲</span></th>
 			<th scope="col" width="60"></th>
 		</tr>
@@ -252,18 +252,30 @@
 				? `<span class="icon-desc" desc="Sync with LDAP allowed"><img src="{% static 'icons/database.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom"/></span>`
 				: `<span class="icon-desc" desc="Sync with LDAP not allowed"><img src="{% static 'icons/database.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom gray-icon"/></span>`;
 			statusCell.innerHTML = statusHtml;
-			
-			row.insertCell().textContent = device.appl_NAC_FQDN;
+
+			const fqdnCell = row.insertCell();
+			fqdnCell.innerHTML = `<span class="icon-desc" desc="Copy FQDN">
+					<img src="{% static 'icons/copy.svg' %}" alt="Copy FQDN" height="14" width="14" class="icon-zoom copy-icon" style="cursor:pointer;"/>
+				</span>
+				${device.appl_NAC_FQDN}
+			`;
+			fqdnCell.querySelector(".copy-icon").addEventListener("click", () => {
+				navigator.clipboard.writeText(device.appl_NAC_FQDN).then(() => {
+					console.log("Copied:", device.appl_NAC_FQDN);
+				}).catch(err => {
+					console.error("Failed to copy:", err);
+				});
+			});
+
 			row.insertCell().textContent = device.appl_NAC_DeviceRoleProd;
 
 			const macCell = row.insertCell();
 			let macHtml = '';
 			if (device.macAddressAIR.length) {
-				macHtml += `<b>
-					<span class="icon-desc" desc="Wireless MAC address">
-						<img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_macAddressAIR" height="14" width="14" class="icon-zoom"/>
+				macHtml += `<span class="icon-desc" desc="Copy wireless MAC address">
+						<img src="{% static 'icons/wifi.svg' %}" alt="appl_NAC_macAddressAIR" height="14" width="14" class="icon-zoom copy-air-icon" style="cursor:pointer;"/>
 					</span>
-					${device.macAddressAIR[0]}
+					<b>${device.macAddressAIR[0]}
 				`;
 				if (device.macAddressAIR.length > 1) {
 					macHtml += ` <a href="#" class="icon-desc" desc="${device.macAddressAIR.join(', ')}"
@@ -274,11 +286,10 @@
 				macHtml += '<br/></b>';
 			}
 			if (device.macAddressCAB.length) {
-				macHtml += `<b>
-					<span class="icon-desc" desc="Wired MAC address">
-						<img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_macAddressCAB" height="14" width="14" class="icon-zoom"/>
+				macHtml += `<span class="icon-desc" desc="Copy wired MAC address">
+						<img src="{% static 'icons/ethernet.svg' %}" alt="appl_NAC_macAddressCAB" height="14" width="14" class="icon-zoom copy-cab-icon" style="cursor:pointer;"/>
 					</span>
-					${device.macAddressCAB[0]}
+					<b>${device.macAddressCAB[0]}
 				`;
 				if (device.macAddressCAB.length > 1) {
 					macHtml += ` <a href="#" class="icon-desc" desc="${device.macAddressCAB.join(', ')}"
@@ -289,6 +300,24 @@
 				macHtml += '<br/></b>';
 			}
 			macCell.innerHTML = macHtml;
+			if (device.macAddressAIR.length) {
+				macCell.querySelector(".copy-air-icon").addEventListener("click", () => {
+					navigator.clipboard.writeText(device.macAddressAIR).then(() => {
+						console.log("Copied:", device.macAddressAIR);
+					}).catch(err => {
+						console.error("Failed to copy:", err);
+					});
+				});
+			}
+			if (device.macAddressCAB.length) {
+				macCell.querySelector(".copy-cab-icon").addEventListener("click", () => {
+					navigator.clipboard.writeText(device.macAddressCAB).then(() => {
+						console.log("Copied:", device.macAddressCAB);
+					}).catch(err => {
+						console.error("Failed to copy:", err);
+					});
+				});
+			}
 
 			row.insertCell().textContent = device.last_modified;
 
