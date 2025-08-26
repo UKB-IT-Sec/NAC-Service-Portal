@@ -85,7 +85,7 @@ class DeviceListCsvView(DeviceListView):
         response = HttpResponse(content_type='text/csv')
 
         # generate file name
-        timestamp = str(datetime.datetime.now())
+        timestamp = str(datetime.datetime.now().replace(microsecond=0))
         params = self.request.GET
         filter_params = []
         if params.get("search_string"):
