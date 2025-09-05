@@ -186,6 +186,7 @@ class DeviceDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     def post(self, request, *args, **kwargs):
         device = self.get_object()
         device.deleted = True
+        device.synchronized = False
         device.save()
         return redirect(reverse_lazy("devices"))
 
