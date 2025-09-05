@@ -1,14 +1,14 @@
 import pytest
-from django.test import RequestFactory
 from django.urls import reverse_lazy
-from nac.models import Device, AdministrationGroup, CustomUser
+from nac.models import AdministrationGroup, CustomUser
 from django.contrib.auth.models import Permission
-from tests.test_models.test_device import deviceObject
+
 
 @pytest.mark.django_db
-def test_flags(deviceObject, client):
-    deviceObject.synchronized = True
-    deviceObject.save()
+def test_flags(sample_object, client):
+    sample_object.synchronized = True
+    sample_object.deleted = False
+    sample_object.save()
 
     perm_delete = Permission.objects.get(codename='delete_device')
     test_user = CustomUser.objects.create()
@@ -19,6 +19,6 @@ def test_flags(deviceObject, client):
 
     client.force_login(test_user)
 
-    response = client.post(reverse_lazy('device_delete', args=(deviceObject.id,)))
-    deviceObject.refresh_from_db()
-    assert deviceObject.synchronized is False and deviceObject.deleted is True
+    client.post(reverse_lazy('device_delete', args=(sample_object.id,)))
+    sample_object.refresh_from_db()
+    assert sample_object.synchronized is False and sample_object.deleted is True
