@@ -12,21 +12,41 @@ def django_db_setup(django_db_setup, django_db_blocker):
 
 
 @pytest.mark.django_db
-@pytest.fixture
-def sample_object(scope="function"):
+@pytest.fixture(scope="function")
+def sample_device_role_prod():
+    """
+    Creates a DeviceRoleProd object that can be used for tests.
+    """
+    sample_device_role_prod = DeviceRoleProd.objects.create(name="test")
+    return sample_device_role_prod
+
+
+@pytest.mark.django_db
+@pytest.fixture(scope="function")
+def sample_administration_group(sample_device_role_prod):
+    """
+    Creates a AdministrationGroup object that can be used for tests.
+    """
+    sample_administration_group = AdministrationGroup.objects.create(name="test")
+    sample_administration_group.DeviceRoleProd.set([sample_device_role_prod])
+    sample_administration_group.save()
+    return sample_administration_group
+
+
+@pytest.mark.django_db
+@pytest.fixture(scope="function")
+def sample_object(sample_device_role_prod, sample_administration_group):
     """
     Creates a Device object that can be used for tests.
     """
-    test_device_role_prod = DeviceRoleProd.objects.create(name="test")
     test_domain = DNSDomain.objects.create(name="test.com")
-    test_administration_group = AdministrationGroup.objects.create(name="test")
-    test_administration_group.DeviceRoleProd.set([test_device_role_prod])
+
     data = {
        "asset_id": "None",
        "vlan": 100,
        "dns_domain": test_domain,
-       "administration_group": test_administration_group,
-       "appl_NAC_DeviceRoleProd": test_device_role_prod,
+       "administration_group": sample_administration_group,
+       "appl_NAC_DeviceRoleProd": sample_device_role_prod,
        "appl_NAC_Hostname": "test_hostname",
        "appl_NAC_Active": True,
        "appl_NAC_ForceDot1X": False,
