@@ -73,9 +73,9 @@
         </td>
 		<td>
 			{% if device.appl_NAC_Active %}
-				<span class="icon-desc" desc="Active (access allowed)"><img src="{% static 'icons/check-lg.svg' %}" alt="appl_NAC_Active_True" height="25" width="25" class="icon-zoom" /></span>
+				<span class="icon-desc" desc="Active (access allowed)"><img src="{% static 'icons/check.svg' %}" alt="appl_NAC_Active_True" height="25" width="25" class="icon-zoom" /></span>
 			{% else %}
-				<span class="icon-desc" desc="Inactive (access not allowed)"><img src="{% static 'icons/x-lg.svg' %}" alt="appl_NAC_Active_False" height="25" width="25" class="icon-zoom" /></span>
+				<span class="icon-desc" desc="Inactive (access not allowed)"><img src="{% static 'icons/x.svg' %}" alt="appl_NAC_Active_False" height="25" width="25" class="icon-zoom" /></span>
 			{% endif %}
 			{% if device.appl_NAC_Install %}
 				<span class="icon-desc" desc="Installation"><img src="{% static 'icons/wrench.svg' %}" alt="appl_NAC_Install" height="25" width="25" class="icon-zoom" /></span>
