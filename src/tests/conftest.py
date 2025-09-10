@@ -1,7 +1,8 @@
 import pytest
 
-from nac.models import AdministrationGroup, DeviceRoleProd, DNSDomain, Device
+from nac.models import AdministrationGroup, DeviceRoleProd, DNSDomain, Device, CustomUser
 
+from django.contrib.auth.models import Permission
 from django.core.management import call_command
 
 
@@ -62,3 +63,24 @@ def sample_device(sample_device_role_prod, sample_administration_group):
        "additional_info": "Placeholder"
     }
     return Device.objects.create(**data)
+
+
+@pytest.mark.django_db
+@pytest.fixture(scope="function")
+def sample_user(sample_administration_group):
+    """
+    Creates a CustomUser object that can be used for tests. This user by default has view, change, delete
+    and add permissions for devices.
+    """
+    sample_user = CustomUser.objects.create()
+    sample_user.set_password("test")
+    sample_user.administration_group.set([sample_administration_group])
+
+    sample_user.user_permissions.add(Permission.objects.get(codename='view_device'))
+    sample_user.user_permissions.add(Permission.objects.get(codename='change_device'))
+    sample_user.user_permissions.add(Permission.objects.get(codename='delete_device'))
+    sample_user.user_permissions.add(Permission.objects.get(codename='add_device'))
+
+    sample_user.save()
+
+    return sample_user
