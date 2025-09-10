@@ -5,10 +5,10 @@ from django.contrib.auth.models import Permission
 
 
 @pytest.mark.django_db
-def test_flags(sample_object, client):
-    sample_object.synchronized = True
-    sample_object.deleted = False
-    sample_object.save()
+def test_flags(sample_device, client):
+    sample_device.synchronized = True
+    sample_device.deleted = False
+    sample_device.save()
 
     perm_delete = Permission.objects.get(codename='delete_device')
     test_user = CustomUser.objects.create()
@@ -19,6 +19,6 @@ def test_flags(sample_object, client):
 
     client.force_login(test_user)
 
-    client.post(reverse_lazy('device_delete', args=(sample_object.id,)))
-    sample_object.refresh_from_db()
-    assert sample_object.synchronized is False and sample_object.deleted is True
+    client.post(reverse_lazy('device_delete', args=(sample_device.id,)))
+    sample_device.refresh_from_db()
+    assert sample_device.synchronized is False and sample_device.deleted is True

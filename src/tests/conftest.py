@@ -35,7 +35,7 @@ def sample_administration_group(sample_device_role_prod):
 
 @pytest.mark.django_db
 @pytest.fixture(scope="function")
-def sample_object(sample_device_role_prod, sample_administration_group):
+def sample_device(sample_device_role_prod, sample_administration_group):
     """
     Creates a Device object that can be used for tests.
     """
