@@ -63,6 +63,23 @@
       </tr>
       </thead>
       <tbody>
+		<tr>
+			<td>
+				<button type="button" class="btn btn-secondary" onclick="toggleCheckboxes()">Select All</button>
+			</td>
+			<td> 
+			</td>
+			<td> 
+			</td>
+			<td> 
+			</td>
+			<td> 
+			</td>
+			<td> 
+			</td>
+			<td> 
+			</td>
+		</tr>
         {% for device in devices %}
         <tr>
         	<td>
@@ -285,6 +302,12 @@
   	}
 </style>
 <script>
+
+	function toggleCheckboxes() {
+    	const checkboxes = document.querySelectorAll('input[name="markedForImport"]');
+    	const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+    	checkboxes.forEach(cb => cb.checked = !allChecked);
+	}
 	function showDetails(title, addresses) {
 		const modal = document.getElementById("detailModal");
 		const modalTitle = document.getElementById("modalTitle");
