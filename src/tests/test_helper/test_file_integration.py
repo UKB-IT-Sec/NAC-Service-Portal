@@ -26,8 +26,8 @@ def test_modify_macs():
 
 def test_read_csv_and_get_devices():
     csv_content = (
-        "AssetID;Hostname;Active;ForceDot1X;Install;AllowAccessCAB;AllowAccessAIR;AllowAccessVPN;AllowAccessCEL;DeviceRoleProd;MacAddressWireless;MacAddressWired\n"
-        "1;host1;1;0;1;1;1;0;0;Role1;aabbccddeeff;ffeeddccbbaa\n"
+        "AssetID;Hostname;Active;ForceDot1X;Install;SyncWithLDAPAllowed;AllowAccessCAB;AllowAccessAIR;AllowAccessVPN;AllowAccessCEL;DeviceRoleProd;MacAddressWireless;MacAddressWired\n"
+        "1;host1;1;0;1;1;1;1;0;0;Role1;aabbccddeeff;ffeeddccbbaa\n"
     )
     file = io.BytesIO(csv_content.encode("utf-8"))
     devices = file_integration.get_devices(file)
@@ -38,7 +38,7 @@ def test_read_csv_and_get_devices():
 
 def test_check_header_format_true():
     csv_content = io.StringIO(
-        "AssetID;Hostname;Active;ForceDot1X;Install;AllowAccessCAB;AllowAccessAIR;AllowAccessVPN;AllowAccessCEL;DeviceRoleProd;MacAddressWireless;MacAddressWired\n"
+        "AssetID;Hostname;Active;ForceDot1X;Install;SyncWithLDAPAllowed;AllowAccessCAB;AllowAccessAIR;AllowAccessVPN;AllowAccessCEL;DeviceRoleProd;MacAddressWireless;MacAddressWired\n"
     )
     reader = file_integration.DictReader(csv_content, delimiter=';')
     assert file_integration._check_header_format(reader)
@@ -52,7 +52,7 @@ def test_check_header_format_false():
 
 def test_validate_header_true():
     csv_content = (
-        "AssetID;Hostname;Active;ForceDot1X;Install;AllowAccessCAB;AllowAccessAIR;AllowAccessVPN;AllowAccessCEL;DeviceRoleProd;MacAddressWireless;MacAddressWired\n"
+        "AssetID;Hostname;Active;ForceDot1X;Install;SyncWithLDAPAllowed;AllowAccessCAB;AllowAccessAIR;AllowAccessVPN;AllowAccessCEL;DeviceRoleProd;MacAddressWireless;MacAddressWired\n"
     )
     file = io.BytesIO(csv_content.encode("utf-8"))
     assert file_integration.validate_header(file)
@@ -71,6 +71,7 @@ def test_map_device():
         'Active': '1',
         'ForceDot1X': '1',
         'Install': '0',
+        'SyncWithLDAPAllowed': '1',
         'AllowAccessCAB': '1',
         'AllowAccessAIR': '0',
         'AllowAccessVPN': '1',
@@ -106,6 +107,7 @@ def test_handle_devices_valid(mock_get_role, mock_form):
         'Active': '1',
         'ForceDot1X': '1',
         'Install': '0',
+        'SyncWithLDAPAllowed': '1',
         'AllowAccessCAB': '1',
         'AllowAccessAIR': '0',
         'AllowAccessVPN': '1',
@@ -140,6 +142,7 @@ def test_handle_devices_invalid(mock_get_role, mock_form):
         'Active': '1',
         'ForceDot1X': '1',
         'Install': '0',
+        'SyncWithLDAPAllowed': '1',
         'AllowAccessCAB': '1',
         'AllowAccessAIR': '0',
         'AllowAccessVPN': '1',
@@ -175,6 +178,7 @@ def test_handle_devices_valid_exception(mock_get_role, mock_form):
         'Active': '1',
         'ForceDot1X': '1',
         'Install': '0',
+        'SyncWithLDAPAllowed': '1',
         'AllowAccessCAB': '1',
         'AllowAccessAIR': '0',
         'AllowAccessVPN': '1',
