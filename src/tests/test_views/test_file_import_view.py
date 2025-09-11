@@ -1,19 +1,9 @@
 import pytest
 import io
 from django.urls import reverse
-from django.test import Client
-from nac.models import CustomUser
 from unittest.mock import patch, MagicMock
 from helper.file_integration import ESSENTIAL_HEADER
 from nac.forms import FileUploadSelectForm
-
-
-@pytest.fixture
-def logged_in_client(db):
-    CustomUser.objects.create_user(username="testuser", password="testpass")
-    client = Client()
-    client.login(username="testuser", password="testpass")
-    return client
 
 
 @pytest.mark.django_db

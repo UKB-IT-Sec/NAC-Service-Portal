@@ -80,9 +80,7 @@ def test_device_filtering(admin_group, device_role_prod, result, sample_user):
 
 
 @pytest.mark.django_db
-def test_csv_export_view(client, sample_user):
-    client.force_login(sample_user)
-
+def test_csv_export_view(client, logged_in_client):
     url = reverse_lazy('device_export_csv')
-    response = client.get(url)
+    response = logged_in_client.get(url)
     assert response.status_code == 200

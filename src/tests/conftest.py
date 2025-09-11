@@ -84,3 +84,13 @@ def sample_user(sample_administration_group):
     sample_user.save()
 
     return sample_user
+
+
+@pytest.mark.django_db
+@pytest.fixture(scope="function")
+def logged_in_client(sample_user, client):
+    """
+    Return an authenticated Client object to be used for tests. Uses sample_user.
+    """
+    client.force_login(sample_user)
+    return client
