@@ -14,4 +14,4 @@ django-sortable-listview
 macaddress
 django-simple-history
 python-magic
-
+python-magic-bin
