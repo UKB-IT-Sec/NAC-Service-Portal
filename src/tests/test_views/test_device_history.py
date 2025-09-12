@@ -1,6 +1,6 @@
 import pytest
 from nac.subviews.device_management import DeviceUpdateView
-from nac.models import AdministrationGroup, Device, CustomUser
+from nac.models import Device
 from nac.forms import DeviceHistoryForm
 from django.test import RequestFactory
 from django.forms.models import model_to_dict
@@ -11,7 +11,7 @@ from django.forms.models import model_to_dict
                          [("dev1-v2"),
                           ("dev1-v3"),
                           ("dev1-v4")])
-def test_select_version(hostname):
+def test_select_version(hostname, sample_user):
     device_with_history = Device.objects.get(id=1)
     device_with_history.appl_NAC_Hostname = "dev1-v1"
     device_with_history.save()
@@ -25,9 +25,6 @@ def test_select_version(hostname):
     history_entry = device_with_history.history.get(appl_NAC_Hostname=hostname)
     expected_data = model_to_dict(history_entry)
 
-    test_user = CustomUser.objects.create()
-    test_user.administration_group.set([AdministrationGroup.objects.get(pk=1), AdministrationGroup.objects.get(pk=2)])
-
     rf = RequestFactory()
     url = f"/devices/{device_with_history.pk}/edit/"
     post_data = {
@@ -35,7 +32,7 @@ def test_select_version(hostname):
         "device_version": history_entry.history_id,
     }
     request = rf.post(url, post_data)
-    request.user = test_user
+    request.user = sample_user
     request.path = url
 
     view = DeviceUpdateView()
@@ -53,7 +50,7 @@ def test_select_version(hostname):
                          [("dev1-v2"),
                           ("dev1-v3"),
                           ("dev1-v4")])
-def test_delete_version(hostname):
+def test_delete_version(hostname, sample_user):
     device_with_history = Device.objects.get(id=1)
     device_with_history.appl_NAC_Hostname = "dev1-v1"
     device_with_history.save()
@@ -66,9 +63,6 @@ def test_delete_version(hostname):
 
     history_entry = device_with_history.history.all().get(appl_NAC_Hostname=hostname)
 
-    test_user = CustomUser.objects.create()
-    test_user.administration_group.set([AdministrationGroup.objects.get(pk=1), AdministrationGroup.objects.get(pk=2)])
-
     rf = RequestFactory()
     url = f"/devices/{device_with_history.pk}/edit/"
     post_data = {
@@ -76,7 +70,7 @@ def test_delete_version(hostname):
         "device_version": history_entry.history_id,
     }
     request = rf.post(url, post_data)
-    request.user = test_user
+    request.user = sample_user
     request.path = url
 
     view = DeviceUpdateView()
@@ -91,15 +85,12 @@ def test_delete_version(hostname):
 
 
 @pytest.mark.django_db
-def test_select_none():
+def test_select_none(sample_user):
     device_with_history = Device.objects.get(id=1)
     device_with_history.appl_NAC_Hostname = "dev1-v1"
     device_with_history.save()
 
     expected_data = model_to_dict(device_with_history)
-
-    test_user = CustomUser.objects.create()
-    test_user.administration_group.set([AdministrationGroup.objects.get(pk=1), AdministrationGroup.objects.get(pk=2)])
 
     rf = RequestFactory()
     url = f"/devices/{device_with_history.pk}/edit/"
@@ -108,7 +99,7 @@ def test_select_none():
         "device_version": "",
     }
     request = rf.post(url, post_data)
-    request.user = test_user
+    request.user = sample_user
     request.path = url
 
     view = DeviceUpdateView()
@@ -122,15 +113,12 @@ def test_select_none():
 
 
 @pytest.mark.django_db
-def test_delete_none():
+def test_delete_none(sample_user):
     device_with_history = Device.objects.get(id=1)
     device_with_history.appl_NAC_Hostname = "dev1-v1"
     device_with_history.save()
 
     expected_data = model_to_dict(device_with_history)
-
-    test_user = CustomUser.objects.create()
-    test_user.administration_group.set([AdministrationGroup.objects.get(pk=1), AdministrationGroup.objects.get(pk=2)])
 
     rf = RequestFactory()
     url = f"/devices/{device_with_history.pk}/edit/"
@@ -139,7 +127,7 @@ def test_delete_none():
         "device_version": "",
     }
     request = rf.post(url, post_data)
-    request.user = test_user
+    request.user = sample_user
     request.path = url
 
     view = DeviceUpdateView()
@@ -174,11 +162,8 @@ def test_number_of_items_in_dropdown():
 
 
 @pytest.mark.django_db
-def test_with_less_than_3_historical_records():
+def test_with_less_than_3_historical_records(sample_user):
     device_with_history = Device.objects.get(id=1)
-
-    test_user = CustomUser.objects.create()
-    test_user.administration_group.set([AdministrationGroup.objects.get(pk=1), AdministrationGroup.objects.get(pk=2)])
 
     for hostname in ["dev1-v1", "dev1-v2", "dev1-v3"]:
         rf = RequestFactory()
@@ -188,7 +173,7 @@ def test_with_less_than_3_historical_records():
             "device_version": "",
         }
         request = rf.post(url, post_data)
-        request.user = test_user
+        request.user = sample_user
         request.path = url
 
         view = DeviceUpdateView()
