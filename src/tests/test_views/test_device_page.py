@@ -30,14 +30,12 @@ def test_device_search(query, result, sample_user):
 
 
 @pytest.mark.django_db
-def test_result_rendering(client, sample_user):
-    client.force_login(sample_user)
-
+def test_result_rendering(logged_in_client):
     url = reverse_lazy('devices')
-    response = client.get(url)
+    response = logged_in_client.get(url)
     assert response.status_code == 200
 
-    ajax_response = client.get(
+    ajax_response = logged_in_client.get(
         url,  # The URL where the AJAX request is sent
         {"search_string": "", "administration_group": "", "device_role_prod": ""},  # Parameters to be sent in the AJAX request
         HTTP_X_REQUESTED_WITH='XMLHttpRequest'  # Indicate it's an AJAX request
@@ -80,7 +78,7 @@ def test_device_filtering(admin_group, device_role_prod, result, sample_user):
 
 
 @pytest.mark.django_db
-def test_csv_export_view(client, logged_in_client):
+def test_csv_export_view(logged_in_client):
     url = reverse_lazy('device_export_csv')
     response = logged_in_client.get(url)
     assert response.status_code == 200
