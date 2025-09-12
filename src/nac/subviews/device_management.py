@@ -1,9 +1,11 @@
+from nac.mixins import CustomPermissionsRequiredMixin
+
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import UpdateView, CreateView
 from django.db.models import Q
 from django.urls import reverse_lazy
 from django.shortcuts import render, redirect
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 import json
 from django.http import JsonResponse
 from django.template.loader import render_to_string
@@ -21,7 +23,7 @@ from ..forms import DeviceForm, DeviceSearchForm, DeviceHistoryForm
 from ..validation import normalize_mac
 
 
-class DeviceListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class DeviceListView(LoginRequiredMixin, CustomPermissionsRequiredMixin, ListView):
     permission_required = "nac.view_device"
     model = Device
     template_name = "devices.html"
@@ -123,14 +125,14 @@ class DeviceListCsvView(DeviceListView):
         return response
 
 
-class DeviceDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+class DeviceDetailView(LoginRequiredMixin, CustomPermissionsRequiredMixin, DetailView):
     permission_required = "nac.view_device"
 
     model = Device
     template_name = "device_detail.html"
 
 
-class DeviceUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+class DeviceUpdateView(LoginRequiredMixin, CustomPermissionsRequiredMixin, UpdateView):
     permission_required = "nac.change_device"
 
     model = Device
@@ -177,7 +179,7 @@ class DeviceUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
         return super().post(request, *args, **kwargs)
 
 
-class DeviceDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+class DeviceDeleteView(LoginRequiredMixin, CustomPermissionsRequiredMixin, DetailView):
     permission_required = "nac.delete_device"
 
     model = Device
@@ -191,7 +193,7 @@ class DeviceDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
         return redirect(reverse_lazy("devices"))
 
 
-class DeviceCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+class DeviceCreateView(LoginRequiredMixin, CustomPermissionsRequiredMixin, CreateView):
     permission_required = "nac.add_device"
 
     model = Device
