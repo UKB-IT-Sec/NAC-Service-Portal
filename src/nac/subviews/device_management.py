@@ -113,6 +113,7 @@ class DeviceListCsvView(DeviceListView):
                 device.appl_NAC_Active,
                 device.appl_NAC_ForceDot1X,
                 device.appl_NAC_Install,
+                device.allowLdapSync,
                 device.appl_NAC_AllowAccessCAB,
                 device.appl_NAC_AllowAccessAIR,
                 device.appl_NAC_AllowAccessVPN,

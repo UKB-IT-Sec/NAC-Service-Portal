@@ -63,6 +63,23 @@
       </tr>
       </thead>
       <tbody>
+		<tr>
+			<td>
+				<button type="button" class="btn btn-secondary" onclick="toggleCheckboxes()">Select All</button>
+			</td>
+			<td> 
+			</td>
+			<td> 
+			</td>
+			<td> 
+			</td>
+			<td> 
+			</td>
+			<td> 
+			</td>
+			<td> 
+			</td>
+		</tr>
         {% for device in devices %}
         <tr>
         	<td>
@@ -73,9 +90,9 @@
         </td>
 		<td>
 			{% if device.appl_NAC_Active %}
-				<span class="icon-desc" desc="Active (access allowed)"><img src="{% static 'icons/check-lg.svg' %}" alt="appl_NAC_Active_True" height="25" width="25" class="icon-zoom" /></span>
+				<span class="icon-desc" desc="Active (access allowed)"><img src="{% static 'icons/check.svg' %}" alt="appl_NAC_Active_True" height="25" width="25" class="icon-zoom" /></span>
 			{% else %}
-				<span class="icon-desc" desc="Inactive (access not allowed)"><img src="{% static 'icons/x-lg.svg' %}" alt="appl_NAC_Active_False" height="25" width="25" class="icon-zoom" /></span>
+				<span class="icon-desc" desc="Inactive (access not allowed)"><img src="{% static 'icons/x.svg' %}" alt="appl_NAC_Active_False" height="25" width="25" class="icon-zoom" /></span>
 			{% endif %}
 			{% if device.appl_NAC_Install %}
 				<span class="icon-desc" desc="Installation"><img src="{% static 'icons/wrench.svg' %}" alt="appl_NAC_Install" height="25" width="25" class="icon-zoom" /></span>
@@ -103,9 +120,9 @@
 				<span class="icon-desc" desc="Access over cellular network not allowed"><img src="{% static 'icons/broadcast-pin.svg' %}" alt="appl_NAC_AllowAccessCEL" height="25" width="25" class="icon-zoom gray-icon"/></span>
 			{% endif %}
 			{% if device.allowLdapSync %}
-				<span class="icon-desc" desc="Sync with LDAP allowed"><img src="{% static 'icons/arrow-repeat.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom"/></span>
+				<span class="icon-desc" desc="Sync with LDAP allowed"><img src="{% static 'icons/database.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom"/></span>
 			{% else %}
-				<span class="icon-desc" desc="Sync with LDAP not allowed"><img src="{% static 'icons/arrow-repeat.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom gray-icon"/></span>
+				<span class="icon-desc" desc="Sync with LDAP not allowed"><img src="{% static 'icons/database-lock.svg' %}" alt="allowLdapSync" height="25" width="25" class="icon-zoom gray-icon"/></span>
 			{% endif %}
 		</td>
 		<td>
@@ -285,6 +302,12 @@
   	}
 </style>
 <script>
+
+	function toggleCheckboxes() {
+    	const checkboxes = document.querySelectorAll('input[name="markedForImport"]');
+    	const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+    	checkboxes.forEach(cb => cb.checked = !allChecked);
+	}
 	function showDetails(title, addresses) {
 		const modal = document.getElementById("detailModal");
 		const modalTitle = document.getElementById("modalTitle");

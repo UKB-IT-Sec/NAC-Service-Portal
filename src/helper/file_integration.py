@@ -11,13 +11,14 @@ ESSENTIAL_HEADER = [
     "Active",
     "ForceDot1X",
     "Install",
+    "SyncWithLDAPAllowed",
     "AllowAccessCAB",
     "AllowAccessAIR",
     "AllowAccessVPN",
     "AllowAccessCEL",
     "DeviceRoleProd",
     "MacAddressWireless",
-    "MacAddressWired"
+    "MacAddressWired",
 ]
 
 
@@ -75,6 +76,7 @@ def _map_device(csv_deviceData, administration_group, dns_domain, deviceroleprod
         'appl_NAC_Active': csv_deviceData.get('Active'),
         'appl_NAC_ForceDot1X': csv_deviceData.get('ForceDot1X'),
         'appl_NAC_Install': csv_deviceData.get('Install'),
+        'allowLdapSync': csv_deviceData.get('SyncWithLDAPAllowed'),
         'appl_NAC_AllowAccessCAB': csv_deviceData.get('AllowAccessCAB'),
         'appl_NAC_AllowAccessAIR': csv_deviceData.get('AllowAccessAIR'),
         'appl_NAC_AllowAccessVPN': csv_deviceData.get('AllowAccessVPN'),
