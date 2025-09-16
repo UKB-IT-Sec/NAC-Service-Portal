@@ -25,7 +25,7 @@ class CustomUserAdmin(UserAdmin):
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
-admin.site.register(Device, SimpleHistoryAdmin)
+admin.site.register(Device, DeviceAdmin)
 admin.site.register(AdministrationGroup)
 admin.site.register(DeviceRoleProd)
 admin.site.register(DNSDomain)
