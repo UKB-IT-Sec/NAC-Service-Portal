@@ -20,6 +20,21 @@ ESSENTIAL_HEADER = [
     "MacAddressWireless",
     "MacAddressWired",
 ]
+DUMMY_DATA = [
+    "DummyAssetID",
+    "DummyHostname",
+    "True",
+    "False",
+    "1",
+    "0",
+    "true",
+    "false",
+    "yes",
+    "faaaaaalseeee",
+    "DUMMY_ROLE",
+    "aaaaaaaaaaaa",
+    "ffffffffffff",
+]
 
 
 def get_devices(csv_file):
@@ -66,6 +81,10 @@ def _modify_macs(deviceDict):
     return modified_list
 
 
+def _string2bool(s):
+    return str(s).lower() in ['true', '1', 'yes', 'True']
+
+
 def _map_device(csv_deviceData, administration_group, dns_domain, deviceroleprod):
     db_deviceObject = {
         'administration_group': administration_group.id if administration_group else None,
@@ -73,14 +92,14 @@ def _map_device(csv_deviceData, administration_group, dns_domain, deviceroleprod
         'appl_NAC_DeviceRoleProd': deviceroleprod.id if deviceroleprod else None,
         'asset_id': csv_deviceData.get('AssetID'),
         'appl_NAC_Hostname': csv_deviceData.get('Hostname'),
-        'appl_NAC_Active': csv_deviceData.get('Active'),
-        'appl_NAC_ForceDot1X': csv_deviceData.get('ForceDot1X'),
-        'appl_NAC_Install': csv_deviceData.get('Install'),
-        'allowLdapSync': csv_deviceData.get('SyncWithLDAPAllowed'),
-        'appl_NAC_AllowAccessCAB': csv_deviceData.get('AllowAccessCAB'),
-        'appl_NAC_AllowAccessAIR': csv_deviceData.get('AllowAccessAIR'),
-        'appl_NAC_AllowAccessVPN': csv_deviceData.get('AllowAccessVPN'),
-        'appl_NAC_AllowAccessCEL': csv_deviceData.get('AllowAccessCEL'),
+        'appl_NAC_Active': _string2bool(csv_deviceData.get('Active')),
+        'appl_NAC_ForceDot1X': _string2bool(csv_deviceData.get('ForceDot1X')),
+        'appl_NAC_Install': _string2bool(csv_deviceData.get('Install')),
+        'allowLdapSync': _string2bool(csv_deviceData.get('SyncWithLDAPAllowed')),
+        'appl_NAC_AllowAccessCAB': _string2bool(csv_deviceData.get('AllowAccessCAB')),
+        'appl_NAC_AllowAccessAIR': _string2bool(csv_deviceData.get('AllowAccessAIR')),
+        'appl_NAC_AllowAccessVPN': _string2bool(csv_deviceData.get('AllowAccessVPN')),
+        'appl_NAC_AllowAccessCEL': _string2bool(csv_deviceData.get('AllowAccessCEL')),
         'appl_NAC_macAddressAIR': csv_deviceData.get('MacAddressWireless'),
         'appl_NAC_macAddressCAB': csv_deviceData.get('MacAddressWired'),
         'source': 'CSV-Import',

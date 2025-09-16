@@ -20,7 +20,7 @@ from nac.forms import FileUploadForm, FileUploadSelectForm
 from helper.file_integration import get_devices, handle_devices, save_checked_objects_in_db, _modify_macs
 import csv
 from django.http import HttpResponse
-from helper.file_integration import ESSENTIAL_HEADER
+from helper.file_integration import ESSENTIAL_HEADER, DUMMY_DATA
 
 
 class FileImportView(LoginRequiredMixin, View):
@@ -32,6 +32,7 @@ class FileImportView(LoginRequiredMixin, View):
             response['Content-Disposition'] = 'attachment; filename="import_schema.csv"'
             writer = csv.writer(response, delimiter=';')
             writer.writerow(ESSENTIAL_HEADER)
+            writer.writerow(DUMMY_DATA)
             return response
 
         form = FileUploadForm()
