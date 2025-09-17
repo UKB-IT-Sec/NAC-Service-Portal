@@ -4,6 +4,10 @@
 <form method="post">
 {% csrf_token %}
 <div class=container>
+	{% if form.errors %}
+		<p style="color: firebrick;">Your username and password didn't match. Please try again.</p>
+	{% endif %}
+
 	<table style="background-color:#424241; color:white;">
 		<tr>
 			<td>
