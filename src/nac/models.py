@@ -43,7 +43,7 @@ class Device(models.Model):
     dns_domain = models.ForeignKey(DNSDomain, on_delete=models.SET_NULL, null=True, verbose_name="DNS domain")
     vlan = models.CharField(null=True, blank=True, max_length=100, verbose_name="VLAN")
     source = models.CharField(null=True, blank=True, max_length=100, verbose_name="Data origin")
-    modified_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, editable=False)
+    modified_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True)
     last_modified = models.TextField(null=True, blank=True, editable=False, verbose_name="Time of last modification")
     creationDate = models.TextField(null=True, blank=True, editable=False, verbose_name="Time of creation")
 
