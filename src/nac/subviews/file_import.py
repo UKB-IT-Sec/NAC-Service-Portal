@@ -74,7 +74,7 @@ class FileImportView(LoginRequiredMixin, View):
                 device_dicts = request.session.get('devices', [])
                 selected_ids = request.POST.getlist('markedForImport')
                 context['step'] = 3
-                context['importedDeviceList'] = save_checked_objects_in_db(device_dicts, selected_ids)
+                context['importedDeviceList'] = save_checked_objects_in_db(device_dicts, selected_ids, self.request.user)
                 return render(request, self.template_name, context)
         except Exception as e:
             context['error'] = e

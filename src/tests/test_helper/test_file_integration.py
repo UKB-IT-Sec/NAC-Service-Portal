@@ -219,8 +219,8 @@ def test_save_checked_objects_in_db(mock_create, mock_get_role, mock_get_dns, mo
     mock_get_dns.return_value = dns_domain
     mock_get_role.return_value = deviceroleprod
     mock_create.return_value = device
-
-    names = file_integration.save_checked_objects_in_db(device_dicts, deviceIDList)
+    mock_currentUser = 'DummyUser'
+    names = file_integration.save_checked_objects_in_db(device_dicts, deviceIDList, mock_currentUser)
     assert names == ['host1']
 
 
@@ -247,6 +247,7 @@ def test_save_checked_objects_in_db_exception(mock_create, mock_get_role, mock_g
     mock_get_role.return_value = deviceroleprod
     mock_create.return_value = device
     mock_create.side_effect = Exception("Error")
+    mock_currentUser = 'DummyUser'
     with pytest.raises(Exception) as e:
-        file_integration.save_checked_objects_in_db(device_dicts, deviceIDList)
+        file_integration.save_checked_objects_in_db(device_dicts, deviceIDList, mock_currentUser)
     assert 'for Device' in str(e.value)
