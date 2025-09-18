@@ -107,7 +107,7 @@ def _map_device(csv_deviceData, administration_group, dns_domain, deviceroleprod
     return db_deviceObject
 
 
-def save_checked_objects_in_db(device_dicts, deviceIDList):
+def save_checked_objects_in_db(device_dicts, deviceIDList, currentUser):
     importedDeviceNames = []
     deviceIDSet = set(str(id) for id in deviceIDList)
     for device_dict in device_dicts:
@@ -123,6 +123,7 @@ def save_checked_objects_in_db(device_dicts, deviceIDList):
                         administration_group=administration_group,
                         dns_domain=dns_domain,
                         appl_NAC_DeviceRoleProd=deviceroleprod,
+                        modified_by=currentUser,
                         **device_data
                     )
                     importedDeviceNames.append(device.appl_NAC_Hostname)
