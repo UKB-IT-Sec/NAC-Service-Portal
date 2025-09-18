@@ -78,6 +78,21 @@ class DeviceSearchForm(forms.Form):
                      ("deleted", "Only deleted devices")],
             label="Show deleted devices?", required=False)
 
+        self.fields["appl_NAC_Active"] = forms.BooleanField(label="Active (access allowed)",
+                                                            required=False)
+        self.fields["appl_NAC_Install"] = forms.BooleanField(label="Installation",
+                                                            required=False)
+        self.fields["appl_NAC_AllowAccessCAB"] = forms.BooleanField(label="Wired access allowed",
+                                                            required=False)
+        self.fields["appl_NAC_AllowAccessAIR"] = forms.BooleanField(label="Wireless access allowed",
+                                                            required=False)
+        self.fields["appl_NAC_AllowAccessVPN"] = forms.BooleanField(label="VPN access allowed",
+                                                            required=False)
+        self.fields["appl_NAC_AllowAccessCEL"] = forms.BooleanField(label="Cellular access allowed",
+                                                            required=False)
+        self.fields["allowLdapSync"] = forms.BooleanField(label="Sync with LDAP allowed",
+                                                            required=False)
+
 
 class MacAddressFormat(forms.Textarea):
     def format_value(self, value):

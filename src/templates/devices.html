@@ -2,6 +2,7 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
+
 {% block content %}
 <div class="container">
 	<h1>Filter</h1>
@@ -10,12 +11,15 @@
 	</a></span>
 	<form id="search_form" action="{% url 'devices' %}" method="get">
 		<div class="row">
-			{% for field in search_form %}
+			{% for field in search_form|slice:":2" %}
 				<div class="col-auto">
 					{{ field | as_crispy_field }}
 				</div>
 			{% endfor %}
+
 		</div>
+
+
 
 		<h1>Devices</h1>
 		<div style="display: flex; justify-content: space-between;">
