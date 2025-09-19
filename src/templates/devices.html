@@ -11,7 +11,7 @@
 	</a></span>
 	<form id="search_form" action="{% url 'devices' %}" method="get">
 		<div class="row">
-			{% for field in search_form|slice:":2" %}
+			{% for field in search_form.visible_fields|slice:":4" %}
 				<div class="col-auto">
 					{{ field | as_crispy_field }}
 				</div>
