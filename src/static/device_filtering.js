@@ -18,7 +18,14 @@ search_form.on('input', function () {
         search_string: $('#id_search_string').val(),
         device_role_prod: $('#id_device_role_prod').val(),
         administration_group: $('#id_administration_group').val(),
-        show_deleted: $('#id_show_deleted').val()
+        show_deleted: $('#id_show_deleted').val(),
+        appl_NAC_Active: $('#id_appl_NAC_Active').val(),
+        appl_NAC_Install: $('#id_appl_NAC_Install').val(),
+        appl_NAC_AllowAccessCAB: $('#id_appl_NAC_AllowAccessCAB').val(),
+        appl_NAC_AllowAccessAIR: $('#id_appl_NAC_AllowAccessAIR').val(),
+        appl_NAC_AllowAccessVPN: $('#id_appl_NAC_AllowAccessVPN').val(),
+        appl_NAC_AllowAccessCEL: $('#id_appl_NAC_AllowAccessCEL').val(),
+        allowLdapSync: $('#id_allowLdapSync').val(),
     }
 
     // if scheduled_function is NOT false, cancel the execution of the function

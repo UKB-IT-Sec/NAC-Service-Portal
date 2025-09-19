@@ -16,9 +16,19 @@
 					{{ field | as_crispy_field }}
 				</div>
 			{% endfor %}
-
 		</div>
-
+		<div class="row">
+			<div class="column">
+				{% for field in search_form.visible_fields|slice:"4:8" %}
+					{{ field | as_crispy_field }}
+				{% endfor %}
+			</div>
+			<div class="column">
+				{% for field in search_form.visible_fields|slice:"8:12" %}
+					{{ field | as_crispy_field }}
+				{% endfor %}
+			</div>
+		</div>
 
 
 		<h1>Devices</h1>

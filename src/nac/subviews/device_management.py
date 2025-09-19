@@ -60,6 +60,23 @@ class DeviceListView(LoginRequiredMixin, CustomPermissionsRequiredMixin, ListVie
         elif (deleted_selection == "deleted"):
             device_list = device_list.filter(deleted=True)
 
+        # filter for flags
+        if self.request.GET.get("appl_NAC_Active"):
+            device_list = device_list.filter(appl_NAC_Active=True)
+        if self.request.GET.get("appl_NAC_Install"):
+            device_list = device_list.filter(appl_NAC_Install=True)
+        if self.request.GET.get("appl_NAC_AllowAccessCAB"):
+            device_list = device_list.filter(appl_NAC_AllowAccessCAB=True)
+        if self.request.GET.get("appl_NAC_AllowAccessAIR"):
+            device_list = device_list.filter(appl_NAC_AllowAccessAIR=True)
+        if self.request.GET.get("appl_NAC_AllowAccessVPN"):
+            device_list = device_list.filter(appl_NAC_AllowAccessVPN=True)
+        if self.request.GET.get("appl_NAC_AllowAccessCEL"):
+            device_list = device_list.filter(appl_NAC_AllowAccessCEL=True)
+        if self.request.GET.get("allowLdapSync"):
+            device_list = device_list.filter(allowLdapSync=True)
+
+
         # return results
         return device_list.order_by("appl_NAC_Hostname")
 
