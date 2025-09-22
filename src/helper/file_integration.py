@@ -52,7 +52,10 @@ def _read_csv(csv_file):
 def _check_header_format(csv_content):
     header_fields = [h.strip().casefold() for h in csv_content.fieldnames]
     essentials_lower = [key.casefold() for key in ESSENTIAL_HEADER]
-    return all(key in header_fields for key in essentials_lower)
+    missing_keys = [key for key in essentials_lower if key not in header_fields]
+    if missing_keys:
+        return False, missing_keys
+    return True, []
 
 
 def validate_header(csv_file):
