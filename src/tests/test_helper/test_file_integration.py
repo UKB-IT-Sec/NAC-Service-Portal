@@ -47,7 +47,7 @@ def test_check_header_format_true():
 def test_check_header_format_false():
     csv_content = io.StringIO("foo;bar;baz\n")
     reader = file_integration.DictReader(csv_content, delimiter=';')
-    assert not file_integration._check_header_format(reader)
+    assert not file_integration._check_header_format(reader)[0]
 
 
 def test_validate_header_true():
@@ -55,13 +55,13 @@ def test_validate_header_true():
         "AssetID;Hostname;Active;ForceDot1X;Install;SyncWithLDAPAllowed;AllowAccessCAB;AllowAccessAIR;AllowAccessVPN;AllowAccessCEL;DeviceRoleProd;MacAddressWireless;MacAddressWired\n"
     )
     file = io.BytesIO(csv_content.encode("utf-8"))
-    assert file_integration.validate_header(file)
+    assert file_integration.validate_header(file)[0]
 
 
 def test_validate_header_false():
     csv_content = "foo;bar;baz\n"
     file = io.BytesIO(csv_content.encode("utf-8"))
-    assert not file_integration.validate_header(file)
+    assert not file_integration.validate_header(file)[0]
 
 
 def test_map_device():

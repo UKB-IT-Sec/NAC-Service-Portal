@@ -51,10 +51,14 @@ class FileUploadForm(forms.Form):
             uploaded_file.seek(0)
 
             if mime not in ['text/csv', 'text/plain']:
-                raise ValidationError("Wrong File-Format (MIME-Type: %s)" % mime)
+                raise ValidationError(f"Wrong File-Format (MIME-Type: {mime})")
             from helper.file_integration import validate_header
-            if not validate_header(uploaded_file):
-                raise ValidationError("Wrong Header-Format")
+            valid, missing_header = validate_header(uploaded_file)
+            if not valid:
+                missing_header_upper = [header.upper() for header in missing_header]
+                missing_header_string = " and ".join(missing_header_upper)
+                error_message = f"Wrong Header-Format - Missing {missing_header_string}"
+                raise ValidationError(error_message)
             uploaded_file.seek(0)
         return uploaded_file
 
