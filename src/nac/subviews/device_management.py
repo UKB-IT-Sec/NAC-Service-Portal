@@ -103,26 +103,35 @@ class DeviceListCsvView(DeviceListView):
         filename = '_'.join([timestamp, filter_params]) + ".csv"
 
         response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
-        writer = csv.writer(response, delimiter=';')
-        header_list = ESSENTIAL_HEADER + ['Deleted']
-        writer.writerow(header_list)
+        hostname_index = ESSENTIAL_HEADER.index("Hostname")
+
+        header_list = (
+            ESSENTIAL_HEADER[:hostname_index + 1]
+            + ["DNS_Domain"]
+            + ESSENTIAL_HEADER[hostname_index + 1:]
+            + ["Deleted"]
+            )
+
+        writer = csv.DictWriter(response, fieldnames=header_list, delimiter=';')
+        writer.writeheader()
         for device in context['device_list']:
-            writer.writerow([
-                device.asset_id,
-                device.appl_NAC_Hostname,
-                device.appl_NAC_Active,
-                device.appl_NAC_ForceDot1X,
-                device.appl_NAC_Install,
-                device.allowLdapSync,
-                device.appl_NAC_AllowAccessCAB,
-                device.appl_NAC_AllowAccessAIR,
-                device.appl_NAC_AllowAccessVPN,
-                device.appl_NAC_AllowAccessCEL,
-                device.appl_NAC_DeviceRoleProd,
-                device.appl_NAC_macAddressAIR,
-                device.appl_NAC_macAddressCAB,
-                device.deleted
-            ])
+            writer.writerow({
+                'AssetID': device.asset_id,
+                'Hostname': device.appl_NAC_Hostname,
+                'DNS_Domain': device.dns_domain,
+                'Active': device.appl_NAC_Active,
+                'ForceDot1X': device.appl_NAC_ForceDot1X,
+                'Install': device.appl_NAC_Install,
+                'SyncWithLDAPAllowed': device.allowLdapSync,
+                'AllowAccessCAB': device.appl_NAC_AllowAccessCAB,
+                'AllowAccessAIR': device.appl_NAC_AllowAccessAIR,
+                'AllowAccessVPN': device.appl_NAC_AllowAccessVPN,
+                'AllowAccessCEL': device.appl_NAC_AllowAccessCEL,
+                'DeviceRoleProd': device.appl_NAC_DeviceRoleProd,
+                'MacAddressWireless': device.appl_NAC_macAddressAIR,
+                'MacAddressWired': device.appl_NAC_macAddressCAB,
+                'Deleted': device.deleted,
+            })
         return response
 
 
