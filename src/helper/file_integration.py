@@ -25,12 +25,12 @@ DUMMY_DATA = [
     "DummyHostname",
     "True",
     "False",
-    "1",
-    "0",
-    "true",
-    "false",
-    "yes",
-    "faaaaaalseeee",
+    "True",
+    "False",
+    "True",
+    "False",
+    "True",
+    "False",
     "DUMMY_ROLE",
     "aaaaaaaaaaaa",
     "ffffffffffff",
@@ -82,7 +82,7 @@ def _modify_macs(deviceDict):
 
 
 def _string2bool(s):
-    return str(s).lower() in ['true', '1', 'yes', 'True']
+    return str(s).lower() in ['True', 'true']
 
 
 def _map_device(csv_deviceData, administration_group, dns_domain, deviceroleprod):
