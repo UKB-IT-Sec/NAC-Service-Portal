@@ -19,13 +19,13 @@ search_form.on('input', function () {
         device_role_prod: $('#id_device_role_prod').val(),
         administration_group: $('#id_administration_group').val(),
         show_deleted: $('#id_show_deleted').val(),
-        appl_NAC_Active: $('#id_appl_NAC_Active').val(),
-        appl_NAC_Install: $('#id_appl_NAC_Install').val(),
-        appl_NAC_AllowAccessCAB: $('#id_appl_NAC_AllowAccessCAB').val(),
-        appl_NAC_AllowAccessAIR: $('#id_appl_NAC_AllowAccessAIR').val(),
-        appl_NAC_AllowAccessVPN: $('#id_appl_NAC_AllowAccessVPN').val(),
-        appl_NAC_AllowAccessCEL: $('#id_appl_NAC_AllowAccessCEL').val(),
-        allowLdapSync: $('#id_allowLdapSync').val(),
+        appl_NAC_Active: $('#id_appl_NAC_Active').is(':checked') ? 'on' : undefined,
+        appl_NAC_Install: $('#id_appl_NAC_Install').is(':checked') ? 'on' : undefined,
+        appl_NAC_AllowAccessCAB: $('#id_appl_NAC_AllowAccessCAB').is(':checked') ? 'on' : undefined,
+        appl_NAC_AllowAccessAIR: $('#id_appl_NAC_AllowAccessAIR').is(':checked') ? 'on' : undefined,
+        appl_NAC_AllowAccessVPN: $('#id_appl_NAC_AllowAccessVPN').is(':checked') ? 'on' : undefined,
+        appl_NAC_AllowAccessCEL: $('#id_appl_NAC_AllowAccessCEL').is(':checked') ? 'on' : undefined,
+        allowLdapSync: $('#id_allowLdapSync').is(':checked') ? 'on' : undefined,
     }
 
     // if scheduled_function is NOT false, cancel the execution of the function

@@ -79,7 +79,7 @@ class DeviceSearchForm(forms.Form):
             label="Show deleted devices?", required=False)
 
         self.fields["appl_NAC_Active"] = forms.BooleanField(label="Active (access allowed)",
-                                                            required=False)
+                                                            required=False, )
         self.fields["appl_NAC_Install"] = forms.BooleanField(label="Installation",
                                                             required=False)
         self.fields["appl_NAC_AllowAccessCAB"] = forms.BooleanField(label="Wired access allowed",
