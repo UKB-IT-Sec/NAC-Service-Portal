@@ -78,20 +78,34 @@ class DeviceSearchForm(forms.Form):
                      ("deleted", "Only deleted devices")],
             label="Show deleted devices?", required=False)
 
-        self.fields["appl_NAC_Active"] = forms.BooleanField(label="Active (access allowed)",
-                                                            required=False, )
-        self.fields["appl_NAC_Install"] = forms.BooleanField(label="Installation",
-                                                            required=False)
-        self.fields["appl_NAC_AllowAccessCAB"] = forms.BooleanField(label="Wired access allowed",
-                                                            required=False)
-        self.fields["appl_NAC_AllowAccessAIR"] = forms.BooleanField(label="Wireless access allowed",
-                                                            required=False)
-        self.fields["appl_NAC_AllowAccessVPN"] = forms.BooleanField(label="VPN access allowed",
-                                                            required=False)
-        self.fields["appl_NAC_AllowAccessCEL"] = forms.BooleanField(label="Cellular access allowed",
-                                                            required=False)
-        self.fields["allowLdapSync"] = forms.BooleanField(label="Sync with LDAP allowed",
-                                                            required=False)
+        self.fields["appl_NAC_Active"] = forms.BooleanField(
+            label=Device._meta.get_field("appl_NAC_Active").verbose_name,
+            required=False,
+        )
+        self.fields["appl_NAC_Install"] = forms.BooleanField(
+            label=Device._meta.get_field("appl_NAC_Install").verbose_name,
+            required=False,
+        )
+        self.fields["appl_NAC_AllowAccessCAB"] = forms.BooleanField(
+            label=Device._meta.get_field("appl_NAC_AllowAccessCAB").verbose_name,
+            required=False,
+        )
+        self.fields["appl_NAC_AllowAccessAIR"] = forms.BooleanField(
+            label=Device._meta.get_field("appl_NAC_AllowAccessAIR").verbose_name,
+            required=False,
+        )
+        self.fields["appl_NAC_AllowAccessVPN"] = forms.BooleanField(
+            label=Device._meta.get_field("appl_NAC_AllowAccessVPN").verbose_name,
+            required=False,
+        )
+        self.fields["appl_NAC_AllowAccessCEL"] = forms.BooleanField(
+            label=Device._meta.get_field("appl_NAC_AllowAccessCEL").verbose_name,
+            required=False,
+        )
+        self.fields["allowLdapSync"] = forms.BooleanField(
+            label=Device._meta.get_field("allowLdapSync").verbose_name,
+            required=False,
+        )
 
 
 class MacAddressFormat(forms.Textarea):
