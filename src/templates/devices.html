@@ -22,13 +22,18 @@
 		<span class="icon-desc" desc="Refresh results"><button type="submit" class="btn btn-secondary btn-sm">
 			<img src="{% static 'icons/arrow-clockwise.svg' %}" alt="Refresh" height="18" width="18"/>
 		</button></span>
-		<button type="submit" class="btn btn-secondary btn-sm" formaction="{% url 'device_export_csv' %}?export=csv">Export as CSV</button>
+		<span>
+			<button type="submit" class="btn btn-secondary btn-sm" formaction="{% url 'device_export_csv' %}?export=csv">Export as CSV</button>
+		</span>
 		</div>
-		<div id="results">
-			{% include "devices_results.html" %}
-		</div>
-
 	</form>
+	<form method="post">
+    	{% csrf_token %}
+		<button type="submit" class="btn btn-secondary btn-sm">Resync</button>
+	</form>
+	<div id="results">
+		{% include "devices_results.html" %}
+	</div>
 </div>
 
 <script type="text/javascript" src="{% static 'device_filtering.js' %}"></script>

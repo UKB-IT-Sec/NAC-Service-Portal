@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 import json
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.template.loader import render_to_string
 from django.forms.models import model_to_dict
 from django.utils import timezone
@@ -80,6 +80,11 @@ class DeviceListView(LoginRequiredMixin, CustomPermissionsRequiredMixin, ListVie
         context["device_role_prod_list"] = DeviceRoleProd.objects.all()
         context["search_form"] = DeviceSearchForm(user=self.request.user)
         return context
+
+    def post(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        queryset.update(synchronized=True)
+        return HttpResponseRedirect(reverse_lazy('devices'))
 
 
 class DeviceListCsvView(DeviceListView):
