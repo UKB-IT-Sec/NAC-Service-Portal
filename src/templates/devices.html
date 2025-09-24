@@ -11,22 +11,24 @@
 	</a></span>
 	<form id="search_form" action="{% url 'devices' %}" method="get">
 		<div class="row">
-			{% for field in search_form.visible_fields|slice:":4" %}
-				<div class="col-auto">
-					{{ field | as_crispy_field }}
-				</div>
-			{% endfor %}
-		</div>
-		<div class="row">
-			<div class="column">
-				{% for field in search_form.visible_fields|slice:"4:8" %}
-					{{ field | as_crispy_field }}
-				{% endfor %}
+			<div class="col-auto">
+				{{ search_form.search_string | as_crispy_field }}
+				{{ search_form.appl_NAC_Active | as_crispy_field }}
+				{{ search_form.appl_NAC_Install | as_crispy_field }}
 			</div>
-			<div class="column">
-				{% for field in search_form.visible_fields|slice:"8:12" %}
-					{{ field | as_crispy_field }}
-				{% endfor %}
+			<div class="col-auto">
+				{{ search_form.device_role_prod | as_crispy_field }}
+				{{ search_form.appl_NAC_AllowAccessCAB | as_crispy_field }}
+				{{ search_form.appl_NAC_AllowAccessAIR | as_crispy_field }}
+			</div>
+			<div class="col-auto">
+				{{ search_form.administration_group | as_crispy_field }}
+				{{ search_form.appl_NAC_AllowAccessVPN | as_crispy_field }}
+				{{ search_form.appl_NAC_AllowAccessCEL | as_crispy_field }}
+			</div>
+			<div class="col-auto">
+				{{ search_form.show_deleted | as_crispy_field }}
+				{{ search_form.allowLdapSync | as_crispy_field }}
 			</div>
 		</div>
 
@@ -46,5 +48,15 @@
 </div>
 
 <script type="text/javascript" src="{% static 'device_filtering.js' %}"></script>
+
+<style>
+    .row {
+        display: flex;
+    }
+
+    .column {
+      flex: 50%;
+    }
+</style>
 
 {% endblock content %}
