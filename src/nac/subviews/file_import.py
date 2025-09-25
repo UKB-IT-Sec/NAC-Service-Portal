@@ -14,6 +14,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 from django.contrib.auth.mixins import LoginRequiredMixin
+from nac.mixins import CustomPermissionsRequiredMixin
 from django.views import View
 from django.shortcuts import render
 from nac.forms import FileUploadForm, FileUploadSelectForm
@@ -23,8 +24,9 @@ from django.http import HttpResponse
 from helper.file_integration import ESSENTIAL_HEADER, DUMMY_DATA
 
 
-class FileImportView(LoginRequiredMixin, View):
+class FileImportView(LoginRequiredMixin, CustomPermissionsRequiredMixin, View):
     template_name = "file_import.html"
+    permission_required = "nac.add_device"
 
     def get(self, request, *args, **kwargs):
         if request.GET.get("download_template") == "1":
