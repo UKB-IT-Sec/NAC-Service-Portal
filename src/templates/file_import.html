@@ -43,7 +43,7 @@
       {{ select_form.administration_group|as_crispy_field }}
       {{ select_form.dns_domain|as_crispy_field }}
       <input type="hidden" name="step" value="2">
-      <button type="submit">Import</button>
+      <button type="submit" class="btn btn-secondary">Import</button>
     </form>
     {% endif %}
   {% if devices and not step == 3 %}
@@ -66,6 +66,7 @@
 		<tr>
 			<td>
 				<button type="button" class="btn btn-secondary" onclick="toggleCheckboxes()">Select All</button>
+                <button type="submit" class="btn btn-secondary">Import</button>
 			</td>
 			<td> 
 			</td>
@@ -77,7 +78,7 @@
 			</td>
 			<td> 
 			</td>
-			<td> 
+			<td>
 			</td>
 		</tr>
         {% for device in devices %}
@@ -251,7 +252,6 @@
     {% endfor %}
       </tbody>
     </table>
-    <button type="submit">Import</button>
   </form>
   {% endif%}
   {% if invalid_devices %}
