@@ -32,6 +32,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('-c', '--config_file', default=DEFAULT_CONFIG, help='use a specific config file [src/ldap.cfg]')
         parser.add_argument('-a', '--all', action='store_true', help='sync all devices')
+        parser.add_argument('-d', '--dry-run', action='store_true', help='see all affected device')
 
     def handle(self, *args, **options):
         setup_console_logger(options['verbosity'])
@@ -51,7 +52,7 @@ class Command(BaseCommand):
             )
 
         for entry in devices_to_sync:
-            self._add_or_update_device_in_ldap_database(entry)
+            self._add_or_update_device_in_ldap_database(entry, dry_run=options['dry_run'])
 
         self.ldap_connection.unbind()
 
@@ -60,21 +61,25 @@ class Command(BaseCommand):
 
     def _add_device(self, device):
         if device.allowLdapSync:
-            if self.ldap_connection.add('appl-NAC-FQDN={},{}'.format(f'{device.appl_NAC_Hostname}.{device.dns_domain}', self.config['ldap-server']['search_base']),
+            if self.ldap_connection.add('appl-NAC-AssetID={},{}'.format(f'{device.asset_id}', self.config['ldap-server']['search_base']),
                                         'appl-NAC-Device',
                                         map_device_data(device)):
-                logging.info('%s added', device.appl_NAC_Hostname)
+                logging.info('Device %s added with ID %s ', device.appl_NAC_Hostname, device.asset_id)
                 device.synchronized = True
                 device.save()
                 return True
             else:
-                logging.error('failed to add %s', device.appl_NAC_Hostname)
+                logging.error('failed to add Device %s with ID %s ', device.appl_NAC_Hostname, device.asset_id)
             return False
         else:
-            logging.error('Device %s not allowed to Sync', device.appl_NAC_Hostname)
+            logging.error('Device %s added with ID %s not allowed to Sync', device.appl_NAC_Hostname, device.asset_id)
 
-    def _add_or_update_device_in_ldap_database(self, device):
+    def _add_or_update_device_in_ldap_database(self, device, dry_run=False):
         logging.debug('processing %s', device.appl_NAC_Hostname)
-        if device_exists(f'{device.appl_NAC_Hostname}.{device.dns_domain}', self.ldap_connection, self.config['ldap-server']['search_base']):
-            delete_device(f'{device.appl_NAC_Hostname}.{device.dns_domain}', self.ldap_connection, self.config['ldap-server']['search_base'])
-        self._add_device(device)
+        if dry_run:
+            logging.info('Dry-run: would add/update device %s', device.appl_NAC_Hostname)
+            return True
+        else:
+            if device_exists(f'{device.asset_id}', self.ldap_connection, self.config['ldap-server']['search_base']):
+                delete_device(f'{device.asset_id}', self.ldap_connection, self.config['ldap-server']['search_base'])
+            return self._add_device(device)
