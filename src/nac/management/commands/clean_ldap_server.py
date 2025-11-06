@@ -19,7 +19,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from ldap3 import SUBTREE
 
 from helper.filesystem import get_config_directory
-from nac.models import Device, DNSDomain
+from nac.models import Device
 from helper.config import get_config_from_file
 from helper.logging import setup_console_logger
 from helper.ldap import connect_to_ldap_server, delete_device
