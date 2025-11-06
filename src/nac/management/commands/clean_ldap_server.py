@@ -54,15 +54,15 @@ class Command(BaseCommand):
                                                                             paged_size=5,
                                                                             generator=True)
         for entry in entry_generator:
-            logging.debug('checking device %s', entry['attributes']['appl-NAC-AssetID'])
+            logging.debug('checking device %s', entry['attributes']['appl-NAC-AssetID'][0])
             try:
-                device_assetID = entry['attributes']['appl-NAC-AssetID']
+                device_assetID = entry['attributes']['appl-NAC-AssetID'][0]
                 print(Device.objects.get(asset_id=device_assetID))
                 logging.info("Device exists")
             except ObjectDoesNotExist:
                 if options['dry_run']:
                     logging.warning('%s would be deleted (DRY RUN)', entry['attributes']['appl-NAC-FQDN'])
                 else:
-                    delete_device(entry['attributes']['appl-NAC-AssetID'], self.ldap_connection, self.config['ldap-server']['search_base'])
+                    delete_device(entry['attributes']['appl-NAC-AssetID'][0], self.ldap_connection, self.config['ldap-server']['search_base'])
 
         self.ldap_connection.unbind()
