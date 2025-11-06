@@ -2,6 +2,7 @@
     "entries": [
         {
             "attributes": {
+                "appl-NAC-AssetID": "testDeviceCable.ukbonn.de",
                 "appl-NAC-Active": true,
                 "appl-NAC-AllowAccessAIR": false,
                 "appl-NAC-AllowAccessCAB": true,
@@ -19,8 +20,11 @@
                     "appl-NAC-Device"
                 ]
             },
-            "dn": "appl-NAC-FQDN=testDeviceCable.ukbonn.de,ou=Devices,dc=ukbonn,dc=de",
+            "dn": "appl-NAC-AssetID=testDeviceCable.ukbonn.de,ou=Devices,dc=ukbonn,dc=de",
             "raw": {
+                "appl-NAC-AssetID": [
+                    "testDeviceCable.ukbonn.de"
+                ],
                 "appl-NAC-Active": [
                     "TRUE"
                 ],
