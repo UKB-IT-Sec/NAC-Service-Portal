@@ -80,6 +80,6 @@ class Command(BaseCommand):
             logging.info('Dry-run: would add/update device %s', device.appl_NAC_Hostname)
             return True
         else:
-            if device_exists(f'{device.asset_id}', self.ldap_connection, self.config['ldap-server']['search_base']):
-                delete_device(f'{device.asset_id}', self.ldap_connection, self.config['ldap-server']['search_base'])
+            if device_exists(f'{device.appl_NAC_Hostname}.{device.dns_domain}', self.ldap_connection, self.config['ldap-server']['search_base']):
+                delete_device(f'{device.appl_NAC_Hostname}.{device.dns_domain}', self.ldap_connection, self.config['ldap-server']['search_base'])
             return self._add_device(device)
