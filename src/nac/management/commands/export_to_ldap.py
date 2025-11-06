@@ -72,7 +72,7 @@ class Command(BaseCommand):
                 logging.error('failed to add Device %s with ID %s ', device.appl_NAC_Hostname, device.asset_id)
             return False
         else:
-            logging.error('Device %s added with ID %s not allowed to Sync', device.appl_NAC_Hostname, device.asset_id)
+            logging.error('Device %s with ID %s not allowed to Sync', device.appl_NAC_Hostname, device.asset_id)
 
     def _add_or_update_device_in_ldap_database(self, device, dry_run=False):
         logging.debug('processing %s', device.appl_NAC_Hostname)
@@ -80,6 +80,6 @@ class Command(BaseCommand):
             logging.info('Dry-run: would add/update device %s', device.appl_NAC_Hostname)
             return True
         else:
-            if device_exists(f'{device.appl_NAC_Hostname}.{device.dns_domain}', self.ldap_connection, self.config['ldap-server']['search_base']):
-                delete_device(f'{device.appl_NAC_Hostname}.{device.dns_domain}', self.ldap_connection, self.config['ldap-server']['search_base'])
+            if device_exists(f'{device.asset_id}', self.ldap_connection, self.config['ldap-server']['search_base']):
+                delete_device(f'{device.asset_id}', self.ldap_connection, self.config['ldap-server']['search_base'])
             return self._add_device(device)

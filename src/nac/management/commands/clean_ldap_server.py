@@ -50,7 +50,7 @@ class Command(BaseCommand):
         entry_generator = self.ldap_connection.extend.standard.paged_search(search_base=self.config['ldap-server']['search_base'],
                                                                             search_filter='(objectClass=appl-NAC-Device)',
                                                                             search_scope=SUBTREE,
-                                                                            attributes=['appl-NAC-FQDN', 'appl-NAC-AssetID'],
+                                                                            attributes=['appl-NAC-AssetID'],
                                                                             paged_size=5,
                                                                             generator=True)
         for entry in entry_generator:
@@ -61,7 +61,7 @@ class Command(BaseCommand):
                 logging.info("Device exists")
             except ObjectDoesNotExist:
                 if options['dry_run']:
-                    logging.warning('%s would be deleted (DRY RUN)', entry['attributes']['appl-NAC-FQDN'])
+                    logging.warning('%s would be deleted (DRY RUN)', entry['attributes']['appl-NAC-AssetID'][0])
                 else:
                     delete_device(entry['attributes']['appl-NAC-AssetID'][0], self.ldap_connection, self.config['ldap-server']['search_base'])
 
