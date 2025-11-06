@@ -28,11 +28,11 @@ def connect_to_ldap_server(address, username, password, port=636, tls=False):
 
 
 def device_exists(device_fqdn, ldap_connection, search_base):
-    return ldap_connection.search('appl-NAC-FQDN={},{}'.format(device_fqdn, search_base), '(objectclass=appl-NAC-Device)')
+    return ldap_connection.search('appl-NAC-AssetID={},{}'.format(device_fqdn, search_base), '(objectclass=appl-NAC-Device)')
 
 
 def delete_device(device_fqdn, ldap_connection, search_base):
-    if ldap_connection.delete('appl-NAC-FQDN={},{}'.format(device_fqdn, search_base)):
+    if ldap_connection.delete('appl-NAC-AssetID={},{}'.format(device_fqdn, search_base)):
         logging.info('%s deleted', device_fqdn)
     else:
         logging.error('failed to delete %s', device_fqdn)
