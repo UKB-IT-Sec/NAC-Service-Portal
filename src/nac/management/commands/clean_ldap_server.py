@@ -57,7 +57,7 @@ class Command(BaseCommand):
             logging.debug('checking device %s', entry['attributes']['appl-NAC-AssetID'][0])
             try:
                 device_assetID = entry['attributes']['appl-NAC-AssetID'][0]
-                print(Device.objects.get(asset_id=device_assetID))
+                Device.objects.get(asset_id=device_assetID)
                 logging.info("Device exists")
             except ObjectDoesNotExist:
                 if options['dry_run']:
