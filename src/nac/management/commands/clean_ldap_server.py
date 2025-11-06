@@ -54,10 +54,11 @@ class Command(BaseCommand):
                                                                             paged_size=5,
                                                                             generator=True)
         for entry in entry_generator:
-            logging.debug('checking device %s', entry['attributes']['appl-NAC-FQDN'])
+            logging.debug('checking device %s', str(entry['attributes']['appl-NAC-AssetID']))
             try:
                 device_assetID = str(entry['attributes']['appl-NAC-AssetID'])
                 Device.objects.get(asset_id=device_assetID)
+                logging.info("Device exists")
             except ObjectDoesNotExist:
                 if options['dry_run']:
                     logging.warning('%s would be deleted (DRY RUN)', entry['attributes']['appl-NAC-FQDN'])
