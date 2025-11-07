@@ -61,7 +61,9 @@ class Command(BaseCommand):
 
     def _add_device(self, device):
         if device.allowLdapSync:
-            if self.ldap_connection.add('appl-NAC-AssetID={},{}'.format(f'{device.asset_id}', self.config['ldap-server']['search_base']),
+            add_dn = 'appl-NAC-AssetID={},{}'.format(f'{device.asset_id}', self.config['ldap-server']['search_base'])
+            print(add_dn)
+            if self.ldap_connection.add(add_dn,
                                         'appl-NAC-Device',
                                         map_device_data(device)):
                 logging.info('Device %s added with ID %s ', device.appl_NAC_Hostname, device.asset_id)
