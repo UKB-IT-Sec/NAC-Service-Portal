@@ -146,6 +146,7 @@ def handle_devices(csv_deviceDict, administration_group, dns_domain):
             if form.is_valid():
                 cleaned = form.cleaned_data
                 cleaned['creationDate'] = timezone.localtime().isoformat(timespec='seconds')
+                cleaned['last_modified'] = timezone.localtime().isoformat(timespec='seconds')
                 cleaned['id'] = idC
                 cleaned['administration_group'] = administration_group.name if administration_group else None
                 cleaned['dns_domain'] = dns_domain.name if dns_domain else None
