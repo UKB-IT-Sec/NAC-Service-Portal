@@ -61,7 +61,9 @@ class Command(BaseCommand):
 
     def _add_device(self, device):
         if device.allowLdapSync:
-            if self.ldap_connection.add('appl-NAC-AssetID={},{}'.format(f'{device.asset_id}', self.config['ldap-server']['search_base']),
+            add_dn = 'appl-NAC-AssetID={},{}'.format(f'{device.asset_id}', self.config['ldap-server']['search_base'])
+            logging.debug('LDAP DN for new Device: %s', add_dn)
+            if self.ldap_connection.add(add_dn,
                                         'appl-NAC-Device',
                                         map_device_data(device)):
                 logging.info('Device %s added with ID %s ', device.appl_NAC_Hostname, device.asset_id)
@@ -75,9 +77,9 @@ class Command(BaseCommand):
             logging.error('Device %s with ID %s not allowed to Sync', device.appl_NAC_Hostname, device.asset_id)
 
     def _add_or_update_device_in_ldap_database(self, device, dry_run=False):
-        logging.debug('processing %s', device.appl_NAC_Hostname)
+        logging.debug('processing %s', device.asset_id)
         if dry_run:
-            logging.info('Dry-run: would add/update device %s', device.appl_NAC_Hostname)
+            logging.info('Dry-run: would add/update device %s', device.asset_id)
             return True
         else:
             if device_exists(f'{device.asset_id}', self.ldap_connection, self.config['ldap-server']['search_base']):
